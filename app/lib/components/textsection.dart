@@ -11,11 +11,15 @@ class TextSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(32),
-      child: Text(
-        description,
-        softWrap: true,
-      ),
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        padding: const EdgeInsets.all(16.0),
+        color: const Color.fromRGBO(0, 0, 0, 0.25),
+        child: Text(
+          description,
+          softWrap: true,
+        )
+      )
     );
   }
 }

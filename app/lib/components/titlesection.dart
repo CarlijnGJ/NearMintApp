@@ -4,11 +4,9 @@ class TitleSection extends StatelessWidget {
   const TitleSection({
     super.key,
     required this.name,
-    required this.location,
   });
 
   final String name;
-  final String location;
 
   @override
   Widget build(BuildContext context) {
@@ -17,24 +15,17 @@ class TitleSection extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-            /*1*/
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                /*2*/
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8),
                   child: Text(
                     name,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
+                      fontSize: 48,
                     ),
-                  ),
-                ),
-                Text(
-                  location,
-                  style: TextStyle(
-                    color: Colors.grey[500],
                   ),
                 ),
               ],

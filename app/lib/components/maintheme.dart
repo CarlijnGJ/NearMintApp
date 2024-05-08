@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 final ThemeData mainTheme = ThemeData (
   // Define the default brightness and colors.
   colorScheme: const ColorScheme(
-    primary: Color(0xFF4E4E4E),
+    primary: Color.fromRGBO(0, 60, 67, 1),
     onPrimary: Colors.white,
-    secondary: Color.fromARGB(255, 0, 75, 16),
+    secondary: Color.fromRGBO(19, 93, 102, 1),
     onSecondary: Colors.white,
-    tertiary: Colors.black,
-    onTertiary: Colors.white,
-    background: Color(0xFF4E4E4E),
+    tertiary: Color.fromRGBO(119, 176, 170, 1),
+    onTertiary: Colors.black,
+    background: Color.fromRGBO(0, 60, 67, 1),
     onBackground: Colors.white,
     surface: Colors.black,
     onSurface: Colors.white,
