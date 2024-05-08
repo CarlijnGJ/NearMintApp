@@ -1,6 +1,6 @@
 import 'package:app/components/topbar.dart';
 import 'package:flutter/material.dart';
-import 'package:app/components/maintheme.dart'; //import the main theme for the app
+import 'package:app/components/themes/maintheme.dart'; //import the main theme for the app
 import 'package:app/screens/home/home_screen.dart'; // Import the necessary widgets
 
 void main() => runApp(const AppBarApp());
