@@ -1,40 +1,50 @@
-import 'package:app/home.dart';
+import 'package:app/topbar.dart';
 import 'package:flutter/material.dart';
-
-/// Flutter code sample for [AppBar].
+import 'package:app/home.dart'; // Import the necessary widgets
 
 void main() => runApp(const AppBarApp());
 
 class AppBarApp extends StatelessWidget {
-  const AppBarApp({super.key});
+  const AppBarApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: TopBar(),
+      home: MainPage(),
     );
   }
 }
 
-class TopBar extends StatelessWidget {
-  const TopBar({super.key});
+class MainPage extends StatefulWidget {
+  const MainPage({Key? key}) : super(key: key);
+
+  @override
+  _MainPageState createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> {
+  late Widget currentScreen;
+
+  @override
+  void initState() {
+    super.initState();
+    currentScreen = const HomePage();
+  }
+
+  void setCurrentScreen(Widget screen) {
+    setState(() {
+      currentScreen = screen;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Near Mint Gaming'),
-        actions: const <Widget>[
-          Padding(
-              padding: EdgeInsets.only(right: 20.0, top: 5),
-              child: Icon(Icons.more_horiz)),
-          Padding(
-              padding: EdgeInsets.only(right: 20.0, top: 20),
-              child: Text('Login')),
-        ],
+      appBar: TopBar(
+        onScreenChange: setCurrentScreen, // Pass the callback function
       ),
-      body: const Center(
-        child: HomePage(),
+      body: Center(
+        child: currentScreen,
       ),
     );
   }
