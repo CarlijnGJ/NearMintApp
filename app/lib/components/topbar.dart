@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:app/home.dart'; // Import the necessary widgets
-import 'package:app/login.dart'; // Import the necessary widgets
+import 'package:app/screens/home/home_screen.dart'; // Import the necessary widgets
+import 'package:app/screens/login/login_screen.dart'; // Import the necessary widgets
 
 class TopBar extends StatefulWidget implements PreferredSizeWidget {
   final Function(Widget) onScreenChange;

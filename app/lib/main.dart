@@ -1,6 +1,6 @@
-import 'package:app/topbar.dart';
+import 'package:app/components/topbar.dart';
 import 'package:flutter/material.dart';
-import 'package:app/home.dart'; // Import the necessary widgets
+import 'package:app/screens/home/home_screen.dart'; // Import the necessary widgets
 
 void main() => runApp(const AppBarApp());
 
