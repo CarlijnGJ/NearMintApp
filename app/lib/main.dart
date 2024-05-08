@@ -29,49 +29,59 @@ class MainApp extends StatelessWidget {
         ),
       ),  
       home: Scaffold(
-        body: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              stops: [
-                0.05,
-                0.15,
-                0.5,
-                0.85,
-                0.95,
-              ],
-              colors: [
-                Colors.teal,
-                Colors.black,
-                Colors.black,
-                Colors.black,
-                Colors.teal
-              ],
-            ),
-          ),
-          child: const SingleChildScrollView(
-            child: Column(
-              children: [
-                TitleSection(
-                    name: 'Near Mint Mobile', 
-                    location: 'Steenwijk, Nederland'
+        body: Stack(
+          children: [
+            Positioned.fill(
+              child: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.centerLeft,
+                    end: Alignment.center,
+                    colors: [Colors.teal, Colors.transparent],
+                    stops: [0.0, 0.5],
                   ),
-                TextSection(
-                  description:
-                  'Lake Oeschinen lies at the foot of the Blüemlisalp in the '
-                  'Bernese Alps. Situated 1,578 meters above sea level, it '
-                  'is one of the larger Alpine Lakes. A gondola ride from '
-                  'Kandersteg, followed by a half-hour walk through pastures '
-                  'and pine forest, leads you to the lake, which warms to 20 '
-                  'degrees Celsius in the summer. Activities enjoyed here '
-                  'include rowing, and riding the summer toboggan run.',
                 ),
-              ],
+              ),
             ),
-          ),
-        ),
-      ),
+            Positioned.fill(
+              child: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.center,
+                    end: Alignment.centerRight,
+                    colors: [Colors.transparent, Colors.teal],
+                    stops: [0.5, 1.0],
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: MediaQuery.of(context).padding.top + kToolbarHeight), // Adjust based on app bar height
+                  const TitleSection(
+                    name: 'Near Mint Mobile',
+                    location: 'Steenwijk, Nederland',
+                  ),
+                  const SizedBox(height: 16.0),
+                  const TextSection(
+                    description:
+                    'Lake Oeschinen lies at the foot of the Blüemlisalp in the '
+                    'Bernese Alps. Situated 1,578 meters above sea level, it '
+                    'is one of the larger Alpine Lakes. A gondola ride from '
+                    'Kandersteg, followed by a half-hour walk through pastures '
+                    'and pine forest, leads you to the lake, which warms to 20 '
+                    'degrees Celsius in the summer. Activities enjoyed here '
+                    'include rowing, and riding the summer toboggan run.',
+                  ),
+                ],
+              ),
+            ),
+          ],
+        )
+      )
     );
   }
 }
