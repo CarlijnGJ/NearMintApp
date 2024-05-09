@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:app/screens/home/home_screen.dart'; // Import the necessary widgets
-import 'package:app/screens/login/login_screen.dart'; // Import the necessary widgets
+import 'dart:html' as html;
 
 class TopBar extends StatefulWidget implements PreferredSizeWidget {
-  final Function(Widget) onScreenChange;
 
-  const TopBar({Key? key, required this.onScreenChange}) : super(key: key);
+  const TopBar({Key? key}) : super(key: key);
 
   @override
   _TopBarState createState() => _TopBarState();
@@ -27,7 +26,6 @@ class _TopBarState extends State<TopBar> {
     setState(() {
       currentScreen = screen;
     });
-    widget.onScreenChange(screen); // Notify MainPage about the screen change
   }
 
   @override
@@ -39,12 +37,15 @@ class _TopBarState extends State<TopBar> {
           icon: const Icon(Icons.more_horiz),
           tooltip: 'More Options',
           onPressed: () {
-            setCurrentScreen(const HomePage());
+            Navigator.pop(context);
+            Navigator.pushNamed(context, '/');
+            html.window.history.pushState(null, '', '');
           },
         ),
         TextButton(
           onPressed: () {
-            setCurrentScreen(const LoginPage());
+            Navigator.pushNamed(context, '/login');
+            html.window.history.pushState(null, 'login', 'login');
           },
           child: const Text('Login'),
         ),
