@@ -1,7 +1,10 @@
-import 'package:app/components/topbar.dart';
 import 'package:flutter/material.dart';
+
+import 'package:app/components/topbar.dart';
 import 'package:app/components/themes/maintheme.dart'; //import the main theme for the app
 import 'package:app/screens/home/home_screen.dart'; // Import the necessary widgets
+import 'package:app/screens/login/login_screen.dart';
+import 'package:app/util/unanimated_pageroute.dart';
 
 void main() => runApp(const AppBarApp());
 
@@ -12,6 +15,24 @@ class AppBarApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: mainTheme,
+      routes: {
+        '/login': (context) => const LoginPage(),
+      },
+      onGenerateRoute: (settings) {
+        if (settings.name == '/') {
+          return UnanimatedPageRoute(
+            builder: (context) => const HomePage(),
+          );
+        }
+        else if (settings.name == LoginPage.routeName) {
+          return UnanimatedPageRoute(
+            builder: (context) => const LoginPage(),
+          );
+        }
+        else {
+          return null;
+        }
+      },
       home: const MainPage(),
     );
   }

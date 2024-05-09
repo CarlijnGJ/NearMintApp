@@ -39,12 +39,12 @@ class _TopBarState extends State<TopBar> {
           icon: const Icon(Icons.more_horiz),
           tooltip: 'More Options',
           onPressed: () {
-            setCurrentScreen(const HomePage());
+            Navigator.pushNamed(context, '/');
           },
         ),
         TextButton(
           onPressed: () {
-            setCurrentScreen(const LoginPage());
+            Navigator.pushNamed(context, '/login');
           },
           child: const Text('Login'),
         ),
