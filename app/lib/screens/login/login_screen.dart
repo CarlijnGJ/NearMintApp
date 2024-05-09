@@ -1,8 +1,6 @@
+import 'package:app/screens/login/components/button.dart';
 import 'package:flutter/material.dart';
-
-import 'package:app/components/topbar.dart';
-import 'package:app/components/titlesection.dart';
-import 'package:app/components/loginpanel.dart';
+import 'package:app/screens/login/components/textfield.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -12,58 +10,81 @@ class LoginPage extends StatefulWidget {
   _LoginPageState createState() => _LoginPageState();
 }
 
+
+
 class _LoginPageState extends State<LoginPage> {
+  final usernameController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  void loginUser(){  print("Login button pressed!");}
+  void forgotPassword(){  print("Forgot Password button pressed!");}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const TopBar(),  
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.centerLeft,
-                  end: Alignment.center,
-                  colors: [Colors.teal, Colors.transparent],
-                  stops: [0.0, 0.5],
+      backgroundColor: Colors.grey[300],
+      body:  SafeArea(
+        child: Center(
+          child: Column(
+            children: [
+              const SizedBox(height: 20),
+
+              const Text(
+                'Credentials',
+                style: TextStyle(
+                  fontSize: 20,
+                ),),
+              const SizedBox(height: 20),
+
+              // username textfield
+              CustomTextField(
+                controller: usernameController,
+                hintText: 'Username',
+                obscureText: false,
+              ),
+
+              const SizedBox(height: 10),
+
+              // password textfield
+              CustomTextField(
+                controller: passwordController,
+                hintText: 'Password',
+                obscureText: true,
+              ),
+
+              const SizedBox(height: 10),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: forgotPassword,
+                      child: Text(
+                      'Forgot Password?',
+                      style: TextStyle(color: Colors.grey[600]),
+                    ),
+                    ),
+                  ],
                 ),
               ),
-            ),
+
+              const SizedBox(height: 10),
+
+              CustomButton(
+                onTap: loginUser),
+              
+              const SizedBox(height: 30),
+              
+              Divider(),
+
+              Text('or use the QR code'),
+
+              Icon(Icons.qr_code_2_rounded, size: 180),
+            ],
           ),
-          Positioned.fill(
-            child: Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.center,
-                  end: Alignment.centerRight,
-                  colors: [Colors.transparent, Colors.teal],
-                  stops: [0.5, 1.0],
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(height: MediaQuery.of(context).padding.top + kToolbarHeight), // Adjust based on app bar height
-                const TitleSection(
-                  name: 'Login Page',
-                ),
-                const SizedBox(height: 16.0),
-                const LoginPanel(
-                  description:
-                  'This is a test-container for the fields and text of the login page. '
-                  'All of the stuff that needs doing will be based off of this. If there\'s '
-                  'anything else involved, that\'ll be here as well.',
-                ),
-              ],
-            ),
-          )
-        ]
-      )
+        ),
+      ),
     );
   }
 }
