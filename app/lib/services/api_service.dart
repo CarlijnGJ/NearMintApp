@@ -25,9 +25,10 @@ class APIService {
 
     if (response.statusCode == 201) {
       print('Login successful');
-      return jsonDecode(response.body);
+      return jsonDecode('');
+      //return jsonDecode(response.body);
     } else {
-      throw Exception('Failed to login');
+      throw 'Failed to login';
     }
   }
 }
