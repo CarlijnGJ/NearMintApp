@@ -1,4 +1,5 @@
 import 'package:app/screens/login/components/button.dart';
+import 'package:app/services/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:app/screens/login/components/textfield.dart';
 
@@ -10,19 +11,32 @@ class LoginPage extends StatefulWidget {
   _LoginPageState createState() => _LoginPageState();
 }
 
-
-
 class _LoginPageState extends State<LoginPage> {
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
 
-  void loginUser(){  print("Login button pressed!");}
-  void forgotPassword(){  print("Forgot Password button pressed!");}
+  void loginUser() async {
+    final username = usernameController.text;
+    final password = passwordController.text;
+    try {
+      // Call the login method from APIService
+      final token = await APIService.login(username, password);
+      // Handle successful login (e.g., navigate to the next screen)
+    } catch (e) {
+      // Handle login error (e.g., show an error message)
+      print('Login failed: $e');
+    }
+  }
+
+  void forgotPassword() {
+    print("Forgot Password button pressed!");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[300],
-      body:  SafeArea(
+      body: SafeArea(
         child: Center(
           child: Column(
             children: [
@@ -32,7 +46,8 @@ class _LoginPageState extends State<LoginPage> {
                 'Credentials',
                 style: TextStyle(
                   fontSize: 20,
-                ),),
+                ),
+              ),
               const SizedBox(height: 20),
 
               // username textfield
@@ -61,9 +76,9 @@ class _LoginPageState extends State<LoginPage> {
                     TextButton(
                       onPressed: forgotPassword,
                       child: Text(
-                      'Forgot Password?',
-                      style: TextStyle(color: Colors.grey[600]),
-                    ),
+                        'Forgot Password?',
+                        style: TextStyle(color: Colors.grey[600]),
+                      ),
                     ),
                   ],
                 ),
@@ -71,11 +86,10 @@ class _LoginPageState extends State<LoginPage> {
 
               const SizedBox(height: 10),
 
-              CustomButton(
-                onTap: loginUser),
-              
+              CustomButton(onTap: loginUser),
+
               const SizedBox(height: 30),
-              
+
               Divider(),
 
               Text('or use the QR code'),
