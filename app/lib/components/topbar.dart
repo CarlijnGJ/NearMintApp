@@ -49,6 +49,13 @@ class _TopBarState extends State<TopBar> {
           },
           child: const Text('Login'),
         ),
+        TextButton(
+          onPressed: () {
+            Navigator.pushNamed(context, '/members');
+            html.window.history.pushState(null, 'members', 'members');
+          },
+          child: const Text('Members'),
+        ),
       ],
     );
   }
