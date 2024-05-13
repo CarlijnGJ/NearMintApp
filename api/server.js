@@ -1,9 +1,9 @@
 const express = require('express');
 const mysql = require('mysql2');
-const bcrypt = require('bcrypt');
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 const cors = require('cors');
+const crypto = require('crypto');
 const basicAuth = require('express-basic-auth');
 require('dotenv').config();
 
@@ -53,7 +53,6 @@ connection.connect((err) => {
     }
     console.log('Connected to MySQL database');
 });
-
 // Routes
 /**
  * @swagger
@@ -76,6 +75,82 @@ app.get('/api/members', (req, res) => {
             return;
         }
         res.json(results);
+    });
+});
+// Routes
+/**
+ * @swagger
+ * /api/member:
+ *  get:
+ *    summary: Get a member by session key
+ *    description: Retrieve user information by session key
+ *    parameters:
+ *      - in: query
+ *        name: session_key
+ *        schema:
+ *          type: string
+ *        required: true
+ *        description: Session key of the user to retrieve
+ *    responses:
+ *      200:
+ *        description: Successful operation
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                nickname:
+ *                  type: string
+ *                  description: The user's nickname
+ *                name:
+ *                  type: string
+ *                  description: The user's name
+ *                avatar:
+ *                  type: string
+ *                  description: URL of the user's avatar image
+ *      404:
+ *        description: User not found
+ */
+app.get('/api/member', (req, res) => {
+    const sessionKey = req.query.session_key;
+
+    // Query to retrieve member_id associated with the provided session key
+    const sessionQuery = 'SELECT member_id FROM Session WHERE session_key = ?';
+    connection.query(sessionQuery, [sessionKey], (err, sessionResults) => {
+        if (err) {
+            console.error('Error executing MySQL query:', err);
+            res.status(500).json({ error: 'Internal server error' });
+            return;
+        }
+
+        if (sessionResults.length === 0) {
+            res.status(404).json({ error: 'User not found' });
+            return;
+        }
+
+        const memberId = sessionResults[0].member_id;
+
+        // Query to retrieve member data using the retrieved member_id
+        const memberQuery = 'SELECT nickname, name, avatar FROM Members WHERE member_id = ?';
+        connection.query(memberQuery, [memberId], (err, memberResults) => {
+            if (err) {
+                console.error('Error executing MySQL query:', err);
+                res.status(500).json({ error: 'Internal server error' });
+                return;
+            }
+            
+            if (memberResults.length === 0) {
+                res.status(404).json({ error: 'User not found' });
+                return;
+            }
+
+            // Send member data in response
+            res.status(200).json({ 
+                nickname: memberResults[0].nickname, 
+                name: memberResults[0].name, 
+                avatar: memberResults[0].avatar 
+            });
+        });
     });
 });
 
@@ -142,8 +217,19 @@ app.post('/api/login', async (req, res) => {
                 }
                 return;
             }
-            
-            res.status(201).json({ message: 'Logged in successfully' });
+              // If authentication is successful, generate a session key
+            const sessionKey = crypto.randomBytes(16).toString('hex');
+            // Getting the member_id from the login
+            var memberId = results[0].member_id;
+            connection.query('INSERT INTO Session (session_key, member_id) VALUES (?, ?)', [sessionKey, memberId], (err) => {
+                if (err) {
+                    console.error('Error inserting session:', err);
+                    res.status(501).json({ error: 'Internal server error' });
+                    return;
+                }
+                // Send the encrypted session key to the front end
+                res.status(201).json({ session_key: sessionKey });
+            });
         });
     } catch (error) {
         if (process.env.NODE_ENV === 'development') {
