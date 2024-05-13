@@ -1,3 +1,4 @@
+import 'package:app/screens/members/member_list.dart';
 import 'package:flutter/material.dart';
 
 import 'package:app/components/themes/maintheme.dart'; //import the main theme for the app
@@ -24,6 +25,10 @@ class AppBarApp extends StatelessWidget {
           case '/login':
             return UnanimatedPageRoute(
               builder: (context) => const LoginPage(),
+            );
+            case '/members':
+            return UnanimatedPageRoute(
+              builder: (context) => const MemberList(),
             );
           default:
             return UnanimatedPageRoute(
