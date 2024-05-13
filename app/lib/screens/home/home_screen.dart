@@ -1,8 +1,10 @@
+import 'package:app/components/tealgradleft.dart';
+import 'package:app/components/tealgradright.dart';
 import 'package:flutter/material.dart';
 
 import 'package:app/components/topbar.dart';
-import 'package:app/components/titlesection.dart';
-import 'package:app/components/textsection.dart';
+import 'package:app/screens/home/components/titlesection.dart';
+import 'package:app/screens/home/components/textsection.dart';
 
 class HomePage extends StatefulWidget {
 
@@ -21,30 +23,8 @@ class _HomePageState extends State<HomePage> {
       appBar: const TopBar(),  
       body: Stack(
         children: [
-          Positioned.fill(
-            child: Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.centerLeft,
-                  end: Alignment.center,
-                  colors: [Colors.teal, Colors.transparent],
-                  stops: [0.0, 0.5],
-                ),
-              ),
-            ),
-          ),
-          Positioned.fill(
-            child: Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.center,
-                  end: Alignment.centerRight,
-                  colors: [Colors.transparent, Colors.teal],
-                  stops: [0.5, 1.0],
-                ),
-              ),
-            ),
-          ),
+          const TealGradLeft(),
+          const TealGradRight(),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Column(
