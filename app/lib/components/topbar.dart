@@ -39,20 +39,19 @@ class _TopBarState extends State<TopBar> {
           onPressed: () {
             Navigator.pop(context);
             Navigator.pushNamed(context, '/');
-            html.window.history.pushState(null, '', '');
           },
         ),
         TextButton(
           onPressed: () {
+            Navigator.pop(context);
             Navigator.pushNamed(context, '/login');
-            html.window.history.pushState(null, 'login', 'login');
           },
           child: const Text('Login'),
         ),
         TextButton(
           onPressed: () {
+            Navigator.pop(context);
             Navigator.pushNamed(context, '/members');
-            html.window.history.pushState(null, 'members', 'members');
           },
           child: const Text('Members'),
         ),
