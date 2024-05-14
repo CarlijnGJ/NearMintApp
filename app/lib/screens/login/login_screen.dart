@@ -6,11 +6,7 @@ import 'package:app/screens/profile/profile_screen.dart';
 import 'package:app/services/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:app/screens/login/components/textfield.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-final String secretKey = dotenv.env['SECRET_KEY']!;
-final String iv = dotenv.env['IV']!;
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
