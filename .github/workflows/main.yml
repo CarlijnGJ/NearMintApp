@@ -7,11 +7,12 @@ jobs:
   create-envfile:
  
     runs-on: ubuntu-latest
- 
+    
     steps:
+    - uses: actions/checkout@v2
     - name: Create directory if needed
       run: |
-        cd ../../NearMintApp/NearMintApp && dir -h
+        cd app && dir -h
     - name: Make envfile
       uses: SpicyPizza/create-envfile@v2.0
       with:
