@@ -1,5 +1,5 @@
 # NearMintApp
-De officiële repository voor de nieuwe Near Mint applicatie.
+The official repository for the new Near Mint website.
 
 # What's in here?
-Deze repository bevat alle code die nodig is om de Near Mint applicatie te bouwen en deployen.
+This repository consist of all the code needed to build and deploy the Near Mint website.
