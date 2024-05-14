@@ -16,26 +16,34 @@ class AppBarApp extends StatelessWidget {
     return MaterialApp(
       theme: mainTheme,
       initialRoute: '/',
-      onGenerateRoute: (settings) {
-        switch (settings.name) {
-          case '/':
-            return UnanimatedPageRoute(
-              builder: (context) => const HomePage(),
-            );
-          case '/login':
-            return UnanimatedPageRoute(
-              builder: (context) => const LoginPage(),
-            );
-            case '/members':
-            return UnanimatedPageRoute(
-              builder: (context) => const MemberList(),
-            );
-          default:
-            return UnanimatedPageRoute(
-              builder: (context) => const HomePage(),
-            );
-        }
-      }
+      routes: {
+        '/': (context) => const HomePage(),
+        '/login': (context) => const LoginPage(),
+        '/members': (context) => const MemberList(),
+
+
+      },
+      
+      // onGenerateRoute: (settings) {
+      //   switch (settings.name) {
+      //     case '/':
+      //       return UnanimatedPageRoute(
+      //         builder: (context) => const HomePage(),
+      //       );
+      //     case '/login':
+      //       return UnanimatedPageRoute(
+      //         builder: (context) => const LoginPage(),
+      //       );
+      //       case '/members':
+      //       return UnanimatedPageRoute(
+      //         builder: (context) => const MemberList(),
+      //       );
+      //     default:
+      //       return UnanimatedPageRoute(
+      //         builder: (context) => const HomePage(),
+      //       );
+      //   }
+      // }
     );
   }
 }
