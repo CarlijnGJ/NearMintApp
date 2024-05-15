@@ -1,4 +1,5 @@
 import 'package:app/screens/members/member_list.dart';
+import 'package:app/screens/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -26,6 +27,7 @@ class AppBarApp extends StatelessWidget {
         '/': (context) => const HomePage(),
         '/login': (context) => const LoginPage(),
         '/members': (context) => const MemberList(),
+        '/profile': (context) => const ProfilePage(),
       },
     );
   }

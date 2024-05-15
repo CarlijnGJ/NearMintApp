@@ -1,8 +1,11 @@
+import 'package:app/components/topbar.dart';
 import 'package:flutter/material.dart';
 import 'package:app/services/api_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilePage extends StatefulWidget {
+  const ProfilePage({Key? key}) : super(key: key);
+
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
@@ -55,21 +58,42 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Profile'),
-      ),
+      appBar: TopBar(),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : isError
               ? Center(child: Text(errorMessage))
-              : Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+              : Padding(
+                  padding: const EdgeInsets.only(left: 16.0, top: 16.0),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text('Nickname: ${nickname ?? ''}'),
-                      Text('Name: ${name ?? ''}'),
-                      // Display avatar here
-                      // You can use Image.network or any other widget to display the avatar
+                      avatar != null
+                          ? Padding(
+                              padding: const EdgeInsets.only(right: 16.0),
+                              child: Image.asset(
+                                // Use the local asset path
+                                avatar!,
+                                width: 100,
+                                height: 100,
+                                // You can set other properties like fit, etc.
+                              ),
+                            )
+                          : SizedBox(), // Placeholder if no avatar
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Padding(padding: const EdgeInsets.only(bottom: 16.0)),
+                          Text(
+                            'Nickname: ${nickname ?? ''}',
+                            style: TextStyle(fontSize: 24.0),
+                          ),
+                          Text(
+                            'Name: ${name ?? ''}',
+                            style: TextStyle(fontSize: 16.0),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
