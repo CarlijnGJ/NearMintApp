@@ -60,7 +60,7 @@ connection.connect((err) => {
  */
 function validateSessionKey(req, res, next) {
     // Extract the session key from the "Authorization" header
-    
+
     const sessionKey = req.headers.auth;
     // Check if the session key is present
     if (!sessionKey) {
@@ -152,9 +152,9 @@ app.post('/api/login', (req, res) => {
                 console.error('Error inserting session:', err);
                 return res.status(500).json({ error: 'Internal server error' });
             }
-
             res.status(201).json({ session_key: sessionKey });
         });
+
     });
 });
 
@@ -193,7 +193,7 @@ app.post('/api/login', (req, res) => {
  */
 app.get('/api/member', validateSessionKey, (req, res) => {
     const memberId = req.memberId;
-    
+
     const memberQuery = 'SELECT nickname, name, avatar FROM Members WHERE member_id = ?';
     connection.query(memberQuery, [memberId], (err, results) => {
         if (err) {
@@ -242,8 +242,49 @@ app.get('/api/members', validateSessionKey, (req, res) => {
         res.status(200).json(results);
     });
 });
+/**
+ * @swagger
+ * /api/getRole:
+ *   get:
+ *     summary: Retrieve the role from a member/admin
+ *     description: Retrieve a list of all members from the database
+ *     parameters:
+ *      - in: header
+ *        name: auth
+ *        schema:
+ *          type: string
+ *        required: true
+ *        description: Session key of the user to retrieve
+ *     responses:
+ *       200:
+ *         description: A JSON array of the role of a member
+ *       500:
+ *         description: Internal server error
+ */
+app.get('/api/getRole', validateSessionKey, (req, res) => {
+    const sessionKey = req.headers.auth;
+    const sessionQuery = `SELECT rt.role_type
+                          FROM Session s
+                          JOIN Members m ON s.member_id = m.member_id
+                          JOIN RoleTypes rt ON m.role_id = rt.role_id
+                          WHERE s.session_key = ?`;
+    connection.query(sessionQuery, [sessionKey], (err, results) => {
+        if (err) {
+            console.error('Error executing MySQL query:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        var role = results[0].role_type;
+        console.log(role);
+        res.status(201).json({ role: role });
+    });
+});
 
 // Start the server
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
+
