@@ -58,8 +58,9 @@ class APIService {
       },
     );
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 201) {
       final data = jsonDecode(response.body);
+      print(data);
       return data['role']; // Adjust based on your API response structure
     } else {
       throw Exception('Failed to load role');

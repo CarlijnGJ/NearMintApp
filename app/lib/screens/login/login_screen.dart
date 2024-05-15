@@ -34,6 +34,7 @@ class _LoginPageState extends State<LoginPage> {
         context,
         MaterialPageRoute(builder: (context) => ProfilePage()),
       );
+      eventBus.fire(RefreshTopbarEvent(true));
     } catch (e) {
       // Handle login error (e.g., show an error message)
       print('Login failed: $e');

@@ -1,17 +1,17 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:app/screens/home/home_screen.dart'; // Import the necessary widgets
-import 'dart:html' as html;
+import 'package:app/screens/home/home_screen.dart';
 import 'package:event_bus/event_bus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:app/services/api_service.dart'; // Import your API service
+import 'package:app/services/api_service.dart';
 
 EventBus eventBus = EventBus();
 
-class LoggedInEvent {
+class RefreshTopbarEvent {
   final bool isLoggedIn;
-  final String role;
 
-  LoggedInEvent(this.isLoggedIn, this.role);
+  RefreshTopbarEvent(this.isLoggedIn);
 }
 
 class TopBar extends StatefulWidget implements PreferredSizeWidget {
@@ -27,67 +27,93 @@ class TopBar extends StatefulWidget implements PreferredSizeWidget {
 class _TopBarState extends State<TopBar> {
   late Widget currentScreen;
   bool isLoggedIn = false;
-  String role = '';
+  String role = 'Visitor';
   String loginButtonText = 'Login'; // Default text for login button
+
+  late StreamSubscription<RefreshTopbarEvent> _eventSubscription;
 
   @override
   void initState() {
+
+    _eventSubscription = eventBus.on<RefreshTopbarEvent>().listen((event) {
+      if (event.isLoggedIn != isLoggedIn) {
+        fetchRoleAndInitialize();
+      } else {
+        if (mounted) {
+          setState(() {
+            isLoggedIn = event.isLoggedIn;
+            loginButtonText = isLoggedIn ? 'Logout' : 'Login';
+          });
+        }
+      }
+    });
+    fetchRoleAndInitialize();
     super.initState();
     currentScreen = const HomePage();
-    // Access SharedPreferences instance outside the event listener
-    SharedPreferences.getInstance().then((prefs) {
-      final sessionKey = prefs.getString('sessionKey');
-      if (sessionKey != null) {
-        APIService.getRole(sessionKey).then((role) {
-          setState(() {
-            isLoggedIn = true;
-            this.role = role;
-            loginButtonText = 'Logout';
-          });
-          eventBus.fire(LoggedInEvent(true, role));
-        });
-      }
-      eventBus.on<LoggedInEvent>().listen((event) {
-        setState(() {
-          isLoggedIn = event.isLoggedIn;
-          role = event.role;
-          loginButtonText = isLoggedIn ? 'Logout' : 'Login';
-        });
-      });
-    });
-  }
-
-  void updateState(SharedPreferences prefs) {
-    setState(() {
-      final sessionKey = prefs.getString('sessionKey');
-      if (sessionKey != null) {
-        APIService.getRole(sessionKey).then((role) {
-          setState(() {
-            isLoggedIn = true;
-            this.role = role;
-            loginButtonText = 'Logout';
-          });
-        });
-      } else {
-        isLoggedIn = false;
-        role = '';
-        loginButtonText = 'Login';
-      }
-    });
-  }
-
-  void setCurrentScreen(Widget screen) {
-    setState(() {
-      currentScreen = screen;
-    });
   }
 
   @override
-  Widget build(BuildContext context) {
-    return AppBar(
-      title: const Text('Near Mint Gaming'),
-      actions: <Widget>[
+  void dispose() {
+    _eventSubscription.cancel(); // Remove the event listener
+    super.dispose();
+  }
 
+  Future<void> fetchRoleAndInitialize() async {
+    final prefs = await SharedPreferences.getInstance();
+    final sessionKey = prefs.getString('session_key');
+    if (sessionKey != null) {
+      try {
+        final newRole = await APIService.getRole(sessionKey);
+        if (mounted) {
+          setState(() {
+            isLoggedIn = true;
+            role = newRole;
+            loginButtonText = 'Logout';
+          });
+        }
+      } catch (e) {
+        print('Error: $e');
+      }
+    } else {
+      if (mounted) {
+        setState(() {
+          isLoggedIn = false;
+          role = 'Visitor';
+          loginButtonText = 'Login';
+        });
+      }
+    }
+  }
+
+  List<Widget> getTopbarButtons(String role) {
+    // return <Widget>[];
+    if (role == 'Admin') {
+      return <Widget>[
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+            Navigator.pushNamed(context, '/members');
+          },
+          child: const Text('Members'),
+        ),
+                IconButton(
+          icon: const Icon(Icons.more_horiz),
+          tooltip: 'More Options',
+          onPressed: () {
+            Navigator.pop(context);
+            Navigator.pushNamed(context, '/');
+          },
+        ),
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+            Navigator.pushNamed(context, '/login');
+          },
+          child: Text(loginButtonText),
+        ),
+      ];
+    } else if (role == 'Member') {
+      return <Widget>[
         IconButton(
           icon: const Icon(Icons.more_horiz),
           tooltip: 'More Options',
@@ -101,16 +127,35 @@ class _TopBarState extends State<TopBar> {
             Navigator.pop(context);
             Navigator.pushNamed(context, '/login');
           },
-          child: const Text('Login'),
+          child: Text(loginButtonText),
+        ),
+      ];
+    } else {
+      return <Widget>[
+        IconButton(
+          icon: const Icon(Icons.more_horiz),
+          tooltip: 'More Options',
+          onPressed: () {
+            Navigator.pop(context);
+            Navigator.pushNamed(context, '/');
+          },
         ),
         TextButton(
           onPressed: () {
             Navigator.pop(context);
-            Navigator.pushNamed(context, '/members');
+            Navigator.pushNamed(context, '/login');
           },
-          child: const Text('Members'),
+          child: Text(loginButtonText),
         ),
-      ],
+      ];
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      title: const Text('Near Mint Gaming'),
+      actions: getTopbarButtons(role),
     );
   }
 }
