@@ -1,4 +1,4 @@
-name: Create envfile
+
 
 on: [ push ]
 
@@ -13,3 +13,4 @@ jobs:
     - name: Create directory if needed
       run: |
         ls
+
