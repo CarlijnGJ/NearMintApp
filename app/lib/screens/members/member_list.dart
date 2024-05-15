@@ -41,6 +41,18 @@ class _MemberListState extends State<MemberList> {
   int page = 0;
   int pageSize = 10;
 
+    void nextPage() {
+    setState(() {
+      page++;
+    });
+  }
+
+  void previousPage() {
+    setState(() {
+      page--;
+    });
+  }
+
   List<User> get usersPerPage {
     final startIndex = page * pageSize;
     final endIndex = startIndex + pageSize;
@@ -63,6 +75,23 @@ class _MemberListState extends State<MemberList> {
             ListWidget(
               memberList: usersPerPage,
               ),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: page > 0 ? previousPage : null,
+                  child: Text('Previous'),
+                ),
+                SizedBox(width: 20),
+                ElevatedButton(
+                  onPressed: (page + 1) * pageSize < allUsers.length
+                      ? nextPage
+                      : null,
+                  child: Text('Next'),
+                ),
+              ],
+            ),
             ],
           ),
         ),

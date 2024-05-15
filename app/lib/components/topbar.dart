@@ -87,43 +87,29 @@ class _TopBarState extends State<TopBar> {
     return AppBar(
       title: const Text('Near Mint Gaming'),
       actions: <Widget>[
-        if (!isLoggedIn) ...[
-          TextButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/login');
-              html.window.history.pushState(null, 'login', 'login');
-            },
-            child: Text(loginButtonText),
-          ),
-        ] else ...[
-          if (role == 'member') ...[
-            TextButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/profile');
-                html.window.history.pushState(null, 'profile', 'profile');
-              },
-              child: const Text('Profile'),
-            ),
-          ] else if (role == 'admin') ...[
-            TextButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/members');
-                html.window.history.pushState(null, 'members', 'members');
-              },
-              child: const Text('Member List'),
-            ),
-          ],
-          TextButton(
-            onPressed: () async {
-              final prefs = await SharedPreferences.getInstance();
-              await prefs.remove('sessionKey');
-              eventBus.fire(LoggedInEvent(false, ''));
-              Navigator.pushNamed(context, '/');
-              html.window.history.pushState(null, '', '');
-            },
-            child: Text(loginButtonText),
-          ),
-        ],
+
+        IconButton(
+          icon: const Icon(Icons.more_horiz),
+          tooltip: 'More Options',
+          onPressed: () {
+            Navigator.pop(context);
+            Navigator.pushNamed(context, '/');
+          },
+        ),
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+            Navigator.pushNamed(context, '/login');
+          },
+          child: const Text('Login'),
+        ),
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+            Navigator.pushNamed(context, '/members');
+          },
+          child: const Text('Members'),
+        ),
       ],
     );
   }
