@@ -40,7 +40,7 @@ class _ProfilePageState extends State<ProfilePage> {
         setState(() {
           isLoading = false;
           isError = true;
-          errorMessage = 'Session key is not available';
+          errorMessage = 'Please login again'; //Session key is not available
         });
       }
     } catch (e) {
@@ -56,10 +56,10 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profile'),
+        title: const Text('Profile'),
       ),
       body: isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : isError
               ? Center(child: Text(errorMessage))
               : Center(

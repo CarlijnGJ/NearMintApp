@@ -29,7 +29,7 @@ const options = {
         openapi: '3.0.0',
         info: {
             title: 'NearMintGaming API Documentation',
-            version: '1.0.0',
+            version: '0.5.0',
             description: 'API endpoints for NearMintGaming',
         },
     },
@@ -221,7 +221,7 @@ app.get('/api/member', validateSessionKey, (req, res) => {
  *     description: Retrieve a list of all members from the database
  *     parameters:
  *      - in: header
- *        name: authorization
+ *        name: auth
  *        schema:
  *          type: string
  *        required: true
