@@ -12,17 +12,4 @@ jobs:
     - uses: actions/checkout@v2
     - name: Create directory if needed
       run: |
-        cd app && mkdir assets
         ls
-    - name: Make envfile
-      uses: SpicyPizza/create-envfile@v2.0
-      with:
-        envkey_DEBUG: false
-        envkey_API_USERNAME: "test"
-        envkey_API_PASSWORD: "test"
-        # envkey_VARIABLE: ${{ vars.SOME_ACTION_VARIABLE }}
-        # some_other_variable: foobar
-        directory: app/assets
-        file_name: .env
-        fail_on_empty: false
-        sort_keys: false
