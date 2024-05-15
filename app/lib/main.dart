@@ -8,6 +8,7 @@ import 'package:app/screens/home/home_screen.dart'; // Import the necessary widg
 import 'package:app/screens/login/login_screen.dart';
 import 'package:app/util/unanimated_pageroute.dart';
 
+
 void main() async {
   await dotenv.load(fileName: '.env');
   runApp(const AppBarApp());

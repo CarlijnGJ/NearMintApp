@@ -48,7 +48,7 @@ class APIService {
       throw 'Failed to get member';
     }
   }
-
+  
   static Future<List<User>> getMembers(String sessionKey) async {
     final response = await http.get(
       Uri.parse('$baseUrl/api/members'),
@@ -72,7 +72,7 @@ class APIService {
     } else {
       throw 'Failed to get members';
     }
-  }
+}
 
   static Future<String> getRole(String sessionKey) async {
     final response = await http.get(
