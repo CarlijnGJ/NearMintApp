@@ -34,7 +34,6 @@ class _TopBarState extends State<TopBar> {
 
   @override
   void initState() {
-
     _eventSubscription = eventBus.on<RefreshTopbarEvent>().listen((event) {
       if (event.isLoggedIn != isLoggedIn) {
         fetchRoleAndInitialize();
@@ -96,13 +95,12 @@ class _TopBarState extends State<TopBar> {
           },
           child: const Text('Members'),
         ),
-                IconButton(
-          icon: const Icon(Icons.more_horiz),
-          tooltip: 'More Options',
+        TextButton(
           onPressed: () {
             Navigator.pop(context);
-            Navigator.pushNamed(context, '/');
+            Navigator.pushNamed(context, '/profile');
           },
+          child: Text('Profile'),
         ),
         TextButton(
           onPressed: () {
@@ -110,6 +108,14 @@ class _TopBarState extends State<TopBar> {
             Navigator.pushNamed(context, '/login');
           },
           child: Text(loginButtonText),
+        ),
+        IconButton(
+          icon: const Icon(Icons.more_horiz),
+          tooltip: 'More Options',
+          onPressed: () {
+            Navigator.pop(context);
+            Navigator.pushNamed(context, '/');
+          },
         ),
       ];
     } else if (role == 'Member') {
@@ -125,9 +131,9 @@ class _TopBarState extends State<TopBar> {
         TextButton(
           onPressed: () {
             Navigator.pop(context);
-            Navigator.pushNamed(context, '/login');
+            Navigator.pushNamed(context, '/profile');
           },
-          child: Text(loginButtonText),
+          child: Text('Profile'),
         ),
       ];
     } else {

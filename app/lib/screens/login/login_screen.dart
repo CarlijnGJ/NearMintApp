@@ -30,10 +30,8 @@ class _LoginPageState extends State<LoginPage> {
       final sessionKey = token['session_key'];
       prefs.setString('session_key', sessionKey);
       // Navigate to the home page
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => ProfilePage()),
-      );
+      Navigator.pop(context);
+      Navigator.pushNamed(context, '/profile');
       eventBus.fire(RefreshTopbarEvent(true));
     } catch (e) {
       // Handle login error (e.g., show an error message)
