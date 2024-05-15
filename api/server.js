@@ -233,7 +233,7 @@ app.get('/api/member', validateSessionKey, (req, res) => {
  *         description: Internal server error
  */
 app.get('/api/members', validateSessionKey, (req, res) => {
-    const query = 'SELECT * FROM Members';
+    const query = 'SELECT name, nickname, credits FROM Members';
     connection.query(query, (err, results) => {
         if (err) {
             console.error('Error executing MySQL query:', err);
