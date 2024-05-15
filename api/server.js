@@ -1,9 +1,9 @@
 const express = require('express');
 const mysql = require('mysql2');
-const bcrypt = require('bcrypt');
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 const cors = require('cors');
+const crypto = require('crypto');
 const basicAuth = require('express-basic-auth');
 require('dotenv').config();
 
@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// Basic authentication middleware
+// Basic authentication middleware for Swagger UI
 const users = {};
 users[process.env.BASIC_AUTH_USERNAME] = process.env.BASIC_AUTH_PASSWORD;
 const authenticate = basicAuth({
@@ -29,7 +29,7 @@ const options = {
         openapi: '3.0.0',
         info: {
             title: 'NearMintGaming API Documentation',
-            version: '1.0.0',
+            version: '0.5.0',
             description: 'API endpoints for NearMintGaming',
         },
     },
@@ -54,37 +54,45 @@ connection.connect((err) => {
     console.log('Connected to MySQL database');
 });
 
-// Routes
+
 /**
- * @swagger
- * /api/members:
- *   get:
- *     summary: Retrieve all members
- *     description: Retrieve a list of all members from the database.
- *     responses:
- *       '200':
- *         description: A JSON array of member objects.
- *       '500':
- *         description: Internal server error.
+ * Middleware to validate session key
  */
-app.get('/api/members', (req, res) => {
-    const query = 'SELECT * FROM Members';
-    connection.query(query, (err, results) => {
+function validateSessionKey(req, res, next) {
+    // Extract the session key from the "Authorization" header
+    
+    const sessionKey = req.headers.auth;
+    // Check if the session key is present
+    if (!sessionKey) {
+        return res.status(401).json({ error: 'Unauthorized: No session key provided' });
+    }
+
+    // Query the database to validate the session key
+    const query = 'SELECT member_id FROM Session WHERE session_key = ?';
+    connection.query(query, [sessionKey], (err, results) => {
         if (err) {
             console.error('Error executing MySQL query:', err);
-            res.status(500).json({ error: 'Internal server error' });
-            return;
+            return res.status(500).json({ error: 'Internal server error' });
         }
-        res.json(results);
+
+        // Check if the session key is valid
+        if (results.length === 0) {
+            return res.status(401).json({ error: 'Unauthorized: Invalid session key' });
+        }
+
+        // If the session key is valid, attach the member ID to the request object
+        req.memberId = results[0].member_id;
+        next();
     });
-});
+}
+
 
 /**
  * @swagger
  * /api/login:
  *   post:
- *     summary: login
- *     description: Login to the application.
+ *     summary: Login to the application
+ *     description: Authenticates a user and returns a session key
  *     requestBody:
  *       required: true
  *       content:
@@ -94,65 +102,146 @@ app.get('/api/members', (req, res) => {
  *             properties:
  *               nickname:
  *                 type: string
- *                 description: The nickname of the member.
+ *                 description: The nickname of the member
  *               password:
  *                 type: string
  *                 format: password
- *                 description: The password of the member.
+ *                 description: The password of the member
  *     responses:
- *       '201':
- *         description: Logged in successfully.
- *       '400':
- *         description: Bad request. Nickname and password are required.
- *       '404':
- *         description: Bad request. Member not found.
- *       '401':
- *         description: Bad request. Incorrect password.
- *       '500':
- *         description: Internal server error.
+ *       201:
+ *         description: Logged in successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 session_key:
+ *                   type: string
+ *                   description: The session key for the logged-in user
+ *       400:
+ *         description: Bad request. Nickname and password are required
+ *       401:
+ *         description: Unauthorized. Incorrect nickname or password
+ *       500:
+ *         description: Internal server error
  */
-app.post('/api/login', async (req, res) => {
+app.post('/api/login', (req, res) => {
     const { nickname, password } = req.body;
 
-    // Check if all required fields are provided
     if (!nickname || !password) {
-        if (process.env.NODE_ENV === 'development') {
-            res.status(400).json({ error: 'Nickname and password are required' });
-        }
-        return;
+        return res.status(400).json({ error: 'Nickname and password are required' });
     }
-    try {
-        const query = 'SELECT * FROM Members WHERE nickname = ?';
-        connection.query(query, [nickname, password], (err, results) => {
-            if (results.length === 0) {
-                if (process.env.NODE_ENV === 'development') {
-                    res.status(404).json({ error: 'Incorrect nickname or password' });
-                } 
-                return;
-            } else if (password !== results[0].password) {
-                if (process.env.NODE_ENV === 'development') {
-                    res.status(404).json({ error: 'Incorrect nickname or password' });
-                }
-                return;            
-            }
+
+    const query = 'SELECT * FROM Members WHERE nickname = ?';
+    connection.query(query, [nickname], (err, results) => {
+        if (err) {
+            console.error('Error executing MySQL query:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+
+        if (results.length === 0 || results[0].password !== password) {
+            return res.status(401).json({ error: 'Incorrect nickname or password' });
+        }
+
+        const memberId = results[0].member_id;
+        const sessionKey = crypto.randomBytes(16).toString('hex');
+
+        const sessionQuery = 'INSERT INTO Session (session_key, member_id) VALUES (?, ?)';
+        connection.query(sessionQuery, [sessionKey, memberId], (err) => {
             if (err) {
-                if (process.env.NODE_ENV === 'development') {
-                    console.error('Error executing MySQL query:', err);
-                    res.status(500).json({ error: 'Internal server error' }); 
-                }
-                return;
+                console.error('Error inserting session:', err);
+                return res.status(500).json({ error: 'Internal server error' });
             }
-            
-            res.status(201).json({ message: 'Logged in successfully' });
+
+            res.status(201).json({ session_key: sessionKey });
         });
-    } catch (error) {
-        if (process.env.NODE_ENV === 'development') {
-            console.error('Error hashing password:', error);
-            res.status(500).json({ error: 'Internal server error' });
-        }
-    }
+    });
 });
 
+/**
+ * @swagger
+ * /api/member:
+ *  get:
+ *    summary: Get a member by session key
+ *    description: Retrieve user information by session key
+ *    parameters:
+ *      - name: auth
+ *        in: header
+ *        required: true
+ *        schema:
+ *          type: string
+ *          description: Session key of the user
+ *    responses:
+ *      200:
+ *        description: Successful operation
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                nickname:
+ *                  type: string
+ *                  description: The user's nickname
+ *                name:
+ *                  type: string
+ *                  description: The user's name
+ *                avatar:
+ *                  type: string
+ *                  description: URL of the user's avatar image
+ *      404:
+ *        description: User not found
+ */
+app.get('/api/member', validateSessionKey, (req, res) => {
+    const memberId = req.memberId;
+    
+    const memberQuery = 'SELECT nickname, name, avatar FROM Members WHERE member_id = ?';
+    connection.query(memberQuery, [memberId], (err, results) => {
+        if (err) {
+            console.error('Error executing MySQL query:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        res.status(200).json({
+            nickname: results[0].nickname,
+            name: results[0].name,
+            avatar: results[0].avatar
+        });
+    });
+});
+
+/**
+ * @swagger
+ * /api/members:
+ *   get:
+ *     summary: Retrieve all members
+ *     description: Retrieve a list of all members from the database
+ *     parameters:
+ *      - in: header
+ *        name: auth
+ *        schema:
+ *          type: string
+ *        required: true
+ *        description: Session key of the user to retrieve
+ *     responses:
+ *       200:
+ *         description: A JSON array of member objects
+ *       500:
+ *         description: Internal server error
+ */
+app.get('/api/members', validateSessionKey, (req, res) => {
+    const query = 'SELECT * FROM Members';
+    connection.query(query, (err, results) => {
+        if (err) {
+            console.error('Error executing MySQL query:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        res.status(200).json(results);
+    });
+});
 
 // Start the server
 app.listen(PORT, () => {
