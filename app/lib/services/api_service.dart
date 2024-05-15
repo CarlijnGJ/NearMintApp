@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:app/screens/members/member_list.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -47,6 +48,30 @@ class APIService {
       throw 'Failed to get member';
     }
   }
+
+static Future<List<User>> getMembers(String sessionKey) async {
+  final response = await http.get(
+    Uri.parse('$baseUrl/api/members'),
+    headers: <String, String>{
+      'Authorization': basicAuth,
+      'Content-Type': 'application/json; charset=UTF-8',
+      'auth': sessionKey
+    },
+  );
+
+  if (response.statusCode == 200) {
+    // Parse the response body into a list of User objects
+    final List<dynamic> responseData = jsonDecode(response.body);
+    final List<User> users = responseData.map((data) => User(
+      name: data['name'],
+      nickname: data['nickname'],
+      credits: data['credits']
+    )).toList();
+    return users;
+  } else {
+    throw 'Failed to get members';
+  }
+}
 
   static Future<String> getRole(String sessionKey) async {
     final response = await http.get(

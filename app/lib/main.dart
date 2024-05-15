@@ -7,6 +7,7 @@ import 'package:app/screens/home/home_screen.dart'; // Import the necessary widg
 import 'package:app/screens/login/login_screen.dart';
 import 'package:app/util/unanimated_pageroute.dart';
 
+
 void main() async {
   await dotenv.load(fileName: '.env');
   runApp(const AppBarApp());
@@ -25,30 +26,7 @@ class AppBarApp extends StatelessWidget {
         '/': (context) => const HomePage(),
         '/login': (context) => const LoginPage(),
         '/members': (context) => const MemberList(),
-
-
       },
-      
-      // onGenerateRoute: (settings) {
-      //   switch (settings.name) {
-      //     case '/':
-      //       return UnanimatedPageRoute(
-      //         builder: (context) => const HomePage(),
-      //       );
-      //     case '/login':
-      //       return UnanimatedPageRoute(
-      //         builder: (context) => const LoginPage(),
-      //       );
-      //       case '/members':
-      //       return UnanimatedPageRoute(
-      //         builder: (context) => const MemberList(),
-      //       );
-      //     default:
-      //       return UnanimatedPageRoute(
-      //         builder: (context) => const HomePage(),
-      //       );
-      //   }
-      // }
     );
   }
 }
