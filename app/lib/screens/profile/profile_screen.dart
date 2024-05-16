@@ -1,4 +1,4 @@
-import 'package:app/components/topbar.dart';
+import 'package:app/components/topbar/topbar.dart';
 import 'package:flutter/material.dart';
 import 'package:app/services/api_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
