@@ -1,6 +1,6 @@
 import 'package:app/components/tealgradleft.dart';
 import 'package:app/components/tealgradright.dart';
-import 'package:app/components/topbar.dart';
+import 'package:app/components/topbar/topbar.dart';
 import 'package:app/screens/login/components/button.dart';
 import 'package:app/screens/profile/profile_screen.dart';
 import 'package:app/services/api_service.dart';
