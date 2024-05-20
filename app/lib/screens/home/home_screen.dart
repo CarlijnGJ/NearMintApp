@@ -2,7 +2,7 @@ import 'package:app/components/tealgradleft.dart';
 import 'package:app/components/tealgradright.dart';
 import 'package:flutter/material.dart';
 
-import 'package:app/components/topbar.dart';
+import 'package:app/components/topbar/topbar.dart';
 import 'package:app/screens/home/components/titlesection.dart';
 import 'package:app/screens/home/components/textsection.dart';
 

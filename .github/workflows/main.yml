@@ -1,0 +1,16 @@
+
+
+on: [ push ]
+
+jobs:
+
+  create-envfile:
+ 
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+    - name: Create directory if needed
+      run: |
+        ls
+

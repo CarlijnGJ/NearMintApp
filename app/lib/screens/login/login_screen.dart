@@ -1,10 +1,12 @@
 import 'package:app/components/tealgradleft.dart';
 import 'package:app/components/tealgradright.dart';
-import 'package:app/components/topbar.dart';
+import 'package:app/components/topbar/topbar.dart';
 import 'package:app/screens/login/components/button.dart';
+import 'package:app/screens/profile/profile_screen.dart';
 import 'package:app/services/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:app/screens/login/components/textfield.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -24,7 +26,13 @@ class _LoginPageState extends State<LoginPage> {
     try {
       // Call the login method from APIService
       final token = await APIService.login(username, password);
-      // Handle successful login (e.g., navigate to the next screen)
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final sessionKey = token['session_key'];
+      prefs.setString('session_key', sessionKey);
+      // Navigate to the home page
+      Navigator.pop(context);
+      Navigator.pushNamed(context, '/profile');
+      eventBus.fire(RefreshTopbarEvent(true));
     } catch (e) {
       // Handle login error (e.g., show an error message)
       print('Login failed: $e');
