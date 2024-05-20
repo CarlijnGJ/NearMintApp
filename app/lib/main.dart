@@ -6,7 +6,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:app/components/themes/maintheme.dart'; //import the main theme for the app
 import 'package:app/screens/home/home_screen.dart'; // Import the necessary widgets
 import 'package:app/screens/login/login_screen.dart';
-import 'package:app/util/unanimated_pageroute.dart';
 
 
 void main() async {
