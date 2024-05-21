@@ -15,7 +15,10 @@ class ButtonSection extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: GestureDetector(
-        onTap: () {},
+        onTap: () {
+          Navigator.pop(context);
+          Navigator.pushNamed(context, '/login');
+        },
         child: Container(
           padding: const EdgeInsets.all(16.0),
           color: const Color.fromRGBO(0, 0, 0, 0.25),
