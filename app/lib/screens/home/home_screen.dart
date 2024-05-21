@@ -11,19 +11,16 @@ import 'package:app/screens/home/components/titlesection.dart';
 import 'package:app/screens/home/components/buttonsection.dart';
 
 class HomePage extends StatefulWidget {
-
   const HomePage({Key? key}) : super(key: key);
 
   @override
-  // ignore: library_private_types_in_public_api
   _HomePageState createState() => _HomePageState();
 }
 
-
 class _HomePageState extends State<HomePage> {
-
   bool isLoggedIn = false;
   String role = 'Visitor';
+  bool isLoading = true;
 
   Future<void> fetchRoleAndInitialize() async {
     final prefs = await SharedPreferences.getInstance();
@@ -35,16 +32,23 @@ class _HomePageState extends State<HomePage> {
           setState(() {
             isLoggedIn = true;
             role = newRole;
+            isLoading = false;
           });
         }
       } catch (e) {
         log('Error: $e');
+        if (mounted) {
+          setState(() {
+            isLoading = false;
+          });
+        }
       }
     } else {
       if (mounted) {
         setState(() {
           isLoggedIn = false;
           role = 'Visitor';
+          isLoading = false;
         });
       }
     }
@@ -63,7 +67,7 @@ class _HomePageState extends State<HomePage> {
           assetname: '../../../Images/account-login-xxl.png',
           description: 'Log in',
         ),
-        const Spacer(flex: 1),
+        const SizedBox(height: 16.0),
         const ButtonSection(
           assetname: '../../../Images/add-user-2-xxl.png',
           description: 'Register',
@@ -71,16 +75,15 @@ class _HomePageState extends State<HomePage> {
       ];
     } else if (role == 'Member') {
       return [
-        // Example buttons for 'User' role
         const ButtonSection(
-          assetname: '../../../Images/account-login-xxl.png', 
+          assetname: '../../../Images/account-login-xxl.png',
           description: 'Log out',
         ),
       ];
     } else if (role == 'Admin') {
       return [
         const ButtonSection(
-          assetname: '../../../Images/account-login-xxl.png', 
+          assetname: '../../../Images/account-login-xxl.png',
           description: 'Log out',
         ),
       ];
@@ -88,11 +91,15 @@ class _HomePageState extends State<HomePage> {
     return [];
   }
 
-
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
     return Scaffold(
-      appBar: const TopBar(),  
+      appBar: const TopBar(),
       body: SingleChildScrollView(
         child: Stack(
           children: [
@@ -103,7 +110,9 @@ class _HomePageState extends State<HomePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  SizedBox(height: MediaQuery.of(context).padding.top + kToolbarHeight), // Adjust based on app bar height
+                  SizedBox(
+                    height: MediaQuery.of(context).padding.top + kToolbarHeight,
+                  ), // Adjust based on app bar height
                   TitleSection(
                     name: 'Welcome, $role!',
                   ),
@@ -113,11 +122,7 @@ class _HomePageState extends State<HomePage> {
                       if (constraints.maxWidth > 600) {
                         return Row(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Spacer(flex: 2),
-                            ...buildButtonsForRole(),
-                            const Spacer(flex: 2),
-                          ],
+                          children: buildButtonsForRole(),
                         );
                       } else {
                         return Column(
@@ -129,9 +134,9 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
-          ]
+          ],
         ),
-      )
+      ),
     );
   }
 }
