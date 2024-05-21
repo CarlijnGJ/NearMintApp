@@ -76,12 +76,24 @@ class _HomePageState extends State<HomePage> {
     } else if (role == 'Member') {
       return [
         const ButtonSection(
+          assetname: '../../../Images/user-3-xxl.png',
+          description: 'Profile',
+        ),
+        const ButtonSection(
           assetname: '../../../Images/account-login-xxl.png',
           description: 'Log out',
         ),
       ];
     } else if (role == 'Admin') {
       return [
+        const ButtonSection(
+          assetname: '../../../Images/user-3-xxl.png',
+          description: 'Profile',
+        ),
+        const ButtonSection(
+          assetname: '../../../Images/add-user-2-xxl.png',
+          description: 'Members',
+        ),
         const ButtonSection(
           assetname: '../../../Images/account-login-xxl.png',
           description: 'Log out',
