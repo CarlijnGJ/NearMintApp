@@ -11,7 +11,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
-app.use(cors());
+app.use(cors()); // only for localhost development
 app.use(express.json());
 
 // Basic authentication middleware for Swagger UI
@@ -233,7 +233,7 @@ app.get('/api/member', validateSessionKey, (req, res) => {
  *         description: Internal server error
  */
 app.get('/api/members', validateSessionKey, (req, res) => {
-    const query = 'SELECT name, nickname, credits FROM Members';
+    const query = 'SELECT * FROM Members';
     connection.query(query, (err, results) => {
         if (err) {
             console.error('Error executing MySQL query:', err);
@@ -287,4 +287,3 @@ app.get('/api/getRole', validateSessionKey, (req, res) => {
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
-
