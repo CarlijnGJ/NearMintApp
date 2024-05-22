@@ -32,6 +32,23 @@ class APIService {
     }
   }
 
+  static Future<void> logout(String sessionKey) async {
+  final response = await http.delete(
+    Uri.parse('$baseUrl/api/logout'),
+    headers: <String, String>{
+      'Authorization': basicAuth,
+      'auth': sessionKey,
+    },
+  );
+
+  if (response.statusCode == 200) {
+    // Logout successful
+    return;
+  } else {
+    throw 'Failed to logout';
+  }
+}
+
   static Future<Map<String, dynamic>> getMember(String sessionKey) async {
     final response = await http.get(
       Uri.parse('$baseUrl/api/member?session_key=$sessionKey'),

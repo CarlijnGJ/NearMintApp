@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const validateSessionKey = require('../middleware/vallidate-sessionkey');
+const validateSessionKey = require('../middleware/validate-sessionkey');
 const connection = require('../config/db');
 
 // Define member-related routes

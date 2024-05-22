@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const connection = require('../config/db');
+const validateSessionKey = require('../middleware/validate-sessionkey');
+const deleteSessionKey = require('../middleware/delete-sessionkey');
+
 const crypto = require('crypto');
 
 // Define autherisation routes
@@ -77,5 +80,24 @@ router.post('/login', (req, res) => {
 
     });
 });
-
+/**
+ * @swagger
+ * /api/logout:
+ *  delete:
+ *    summary: Logout of the application
+ *    description: Remove the session key
+ *    parameters:
+ *      - name: auth
+ *        in: header
+ *        required: true
+ *        schema:
+ *          type: string
+ *          description: Session key of the user
+ *    responses:
+ *      200:
+ *        description: Successfully deleted session
+ */
+router.delete('/logout', deleteSessionKey, (req, res) => {
+    res.status(200).json({ message: 'Logout successful' });
+});
 module.exports = router;

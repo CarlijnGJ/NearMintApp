@@ -86,6 +86,28 @@ function validateSessionKey(req, res, next) {
     });
 }
 
+function deleteSessionKey(req, res, next) {
+    const sessionKey = req.headers.auth;
+
+    if (!sessionKey) {
+        return res.status(400).json({ error: 'Session key not provided in header' });
+    }
+
+    const deleteQuery = 'DELETE FROM Session WHERE session_key = ?';
+    connection.query(deleteQuery, [sessionKey], (err, results) => {
+        if (err) {
+            console.error('Error executing MySQL query:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }   
+
+        if (results.affectedRows === 0) {
+            return res.status(404).json({ error: 'Session key not found' });
+        }
+
+        // Session key successfully deleted
+        next();
+    });
+}
 
 /**
  * @swagger
@@ -215,6 +237,27 @@ app.get('/api/member', validateSessionKey, (req, res) => {
 
 /**
  * @swagger
+ * /api/logout:
+ *  delete:
+ *    summary: Logout of the application
+ *    description: Remove the session key
+ *    parameters:
+ *      - name: auth
+ *        in: header
+ *        required: true
+ *        schema:
+ *          type: string
+ *          description: Session key of the user
+ *    responses:
+ *      200:
+ *        description: Successfully deleted session
+ */
+app.delete('/api/logout', deleteSessionKey, (req, res) => {
+    res.status(200).json({ message: 'Logout successful' });
+});
+
+/**
+ * @swagger
  * /api/members:
  *   get:
  *     summary: Retrieve all members
@@ -278,7 +321,6 @@ app.get('/api/getRole', validateSessionKey, (req, res) => {
             return res.status(404).json({ error: 'User not found' });
         }
         var role = results[0].role_type;
-        console.log(role);
         res.status(201).json({ role: role });
     });
 });
