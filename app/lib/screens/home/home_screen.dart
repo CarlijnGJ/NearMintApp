@@ -8,7 +8,7 @@ import 'package:app/components/topbar/topbar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:app/services/api_service.dart';
 import 'package:app/screens/home/components/titlesection.dart';
-import 'package:app/screens/home/components/buttonsection.dart';
+import 'package:app/screens/home/components/navbutton.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -63,40 +63,47 @@ class _HomePageState extends State<HomePage> {
   List<Widget> buildButtonsForRole() {
     if (role == 'Visitor') {
       return [
-        const ButtonSection(
+        const NavButton(
           assetname: '../../../Images/account-login-xxl.png',
           description: 'Log in',
+          url: '/login',
         ),
         const SizedBox(height: 16.0),
-        const ButtonSection(
+        const NavButton(
           assetname: '../../../Images/add-user-2-xxl.png',
           description: 'Register',
+          url: '/login',
         ),
       ];
     } else if (role == 'Member') {
       return [
-        const ButtonSection(
+        const NavButton(
           assetname: '../../../Images/user-3-xxl.png',
           description: 'Profile',
+          url: '/profile'
         ),
-        const ButtonSection(
+        const NavButton(
           assetname: '../../../Images/account-login-xxl.png',
           description: 'Log out',
+          url: '/',
         ),
       ];
     } else if (role == 'Admin') {
       return [
-        const ButtonSection(
+        const NavButton(
           assetname: '../../../Images/user-3-xxl.png',
           description: 'Profile',
+          url: '/profile'
         ),
-        const ButtonSection(
+        const NavButton(
           assetname: '../../../Images/add-user-2-xxl.png',
           description: 'Members',
+          url: '/members'
         ),
-        const ButtonSection(
+        const NavButton(
           assetname: '../../../Images/account-login-xxl.png',
           description: 'Log out',
+          url: '/'
         ),
       ];
     }
