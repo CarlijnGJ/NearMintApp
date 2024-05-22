@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 
-class ButtonSection extends StatelessWidget {
-  const ButtonSection({
+class NavButton extends StatelessWidget {
+  const NavButton({
     super.key,
     required this.assetname,
     required this.description,
+    required this.url,
   });
 
   final String assetname;
   final String description;
+  final String url;
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +19,7 @@ class ButtonSection extends StatelessWidget {
       child: GestureDetector(
         onTap: () {
           Navigator.pop(context);
-          Navigator.pushNamed(context, '/login');
+          Navigator.pushNamed(context, url);
         },
         child: Container(
           padding: const EdgeInsets.all(16.0),
