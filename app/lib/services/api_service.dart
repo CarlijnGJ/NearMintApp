@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:app/screens/members/components/user.dart';
 import 'package:app/screens/members/member_list.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
