@@ -1,3 +1,4 @@
+import 'package:app/screens/addmember/addmember_screen.dart';
 import 'package:app/screens/members/member_list.dart';
 import 'package:app/screens/profile/profile_screen.dart';
 import 'package:app/screens/setup/setup_screen.dart';
@@ -29,6 +30,7 @@ class AppBarApp extends StatelessWidget {
         '/members': (context) => const MemberList(),
         '/profile': (context) => const ProfilePage(),
         '/setup': (context) => const SetupPage(),
+        '/addmember': (context) => const AddMemberPage(),
       },
     );
   }
