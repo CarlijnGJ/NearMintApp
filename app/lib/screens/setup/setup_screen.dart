@@ -14,11 +14,21 @@ class _SetupPageState extends State<SetupPage> {
 
   final nicknameController = TextEditingController();
   final passwordController = TextEditingController();
+  final genderController = TextEditingController();
+  final gameController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
   }
+
+  String? selectedImage;
+
+  final List<Map<String, String>> images = [
+    {'name': 'Choice 1', 'path': '../../Images/ProfilePics/PFP1.png'},
+    {'name': 'Choice 2', 'path': '../../Images/ProfilePics/PFP2.png'},
+    {'name': 'Choice 3', 'path': '../../Images/ProfilePics/PFP3.png'},
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -30,25 +40,34 @@ class _SetupPageState extends State<SetupPage> {
               constraints: BoxConstraints(
                 minHeight: constraints.maxHeight,
               ),
-              child: Stack(
-                children: [
-                  const TealGradLeft(),
-                  const TealGradRight(),
-                  SafeArea(
-                    child: Center(
+              child: IntrinsicHeight(
+                child: Stack(
+                  children: [
+                    const TealGradLeft(),
+                    const TealGradRight(),
+
+                    SafeArea(
                       child: Column(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           const SizedBox(height: 20),
 
                           const Text(
-                            'Credentials',
+                            'Hello, [name]',
+                            style: TextStyle(
+                              fontSize: 32,
+                            ),
+                          ),
+
+                          const Text(
+                            'Just a few more steps to register your account!',
                             style: TextStyle(
                               fontSize: 20,
                             ),
                           ),
-                          const SizedBox(height: 20),
 
-                          // username textfield
+                          const SizedBox(height: 20),
+                          
                           CustomTextField(
                             controller: nicknameController,
                             hintText: 'Nickname',
@@ -57,32 +76,95 @@ class _SetupPageState extends State<SetupPage> {
 
                           const SizedBox(height: 10),
 
-                          CustomTextField(
-                            controller: passwordController,
-                            hintText: 'Password',
-                            obscureText: true,
-                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: CustomTextField(
+                                  controller: passwordController,
+                                  hintText: 'Password',
+                                  obscureText: true,
+                                ),
+                              ),
 
-                          const SizedBox(height: 10),
+                              const SizedBox(width: 10),
 
-                          CustomTextField(
-                            controller: passwordController,
-                            hintText: 'Repeat Password',
-                            obscureText: true,
+                              Expanded(
+                                child: CustomTextField(
+                                  controller: passwordController,
+                                  hintText: 'Repeat Password',
+                                  obscureText: true,
+                                ),
+                              ),
+                            ],
                           ),
 
                           const SizedBox(height: 10),
 
                           const Divider(),
 
-                          const Text('or use the QR code'),
+                          const SizedBox(height: 10),
 
-                          const Icon(Icons.qr_code_2_rounded, size: 180),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: CustomTextField(
+                                  controller: genderController,
+                                  hintText: 'Gender*',
+                                  obscureText: false,
+                                ),
+                              ),
+
+                              const SizedBox(width: 10),
+
+                              Expanded(
+                                child: CustomTextField(
+                                  controller: gameController,
+                                  hintText: 'Preferred Game*',
+                                  obscureText: false,
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(height: 10),
+
+                          DropdownButton<String>(
+                            hint: const Text('Select an image'),
+                            value: selectedImage,
+                            items: images.map((image) {
+                              return DropdownMenuItem<String>(
+                                value: image['path'],
+                                child: Row(
+                                  children: [
+                                    Image.asset(
+                                      image['path']!,
+                                      width: 50,
+                                      height: 50,
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Text(image['name']!),
+                                  ],
+                                ),
+                              );
+                            }).toList(),
+                            onChanged: (newValue) {
+                              setState(() {
+                                selectedImage = newValue;
+                              });
+                            },
+                          ),
+
+                          const Text(
+                            '* = Optional',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
                         ],
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           );
