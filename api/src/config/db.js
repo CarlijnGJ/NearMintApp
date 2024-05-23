@@ -2,7 +2,7 @@ const mysql = require('mysql2');
 require('dotenv').config({ path: '../.env' });
 
 let currentDatabase;
- switch (process.env.NODE_ENV) {
+switch (process.env.MODE_ENV) {
     case 'production':
         currentDatabase = process.env.DB_DATABASE;
         break;
@@ -10,7 +10,7 @@ let currentDatabase;
         currentDatabase = process.env.DB_TEST_DATABASE;
         break;
     default:
-        currentDatabase = process.env.DB_TEST_DATABASE;
+        currentDatabase = process.env.DB_DATABASE;
 };
 
 // Database connection
