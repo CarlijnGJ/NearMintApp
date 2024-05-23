@@ -1,11 +1,11 @@
 import 'package:app/components/tealgradleft.dart';
 import 'package:app/components/tealgradright.dart';
 import 'package:app/components/topbar/topbar.dart';
-import 'package:app/screens/login/components/button.dart';
+import 'package:app/components/button.dart';
 import 'package:app/screens/profile/profile_screen.dart';
 import 'package:app/services/api_service.dart';
 import 'package:flutter/material.dart';
-import 'package:app/screens/login/components/textfield.dart';
+import 'package:app/components/textfield.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
@@ -101,7 +101,7 @@ class _LoginPageState extends State<LoginPage> {
 
                     const SizedBox(height: 10),
 
-                    CustomButton(onTap: loginUser),
+                    CustomButton(text: 'Log in', onTap: loginUser),
 
                     const SizedBox(height: 30),
 

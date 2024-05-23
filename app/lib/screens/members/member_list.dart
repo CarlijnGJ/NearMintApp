@@ -62,6 +62,11 @@ import 'package:app/screens/members/components/userservice.dart';
       return userService.getUsersPerPage(page);
     }
 
+    void addMemberButton(){
+      Navigator.pop(context);
+      Navigator.pushNamed(context, '/addmember');
+    }
+
       @override
     Widget build(BuildContext context) {
 
@@ -79,6 +84,16 @@ import 'package:app/screens/members/components/userservice.dart';
               ListWidget(
                 memberList: usersPerPage(page),
                 ),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: addMemberButton, 
+                    child: const Text('Add member'),
+                  )
+                ],
+              ),
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
