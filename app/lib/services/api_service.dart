@@ -8,7 +8,7 @@ final String username = dotenv.env['API_USERNAME']!;
 final String password = dotenv.env['API_PASSWORD']!;
 String basicAuth = 'Basic ${base64Encode(utf8.encode('$username:$password'))}';
 
-class APIService {
+class APIService {  
   static const String baseUrl =
       'http://localhost:3000'; // Replace this with your API base URL
 
@@ -91,6 +91,47 @@ class APIService {
       throw 'Failed to get members';
     }
 }
+
+static Future<void> addMember(String name, String mail, String phoneNumber, String secret) async {
+  // Define the API endpoint
+  final String apiUrl = '$baseUrl/api/addmember';
+
+  // Prepare the request body
+  Map<String, dynamic> data = {
+    'name': name,
+    'mail': mail,
+    'phonenumber': phoneNumber,
+    'secret': secret,
+  };
+
+  try {
+    // Convert the request body to JSON format
+    String requestBody = json.encode(data);
+
+    // Make an HTTP POST request to the server
+    final response = await http.post(
+      Uri.parse(apiUrl),
+      headers: <String, String>{
+        'Authorization': basicAuth,
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: requestBody, // Send the request body
+    );
+
+    // Check if the request was successful (status code 200)
+    if (response.statusCode == 200) {
+      // Member added successfully
+      print('Member added successfully');
+    } else {
+      // Handle error response
+      print('Failed to add member: ${response.statusCode}');
+    }
+  } catch (e) {
+    // Handle network errors
+    print('Error adding member: $e');
+  }
+}
+
 
   static Future<String> getRole(String sessionKey) async {
     final response = await http.get(
