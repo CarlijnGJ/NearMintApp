@@ -1,8 +1,9 @@
+import 'dart:developer';
+
 import 'package:app/components/tealgradleft.dart';
 import 'package:app/components/tealgradright.dart';
 import 'package:app/components/topbar/topbar.dart';
 import 'package:app/components/button.dart';
-import 'package:app/screens/profile/profile_screen.dart';
 import 'package:app/services/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:app/components/textfield.dart';
@@ -19,6 +20,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
+  final codeController = TextEditingController();
 
   void loginUser() async {
     final username = usernameController.text;
@@ -31,7 +33,7 @@ class _LoginPageState extends State<LoginPage> {
       prefs.setString('session_key', sessionKey);
       // Navigate to the home page
       Navigator.pop(context);
-      Navigator.pushNamed(context, '/profile');
+      Navigator.pushNamed(context, '/');
       eventBus.fire(RefreshTopbarEvent(true));
     } catch (e) {
       // Handle login error (e.g., show an error message)
@@ -41,6 +43,24 @@ class _LoginPageState extends State<LoginPage> {
 
   void forgotPassword() {
     print("Forgot Password button pressed!");
+  }
+
+  void registerUser() async {
+    final code = codeController.text;
+
+    try {
+      final exists = await APIService.checkCode(code);
+
+      if (exists.result) {
+        Navigator.pop(context);
+        Navigator.pushNamed(context, '/setup', arguments: exists.name);
+        eventBus.fire(RefreshTopbarEvent(true));
+      } else {
+        log('Code does not exist');
+      }
+    } catch (e) {
+      log('Register nav failed: $e');
+    }
   }
 
   @override
@@ -105,11 +125,29 @@ class _LoginPageState extends State<LoginPage> {
 
                     const SizedBox(height: 30),
 
-                    Divider(),
+                    const Divider(),
 
-                    Text('or use the QR code'),
+                    const SizedBox(height: 20),
 
-                    Icon(Icons.qr_code_2_rounded, size: 180),
+                    const Text(
+                      'Register',
+                      style: TextStyle(
+                        fontSize: 20,
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    //code textfield
+                    CustomTextField(
+                      controller: codeController,
+                      hintText: 'Token',
+                      obscureText: false,
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    CustomButton(text: 'Register', onTap: registerUser),
                   ],
                 ),
               ),

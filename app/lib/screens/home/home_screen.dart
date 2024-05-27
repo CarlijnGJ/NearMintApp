@@ -134,10 +134,6 @@ class _HomePageState extends State<HomePage> {
                   const TitleSection(
                     name: 'Welcome!',
                   ),
-                  const NavButton(
-                    assetname: '../../../Images/add-user-2-xxl.png', 
-                    description: 'Setup Account', 
-                    url: '/setup'),
                   const SizedBox(height: 16.0),
                   LayoutBuilder(
                     builder: (context, constraints) {

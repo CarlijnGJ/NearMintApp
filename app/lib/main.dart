@@ -29,8 +29,19 @@ class AppBarApp extends StatelessWidget {
         '/login': (context) => const LoginPage(),
         '/members': (context) => const MemberList(),
         '/profile': (context) => const ProfilePage(),
-        '/setup': (context) => const SetupPage(),
         '/addmember': (context) => const AddMemberPage(),
+      },
+      onGenerateRoute: (settings) {
+        if (settings.name == '/setup') {
+          final String name = settings.arguments as String;
+          return MaterialPageRoute(
+            builder: (context) {
+              return SetupPage(name);
+            },
+          );
+        }
+        assert(false, 'Need to implement ${settings.name}');
+        return null;
       },
     );
   }

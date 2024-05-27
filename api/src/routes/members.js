@@ -61,6 +61,49 @@ router.get('/member', validateSessionKey, (req, res) => {
 
 /**
  * @swagger
+ * /api/member/code:
+ *   get:
+ *     summary: Retrieve all member codes
+ *     description: Retrieve a list of codes for new members from the database
+ *     parameters:
+ *      - in: header
+ *        name: code
+ *        schema:
+ *          type: string
+ *        required: true
+ *        description: Code to match against the others
+ *     responses:
+ *       200:
+ *         description: A JSON array of member objects
+ *       500:
+ *         description: Internal server error
+ */
+router.get('/member/code', (req, res) => {
+    const parameter = req.headers.code;
+    const codeQuery = 'SELECT secret, name FROM NewMembers WHERE secret = ?';
+
+    if (!parameter) {
+        return res.status(400).json({ error: 'Code header is required' });
+    }
+
+    connection.query(codeQuery, [parameter], (err, results) => {
+        if (err) {
+            console.error('Error executing MySQL query:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+
+        if (results.length != 0) {
+            console.log("True");
+            res.status(200).json({ result: true, name: results[0].name });
+        } else {
+            console.log("False");
+            res.status(200).json({ result: false, name: 'null' });
+        }
+    });
+});
+
+/**
+ * @swagger
  * /api/members:
  *   get:
  *     summary: Retrieve all members

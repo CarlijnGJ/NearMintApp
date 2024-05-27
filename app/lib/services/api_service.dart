@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:app/screens/members/components/user.dart';
 import 'package:app/screens/members/member_list.dart';
 import 'package:http/http.dart' as http;
@@ -34,21 +35,21 @@ class APIService {
   }
 
   static Future<void> logout(String sessionKey) async {
-  final response = await http.delete(
-    Uri.parse('$baseUrl/api/logout'),
-    headers: <String, String>{
-      'Authorization': basicAuth,
-      'auth': sessionKey,
-    },
-  );
+    final response = await http.delete(
+      Uri.parse('$baseUrl/api/logout'),
+      headers: <String, String>{
+        'Authorization': basicAuth,
+        'auth': sessionKey,
+      },
+    );
 
-  if (response.statusCode == 200) {
-    // Logout successful
-    return;
-  } else {
-    throw 'Failed to logout';
+    if (response.statusCode == 200) {
+      // Logout successful
+      return;
+    } else {
+      throw 'Failed to logout';
+    }
   }
-}
 
   static Future<Map<String, dynamic>> getMember(String sessionKey) async {
     final response = await http.get(
@@ -90,7 +91,7 @@ class APIService {
     } else {
       throw 'Failed to get members';
     }
-}
+  }
 
   static Future<String> getRole(String sessionKey) async {
     final response = await http.get(
@@ -108,5 +109,39 @@ class APIService {
     } else {
       throw Exception('Failed to load role');
     }
+  }
+
+  static Future<dynamic> checkCode(String code) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/member/code'), // Replace with your API endpoint
+      headers: {
+        'Authorization': basicAuth,
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Code': code,
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      log(response.body);
+      return CodeInfo.fromJson(data); // Adjust based on your API response structure
+    } else {
+      throw Exception('Failed to check code');
+    }
+  }
+}
+
+//Needed for checkCode, needs to be moved or recoded
+class CodeInfo {
+  final bool result;
+  final String name;
+
+  CodeInfo({required this.result, required this.name});
+
+  factory CodeInfo.fromJson(Map<String, dynamic> json) {
+    return CodeInfo(
+      result: json['result'],
+      name: json['name'],
+    );
   }
 }

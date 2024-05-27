@@ -4,7 +4,9 @@ import 'package:app/screens/setup/components/textfield.dart';
 import 'package:flutter/material.dart';
 
 class SetupPage extends StatefulWidget {
-  const SetupPage({Key? key}) : super(key: key);
+  final String name;
+
+  const SetupPage(this.name, {Key? key}) : super(key: key);
 
   @override
   _SetupPageState createState() => _SetupPageState();
@@ -25,9 +27,12 @@ class _SetupPageState extends State<SetupPage> {
   String? selectedImage;
 
   final List<Map<String, String>> images = [
-    {'name': 'Choice 1', 'path': '../../Images/ProfilePics/PFP1.png'},
-    {'name': 'Choice 2', 'path': '../../Images/ProfilePics/PFP2.png'},
-    {'name': 'Choice 3', 'path': '../../Images/ProfilePics/PFP3.png'},
+    {'name': 'Magic', 'path': '../../Images/ProfilePics/PFP1.png'},
+    {'name': 'Sea', 'path': '../../Images/ProfilePics/PFP2.png'},
+    {'name': 'Skull', 'path': '../../Images/ProfilePics/PFP3.png'},
+    {'name': 'Vanguard', 'path': '../../Images/ProfilePics/PFP4.png'},
+    {'name': 'Lorcana', 'path': '../../Images/ProfilePics/PFP5.png'},
+    {'name': 'OnePiece', 'path': '../../Images/ProfilePics/PFP6.png'},
   ];
 
   @override
@@ -52,9 +57,9 @@ class _SetupPageState extends State<SetupPage> {
                         children: [
                           const SizedBox(height: 20),
 
-                          const Text(
-                            'Hello, [name]',
-                            style: TextStyle(
+                          Text(
+                            'Hello, ${widget.name}',
+                            style: const TextStyle(
                               fontSize: 32,
                             ),
                           ),
