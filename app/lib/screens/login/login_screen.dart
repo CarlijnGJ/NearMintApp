@@ -45,7 +45,7 @@ class _LoginPageState extends State<LoginPage> {
     print("Forgot Password button pressed!");
   }
 
-  void registerUser() async {
+  void checkValidity() async {
     final code = codeController.text;
 
     try {
@@ -56,9 +56,11 @@ class _LoginPageState extends State<LoginPage> {
         Navigator.pushNamed(context, '/setup', arguments: exists.name);
         eventBus.fire(RefreshTopbarEvent(true));
       } else {
+        //TO-DO: Add logic to display error visually
         log('Code does not exist');
       }
     } catch (e) {
+      //TO-DO: Add logic to display error visually
       log('Register nav failed: $e');
     }
   }
@@ -147,7 +149,7 @@ class _LoginPageState extends State<LoginPage> {
 
                     const SizedBox(height: 20),
 
-                    CustomButton(text: 'Register', onTap: registerUser),
+                    CustomButton(text: 'Register', onTap: checkValidity),
                   ],
                 ),
               ),

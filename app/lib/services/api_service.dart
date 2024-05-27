@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'package:app/screens/members/components/user.dart';
 import 'package:app/screens/members/member_list.dart';
 import 'package:http/http.dart' as http;
@@ -123,7 +122,6 @@ class APIService {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      log(response.body);
       return CodeInfo.fromJson(data); // Adjust based on your API response structure
     } else {
       throw Exception('Failed to check code');

@@ -1,6 +1,9 @@
+import 'dart:developer';
+
 import 'package:app/components/tealgradleft.dart';
 import 'package:app/components/tealgradright.dart';
-import 'package:app/screens/setup/components/textfield.dart';
+import 'package:app/components/textfield.dart';
+import 'package:app/components/button.dart';
 import 'package:flutter/material.dart';
 
 class SetupPage extends StatefulWidget {
@@ -16,6 +19,7 @@ class _SetupPageState extends State<SetupPage> {
 
   final nicknameController = TextEditingController();
   final passwordController = TextEditingController();
+  final pwcheckController = TextEditingController();
   final genderController = TextEditingController();
   final gameController = TextEditingController();
 
@@ -34,6 +38,10 @@ class _SetupPageState extends State<SetupPage> {
     {'name': 'Lorcana', 'path': '../../Images/ProfilePics/PFP5.png'},
     {'name': 'OnePiece', 'path': '../../Images/ProfilePics/PFP6.png'},
   ];
+
+  void finishRegister() {
+    log("Data: ${nicknameController.text}, ${passwordController.text}, ${pwcheckController.text}, ${genderController.text}, ${gameController.text}.");
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +103,7 @@ class _SetupPageState extends State<SetupPage> {
 
                               Expanded(
                                 child: CustomTextField(
-                                  controller: passwordController,
+                                  controller: pwcheckController,
                                   hintText: 'Repeat Password',
                                   obscureText: true,
                                 ),
@@ -133,6 +141,13 @@ class _SetupPageState extends State<SetupPage> {
 
                           const SizedBox(height: 10),
 
+                          if (selectedImage != null && selectedImage!.isNotEmpty)
+                            Image.asset(selectedImage!, width: 200, height: 200)
+                          else
+                            const SizedBox.shrink(),
+
+                          const SizedBox(height: 10),
+
                           DropdownButton<String>(
                             hint: const Text('Select an image'),
                             value: selectedImage,
@@ -154,7 +169,7 @@ class _SetupPageState extends State<SetupPage> {
                             }).toList(),
                             onChanged: (newValue) {
                               setState(() {
-                                selectedImage = newValue;
+                                selectedImage = newValue.toString();
                               });
                             },
                           ),
@@ -165,6 +180,8 @@ class _SetupPageState extends State<SetupPage> {
                               fontSize: 16,
                             ),
                           ),
+
+                          CustomButton(text: 'Finish registration', onTap: finishRegister)
                         ],
                       ),
                     ),
