@@ -25,11 +25,7 @@ const connection = require('../config/db');
  */
 router.get('/getRole', validateSessionKey, (req, res) => {
     const sessionKey = req.headers.auth;
-    const sessionQuery = `SELECT rt.role_type
-                          FROM Session s
-                          JOIN Members m ON s.member_id = m.member_id
-                          JOIN RoleTypes rt ON m.role_id = rt.role_id
-                          WHERE s.session_key = ?`;
+    const sessionQuery = `CALL GetRole(?)`;
     connection.query(sessionQuery, [sessionKey], (err, results) => {
         if (err) {
             console.error('Error executing MySQL query:', err);
@@ -39,7 +35,7 @@ router.get('/getRole', validateSessionKey, (req, res) => {
         if (results.length === 0) {
             return res.status(404).json({ error: 'User not found' });
         }
-        var role = results[0].role_type;
+        var role = results[0][0].role_type;
         res.status(201).json({ role: role });
     });
 });

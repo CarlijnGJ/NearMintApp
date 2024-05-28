@@ -67,7 +67,7 @@ router.post('/login', (req, res) => {
             const memberId = results[0][0].member_id;
             const sessionKey = crypto.randomBytes(16).toString('hex');
 
-            const sessionQuery = 'INSERT INTO Session (session_key, member_id) VALUES (?, ?)';
+            const sessionQuery = 'CALL CreateSession(?, ?)';
             connection.query(sessionQuery, [sessionKey, memberId], (err) => {
                 if (err) {
                     console.error('Error inserting session:', err);

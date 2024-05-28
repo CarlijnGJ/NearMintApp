@@ -40,7 +40,7 @@ const connection = require('../config/db');
 router.get('/member', validateSessionKey, (req, res) => {
     const memberId = req.memberId;
 
-    const memberQuery = 'SELECT nickname, name, avatar FROM Members WHERE member_id = ?';
+    const memberQuery = 'CALL GetMember(?)';
     connection.query(memberQuery, [memberId], (err, results) => {
         if (err) {
             console.error('Error executing MySQL query:', err);
@@ -52,9 +52,9 @@ router.get('/member', validateSessionKey, (req, res) => {
         }
 
         res.status(200).json({
-            nickname: results[0].nickname,
-            name: results[0].name,
-            avatar: results[0].avatar
+            nickname: results[0][0].nickname,
+            name: results[0][0].name,
+            avatar: results[0][0].avatar
         });
     });
 });
@@ -122,7 +122,7 @@ router.get('/member/code', (req, res) => {
  *         description: Internal server error
  */
 router.get('/members', validateSessionKey, (req, res) => {
-    const query = 'SELECT * FROM Members';
+    const query = 'CALL GetMembers()';
     connection.query(query, (err, results) => {
         if (err) {
             console.error('Error executing MySQL query:', err);

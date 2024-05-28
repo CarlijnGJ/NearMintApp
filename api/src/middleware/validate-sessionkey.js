@@ -9,7 +9,7 @@ function validateSessionKey(req, res, next) {
         return res.status(401).json({ error: 'Unauthorized: No session key provided' });
     }
 
-    const query = 'SELECT member_id FROM Session WHERE session_key = ?';
+    const query = 'CALL ValidateSessionKey(?)';
     connection.query(query, [sessionKey], (err, results) => {
         if (err) {
             console.error('Error executing MySQL query:', err);
@@ -20,7 +20,7 @@ function validateSessionKey(req, res, next) {
             return res.status(401).json({ error: 'Unauthorized: Invalid session key' });
         }
 
-        req.memberId = results[0].member_id;
+        req.memberId = results[0][0].member_id;
         next();
     });
 }
