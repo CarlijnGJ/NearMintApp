@@ -1,10 +1,14 @@
 import 'dart:developer';
+import 'dart:convert';
+import 'dart:io';
 
+import 'package:app/components/customexception.dart';
 import 'package:app/components/tealgradleft.dart';
 import 'package:app/components/tealgradright.dart';
 import 'package:app/components/topbar/topbar.dart';
 import 'package:app/components/button.dart';
 import 'package:app/services/api_service.dart';
+import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:app/components/textfield.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -21,13 +25,22 @@ class _LoginPageState extends State<LoginPage> {
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
   final codeController = TextEditingController();
+  String? errorMessage;
+
+  String generateHashCode(String code) {
+    var bytes = utf8.encode(code); // Convert the code to bytes
+    var digest = sha256.convert(bytes); // Perform SHA-256 hashing
+    return digest.toString(); // Convert the digest to a string
+  }
 
   void loginUser() async {
+    errorMessage = null;
     final username = usernameController.text;
     final password = passwordController.text;
+    final hashedPassword = generateHashCode(password);
     try {
       // Call the login method from APIService
-      final token = await APIService.login(username, password);
+      final token = await APIService.login(username, hashedPassword);
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final sessionKey = token['session_key'];
       prefs.setString('session_key', sessionKey);
@@ -36,8 +49,15 @@ class _LoginPageState extends State<LoginPage> {
       Navigator.pushNamed(context, '/');
       eventBus.fire(RefreshTopbarEvent(true));
     } catch (e) {
-      // Handle login error (e.g., show an error message)
-      print('Login failed: $e');
+      
+      setState(() {
+        if (e is HttpExceptionWithStatusCode) {
+          errorMessage = e.message;
+        } else {
+          errorMessage = 'Connection failed';
+        }
+      });
+      
     }
   }
 
@@ -101,6 +121,7 @@ class _LoginPageState extends State<LoginPage> {
                       controller: passwordController,
                       hintText: 'Password',
                       obscureText: true,
+                      errorText: errorMessage,
                     ),
 
                     const SizedBox(height: 10),
