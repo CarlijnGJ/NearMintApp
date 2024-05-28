@@ -6,13 +6,17 @@ class TealGradLeft extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Positioned.fill(
-      child: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.centerLeft,
-            end: Alignment.center,
-            colors: [Colors.teal, Colors.transparent],
-            stops: [0.0, 0.5],
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Container(
+          width: MediaQuery.of(context).size.width / 2,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.center,
+              colors: [Colors.teal, Colors.transparent],
+              stops: [0.0, 0.5],
+            ),
           ),
         ),
       ),

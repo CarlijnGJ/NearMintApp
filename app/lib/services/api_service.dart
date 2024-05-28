@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:app/components/customexception.dart';
 import 'package:app/screens/members/components/user.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -27,9 +28,14 @@ class APIService {
 
     if (response.statusCode == 201) {
       return jsonDecode(response.body);
-    } else {
-      throw 'Failed to login';
     }
+    else if (response.statusCode == 400){
+      throw HttpExceptionWithStatusCode('Incorrect username and password combination', 400);
+    }else{
+     throw 'Connection failed';
+}
+
+    
   }
 
   static Future<void> logout(String sessionKey) async {
@@ -148,5 +154,38 @@ static Future<void> addMember(String name, String mail, String phoneNumber, Stri
     } else {
       throw Exception('Failed to load role');
     }
+  }
+
+  static Future<dynamic> checkCode(String code) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/member/code'), // Replace with your API endpoint
+      headers: {
+        'Authorization': basicAuth,
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Code': code,
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return CodeInfo.fromJson(data); // Adjust based on your API response structure
+    } else {
+      throw Exception('Failed to check code');
+    }
+  }
+}
+
+//Needed for checkCode, needs to be moved or recoded
+class CodeInfo {
+  final bool result;
+  final String name;
+
+  CodeInfo({required this.result, required this.name});
+
+  factory CodeInfo.fromJson(Map<String, dynamic> json) {
+    return CodeInfo(
+      result: json['result'],
+      name: json['name'],
+    );
   }
 }

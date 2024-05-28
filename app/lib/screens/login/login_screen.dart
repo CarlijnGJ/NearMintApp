@@ -1,10 +1,12 @@
+import 'dart:developer';
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:app/components/customexception.dart';
 import 'package:app/components/tealgradleft.dart';
 import 'package:app/components/tealgradright.dart';
 import 'package:app/components/topbar/topbar.dart';
 import 'package:app/components/button.dart';
-import 'package:app/screens/profile/profile_screen.dart';
 import 'package:app/services/api_service.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +24,8 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
+  final codeController = TextEditingController();
+  String? errorMessage;
 
   String generateHashCode(String code) {
     var bytes = utf8.encode(code); // Convert the code to bytes
@@ -30,6 +34,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void loginUser() async {
+    errorMessage = null;
     final username = usernameController.text;
     final password = passwordController.text;
     final hashedPassword = generateHashCode(password);
@@ -41,16 +46,43 @@ class _LoginPageState extends State<LoginPage> {
       prefs.setString('session_key', sessionKey);
       // Navigate to the home page
       Navigator.pop(context);
-      Navigator.pushNamed(context, '/profile');
+      Navigator.pushNamed(context, '/');
       eventBus.fire(RefreshTopbarEvent(true));
     } catch (e) {
-      // Handle login error (e.g., show an error message)
-      print('Login failed: $e');
+      
+      setState(() {
+        if (e is HttpExceptionWithStatusCode) {
+          errorMessage = e.message;
+        } else {
+          errorMessage = 'Connection failed';
+        }
+      });
+      
     }
   }
 
   void forgotPassword() {
     print("Forgot Password button pressed!");
+  }
+
+  void checkValidity() async {
+    final code = codeController.text;
+
+    try {
+      final exists = await APIService.checkCode(code);
+
+      if (exists.result) {
+        Navigator.pop(context);
+        Navigator.pushNamed(context, '/setup', arguments: exists.name);
+        eventBus.fire(RefreshTopbarEvent(true));
+      } else {
+        //TO-DO: Add logic to display error visually
+        log('Code does not exist');
+      }
+    } catch (e) {
+      //TO-DO: Add logic to display error visually
+      log('Register nav failed: $e');
+    }
   }
 
   @override
@@ -89,6 +121,7 @@ class _LoginPageState extends State<LoginPage> {
                       controller: passwordController,
                       hintText: 'Password',
                       obscureText: true,
+                      errorText: errorMessage,
                     ),
 
                     const SizedBox(height: 10),
@@ -115,11 +148,29 @@ class _LoginPageState extends State<LoginPage> {
 
                     const SizedBox(height: 30),
 
-                    Divider(),
+                    const Divider(),
 
-                    Text('or use the QR code'),
+                    const SizedBox(height: 20),
 
-                    Icon(Icons.qr_code_2_rounded, size: 180),
+                    const Text(
+                      'Register',
+                      style: TextStyle(
+                        fontSize: 20,
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    //code textfield
+                    CustomTextField(
+                      controller: codeController,
+                      hintText: 'Token',
+                      obscureText: false,
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    CustomButton(text: 'Register', onTap: checkValidity),
                   ],
                 ),
               ),
