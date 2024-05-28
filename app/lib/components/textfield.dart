@@ -4,12 +4,14 @@ class CustomTextField extends StatelessWidget {
   final controller;
   final String hintText;
   final bool obscureText;
+  final String? errorText;
 
   const CustomTextField({
     super.key,
     required this.controller,
     required this.hintText,
     required this.obscureText,
+    this.errorText,
   });
 
   @override
@@ -31,6 +33,7 @@ class CustomTextField extends StatelessWidget {
           filled: true,
           hintText: hintText,
           hintStyle: TextStyle(color: Colors.black),
+          errorText: errorText,
         ),
       ),
     );
