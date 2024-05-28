@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:app/screens/members/components/user.dart';
-import 'package:app/screens/members/member_list.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -34,21 +33,21 @@ class APIService {
   }
 
   static Future<void> logout(String sessionKey) async {
-  final response = await http.delete(
-    Uri.parse('$baseUrl/api/logout'),
-    headers: <String, String>{
-      'Authorization': basicAuth,
-      'auth': sessionKey,
-    },
-  );
+    final response = await http.delete(
+      Uri.parse('$baseUrl/api/logout'),
+      headers: <String, String>{
+        'Authorization': basicAuth,
+        'auth': sessionKey,
+      },
+    );
 
-  if (response.statusCode == 200) {
-    // Logout successful
-    return;
-  } else {
-    throw 'Failed to logout';
+    if (response.statusCode == 200) {
+      // Logout successful
+      return;
+    } else {
+      throw 'Failed to logout';
+    }
   }
-}
 
   static Future<Map<String, dynamic>> getMember(String sessionKey) async {
     final response = await http.get(
@@ -66,7 +65,7 @@ class APIService {
       throw 'Failed to get member';
     }
   }
-  
+
   static Future<List<User>> getMembers(String sessionKey) async {
     final response = await http.get(
       Uri.parse('$baseUrl/api/members'),
@@ -90,7 +89,7 @@ class APIService {
     } else {
       throw 'Failed to get members';
     }
-}
+  }
 
   static Future<String> getRole(String sessionKey) async {
     final response = await http.get(

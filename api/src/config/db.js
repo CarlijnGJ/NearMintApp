@@ -1,5 +1,7 @@
 const mysql = require('mysql2');
 require('dotenv').config({ path: '../.env' });
+const crypto = require('crypto');
+
 
 let currentDatabase;
 switch (process.env.MODE_ENV) {
@@ -13,12 +15,14 @@ switch (process.env.MODE_ENV) {
         currentDatabase = process.env.DB_DATABASE;
 };
 
+const hashedPassword = crypto.createHash('sha256').update(process.env.DB_PASSWORD, 'utf8').digest('hex');
+
 // Database connection
 const connection = mysql.createConnection({
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
     user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
+    password: hashedPassword,
     database: currentDatabase,
 });
 

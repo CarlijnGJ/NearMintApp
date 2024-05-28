@@ -1,12 +1,13 @@
 const request = require('supertest');
-const app = require('../src/app'); // assuming your Express app is in app.js
+const connection = require('../src/config/db');
+const app  = require('../src/app');
 
 describe('Authentication Endpoints', () => {
     var sessionKey;
     it('POST /api/login - responds with status 200 and valid token for valid credentials', async () => {
         const response = await request(app)
         .post('/api/login')
-        .send({ nickname: 'member', password: 'member' });
+        .send({ nickname: 'member', password: 'e31ab643c44f7a0ec824b59d1194d60dac334200d845e61d2d289daa0f087ea4' });
 
         expect(response.status).toBe(201);
         expect(response.body).toHaveProperty('session_key');
@@ -17,7 +18,6 @@ describe('Authentication Endpoints', () => {
         const response = await request(app)
         .delete('/api/logout')
         .set('auth', sessionKey);
-    
         expect(response.status).toBe(200);
     });
 });
@@ -40,4 +40,8 @@ describe('Get Members with the right premssions Endpoints', () => {
     
         expect(response.status).toBe(200);
       });
+  });
+ 
+  afterAll(() => {
+    connection.end(); // Close the MySQL connection
   });

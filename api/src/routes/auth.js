@@ -49,35 +49,33 @@ const crypto = require('crypto');
  *       500:
  *         description: Internal server error
  */
+
 router.post('/login', (req, res) => {
     const { nickname, password } = req.body;
     if (!nickname || !password) {
         return res.status(400).json({ error: 'Nickname and password are required' });
     }
 
-    const query = 'SELECT * FROM Members WHERE nickname = ?';
-    connection.query(query, [nickname], (err, results) => {
+    const query = 'CALL Login(?, ?)';
+    connection.query(query, [nickname, password], (err, results) => {
         if (err) {
             console.error('Error executing MySQL query:', err);
             return res.status(500).json({ error: 'Internal server error' });
+        }    
+
+        if (results.length > 0 && results[0][0].member_id !== null && results[0][0].nickname !== null) {
+            const memberId = results[0][0].member_id;
+            const sessionKey = crypto.randomBytes(16).toString('hex');
+
+            const sessionQuery = 'INSERT INTO Session (session_key, member_id) VALUES (?, ?)';
+            connection.query(sessionQuery, [sessionKey, memberId], (err) => {
+                if (err) {
+                    console.error('Error inserting session:', err);
+                    return res.status(500).json({ error: 'Internal server error' });
+                }
+                res.status(201).json({ session_key: sessionKey });
+            });
         }
-
-        if (results.length === 0 || results[0].password !== password) {
-            return res.status(401).json({ error: 'Incorrect nickname or password' });
-        }
-
-        const memberId = results[0].member_id;
-        const sessionKey = crypto.randomBytes(16).toString('hex');
-
-        const sessionQuery = 'INSERT INTO Session (session_key, member_id) VALUES (?, ?)';
-        connection.query(sessionQuery, [sessionKey, memberId], (err) => {
-            if (err) {
-                console.error('Error inserting session:', err);
-                return res.status(500).json({ error: 'Internal server error' });
-            }
-            res.status(201).json({ session_key: sessionKey });
-        });
-
     });
 });
 /**
