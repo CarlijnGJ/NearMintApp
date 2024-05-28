@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:app/components/customexception.dart';
 import 'package:app/screens/members/components/user.dart';
 import 'package:app/screens/members/member_list.dart';
 import 'package:http/http.dart' as http;
@@ -28,9 +29,14 @@ class APIService {
 
     if (response.statusCode == 201) {
       return jsonDecode(response.body);
-    } else {
-      throw 'Failed to login';
     }
+    else if (response.statusCode == 400){
+      throw HttpExceptionWithStatusCode('Incorrect username and password combination', 400);
+    }else{
+     throw 'Connection failed';
+}
+
+    
   }
 
   static Future<void> logout(String sessionKey) async {
