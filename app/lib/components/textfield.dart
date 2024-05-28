@@ -34,6 +34,13 @@ class CustomTextField extends StatelessWidget {
           hintText: hintText,
           hintStyle: TextStyle(color: Colors.black),
           errorText: errorText,
+          errorBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.red)),
+          suffixIcon: this.errorText != null ? Icon(
+            Icons.error, 
+            color: Colors.red,
+            )
+            : null,
+
         ),
       ),
     );

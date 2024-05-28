@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:app/components/customexception.dart';
 import 'package:app/components/tealgradleft.dart';
 import 'package:app/components/tealgradright.dart';
 import 'package:app/components/topbar/topbar.dart';
@@ -22,6 +24,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
+  String? errorMessage;
 
   String generateHashCode(String code) {
     var bytes = utf8.encode(code); // Convert the code to bytes
@@ -30,6 +33,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void loginUser() async {
+    errorMessage = null;
     final username = usernameController.text;
     final password = passwordController.text;
     final hashedPassword = generateHashCode(password);
@@ -44,8 +48,15 @@ class _LoginPageState extends State<LoginPage> {
       Navigator.pushNamed(context, '/profile');
       eventBus.fire(RefreshTopbarEvent(true));
     } catch (e) {
-      // Handle login error (e.g., show an error message)
-      print('Login failed: $e');
+      
+      setState(() {
+        if (e is HttpExceptionWithStatusCode) {
+          errorMessage = e.message;
+        } else {
+          errorMessage = 'Connection failed';
+        }
+      });
+      
     }
   }
 
@@ -89,6 +100,7 @@ class _LoginPageState extends State<LoginPage> {
                       controller: passwordController,
                       hintText: 'Password',
                       obscureText: true,
+                      errorText: errorMessage,
                     ),
 
                     const SizedBox(height: 10),
