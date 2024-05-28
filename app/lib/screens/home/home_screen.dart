@@ -119,40 +119,45 @@ class _HomePageState extends State<HomePage> {
     }
     return Scaffold(
       body: SingleChildScrollView(
-        child: Stack(
-          children: [
-            const TealGradLeft(),
-            const TealGradRight(),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    height: MediaQuery.of(context).padding.top + kToolbarHeight,
-                  ), // Adjust based on app bar height
-                  const TitleSection(
-                    name: 'Welcome!',
-                  ),
-                  const SizedBox(height: 16.0),
-                  LayoutBuilder(
-                    builder: (context, constraints) {
-                      if (constraints.maxWidth > 600) {
-                        return Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: buildButtonsForRole(),
-                        );
-                      } else {
-                        return Column(
-                          children: buildButtonsForRole(),
-                        );
-                      }
-                    },
-                  ),
-                ],
+        child: Container(
+          constraints: BoxConstraints(
+            minHeight: MediaQuery.of(context).size.height,
+          ),
+          child: Stack(
+            children: [
+              const TealGradLeft(),
+              const TealGradRight(),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      height: MediaQuery.of(context).padding.top + kToolbarHeight,
+                    ), // Adjust based on app bar height
+                    const TitleSection(
+                      name: 'Welcome!',
+                    ),
+                    const SizedBox(height: 16.0),
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        if (constraints.maxWidth > 600) {
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: buildButtonsForRole(),
+                          );
+                        } else {
+                          return Column(
+                            children: buildButtonsForRole(),
+                          );
+                        }
+                      },
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
