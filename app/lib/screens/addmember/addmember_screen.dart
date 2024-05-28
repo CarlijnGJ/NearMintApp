@@ -9,6 +9,7 @@ import 'package:app/components/textfield.dart';
 import 'package:app/components/button.dart';
 import 'package:app/screens/addmember/inputvalidation.dart';
 import 'package:app/services/api_service.dart';
+import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:flutter/material.dart';
 import 'package:crypto/crypto.dart';
 
@@ -21,6 +22,7 @@ class AddMemberPage extends StatefulWidget {
 }
 
 class _AddMemberPageState extends State<AddMemberPage> {
+    List<String?> errors = [];
     final usernameController = TextEditingController();
     final emailController = TextEditingController();
     final phonenumberController = TextEditingController();
@@ -42,31 +44,37 @@ class _AddMemberPageState extends State<AddMemberPage> {
     final email = emailController.text;
     final phoneNumber = phonenumberController.text;
 
-    List<String> errors = [];
+errors = List.filled(3, null);
+  if (!ValidateUser().validateUsername(username)) {
+    errors[0] = 'Invalid username';
+  }
 
-    if (!ValidateUser().validateUsername(username)) {
-      errors.add('Invalid username');
-    }
+  if (!ValidateUser().validateEmail(email)) {
+    errors[1] = 'Invalid email';
+  }
 
-    if (!ValidateUser().validateEmail(email)) {
-      errors.add('Invalid email');
-    }
-
-    if (!ValidateUser().validatePhoneNumber(phoneNumber)) {
-      errors.add('Invalid phone number');
-    }
-
-    if (errors.isNotEmpty) {
-      errors.forEach((error) => print(error));
-      // Show the errors to the user
-      return;
-    }
-
-    final secret = generateRandomCode();
-    String hashedSecret = generateHashCode(secret);
+  if (!ValidateUser().validatePhoneNumber(phoneNumber)) {
+    errors[2] = 'Invalid phone number';
+  }
+  
+  if (errors.any((error) => error != null)) {
+    setState(() {
+      print('Errors: $errors'); // Debugging check
+    });
+    return;
+  }
 
     try{
-      await APIService.addMember(username, email, phoneNumber, hashedSecret);
+      final key = encrypt.Key.fromLength(32); // 32 bytes for AES256 encryption
+      final iv = encrypt.IV.fromLength(16); // 16 bytes for AES
+      final encrypter = encrypt.Encrypter(encrypt.AES(key));
+      final secret = generateRandomCode();
+      String hashedSecret = generateHashCode(secret);
+      final encryptedUsername = encrypter.encrypt(username, iv: iv).base64;
+      final encryptedEmail = encrypter.encrypt(email, iv: iv).base64;
+      final encryptedPhoneNumber = encrypter.encrypt(phoneNumber, iv: iv).base64;
+      await APIService.addMember(encryptedUsername, encryptedEmail, encryptedPhoneNumber, hashedSecret);
+      print('click');
     }
 
     catch(e){
@@ -106,6 +114,7 @@ class _AddMemberPageState extends State<AddMemberPage> {
                       controller: usernameController,
                       hintText: 'Username',
                       obscureText: false,
+                      errorText: errors.isNotEmpty ? errors[0] : null,
                     ),
 
                     const SizedBox(height: 10),
@@ -115,6 +124,7 @@ class _AddMemberPageState extends State<AddMemberPage> {
                       controller: emailController,
                       hintText: 'Email',
                       obscureText: false,
+                      errorText: errors.length > 1 ? errors[1] : null,
                     ),
 
                     const SizedBox(height: 10),
@@ -123,6 +133,8 @@ class _AddMemberPageState extends State<AddMemberPage> {
                       controller: phonenumberController,
                       hintText: 'Phone number',
                       obscureText: false,
+                      errorText: errors.length > 2 ? errors[2] : null,
+
                     ),
 
                     const SizedBox(height: 10),
