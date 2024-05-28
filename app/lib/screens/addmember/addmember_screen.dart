@@ -7,6 +7,7 @@ import 'package:app/components/tealgradright.dart';
 import 'package:app/components/topbar/topbar.dart';
 import 'package:app/components/textfield.dart';
 import 'package:app/components/button.dart';
+import 'package:app/screens/addmember/inputvalidation.dart';
 import 'package:app/services/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:crypto/crypto.dart';
@@ -39,16 +40,33 @@ class _AddMemberPageState extends State<AddMemberPage> {
   void addMember() async {
     final username = usernameController.text;
     final email = emailController.text;
-    final phonenumber = phonenumberController.text;
+    final phoneNumber = phonenumberController.text;
+
+    List<String> errors = [];
+
+    if (!ValidateUser().validateUsername(username)) {
+      errors.add('Invalid username');
+    }
+
+    if (!ValidateUser().validateEmail(email)) {
+      errors.add('Invalid email');
+    }
+
+    if (!ValidateUser().validatePhoneNumber(phoneNumber)) {
+      errors.add('Invalid phone number');
+    }
+
+    if (errors.isNotEmpty) {
+      errors.forEach((error) => print(error));
+      // Show the errors to the user
+      return;
+    }
+
     final secret = generateRandomCode();
-    print('6-digit code: $secret' );
     String hashedSecret = generateHashCode(secret);
-    print('Hashed 6-digit code: $hashedSecret');
 
     try{
-      //add to database
-      await APIService.addMember("test", "test@mail.nl", "0612345678", hashedSecret);
-      //send email
+      await APIService.addMember(username, email, phoneNumber, hashedSecret);
     }
 
     catch(e){
