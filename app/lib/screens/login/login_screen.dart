@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 import 'package:app/components/tealgradleft.dart';
 import 'package:app/components/tealgradright.dart';
 import 'package:app/components/topbar/topbar.dart';
 import 'package:app/components/button.dart';
 import 'package:app/screens/profile/profile_screen.dart';
 import 'package:app/services/api_service.dart';
+import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:app/components/textfield.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -20,12 +23,19 @@ class _LoginPageState extends State<LoginPage> {
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
 
+  String generateHashCode(String code) {
+    var bytes = utf8.encode(code); // Convert the code to bytes
+    var digest = sha256.convert(bytes); // Perform SHA-256 hashing
+    return digest.toString(); // Convert the digest to a string
+  }
+
   void loginUser() async {
     final username = usernameController.text;
     final password = passwordController.text;
+    final hashedPassword = generateHashCode(password);
     try {
       // Call the login method from APIService
-      final token = await APIService.login(username, password);
+      final token = await APIService.login(username, hashedPassword);
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final sessionKey = token['session_key'];
       prefs.setString('session_key', sessionKey);
