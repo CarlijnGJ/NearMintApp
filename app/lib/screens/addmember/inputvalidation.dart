@@ -8,7 +8,7 @@ class ValidateUser {
 
   // Method to validate the email
   bool validateEmail(String email) {
-    String pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$';
+    String pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,128}$';
     RegExp regex = RegExp(pattern);
     return regex.hasMatch(email);
   }
@@ -25,5 +25,11 @@ class ValidateUser {
     String pattern = r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{12,128}$';
     RegExp regex = RegExp(pattern);
     return regex.hasMatch(password);
+  }
+  
+  static bool validateToken(String token){
+    String pattern = r'^[0-9a-zA-Z]{6}$';
+    RegExp regex = RegExp(pattern);
+    return regex.hasMatch(token);
   }
 }
