@@ -3,7 +3,7 @@ import 'package:app/components/customexception.dart';
 import 'package:app/screens/members/components/user.dart';
 import 'package:http/http.dart' as http;
 
-class APIService {  
+class APIService {
   static const String baseUrl =
       'http://localhost:3000'; // Replace this with your API base URL
 
@@ -22,14 +22,12 @@ class APIService {
 
     if (response.statusCode == 201) {
       return jsonDecode(response.body);
+    } else if (response.statusCode == 400) {
+      throw HttpExceptionWithStatusCode(
+          'Incorrect username and password combination', 400);
+    } else {
+      throw 'Connection failed';
     }
-    else if (response.statusCode == 400){
-      throw HttpExceptionWithStatusCode('Incorrect username and password combination', 400);
-    }else{
-     throw 'Connection failed';
-}
-
-    
   }
 
   static Future<void> logout(String sessionKey) async {
@@ -89,45 +87,45 @@ class APIService {
     }
   }
 
-static Future<void> addMember(String name, String mail, String phoneNumber, String secret) async {
-  // Define the API endpoint
-  const String apiUrl = '$baseUrl/api/addmember';
+  static Future<void> addMember(
+      String name, String mail, String phoneNumber, String secret) async {
+    // Define the API endpoint
+    const String apiUrl = '$baseUrl/api/addmember';
 
-  // Prepare the request body
-  Map<String, dynamic> data = {
-    'name': name,
-    'mail': mail,
-    'phonenumber': phoneNumber,
-    'secret': secret,
-  };
+    // Prepare the request body
+    Map<String, dynamic> data = {
+      'name': name,
+      'mail': mail,
+      'phonenumber': phoneNumber,
+      'secret': secret,
+    };
 
-  try {
-    // Convert the request body to JSON format
-    String requestBody = json.encode(data);
+    try {
+      // Convert the request body to JSON format
+      String requestBody = json.encode(data);
 
-    // Make an HTTP POST request to the server
-    final response = await http.post(
-      Uri.parse(apiUrl),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: requestBody, // Send the request body
-    );
+      // Make an HTTP POST request to the server
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: requestBody, // Send the request body
+      );
 
-    // Check if the request was successful (status code 200)
-    if (response.statusCode == 200) {
-      // Member added successfully
-      print('Member added successfully');
-    } else {
-      // Handle error response
-      print('Failed to add member: ${response.statusCode}');
+      // Check if the request was successful (status code 200)
+      if (response.statusCode == 200) {
+        // Member added successfully
+        print('Member added successfully');
+      } else {
+        // Handle error response
+        print('Failed to add member: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle network errors
+      print('Error adding member: $e');
     }
-  } catch (e) {
-    // Handle network errors
-    print('Error adding member: $e');
   }
-}
-
 
   static Future<String> getRole(String sessionKey) async {
     final response = await http.get(
@@ -157,7 +155,8 @@ static Future<void> addMember(String name, String mail, String phoneNumber, Stri
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      return CodeInfo.fromJson(data); // Adjust based on your API response structure
+      return CodeInfo.fromJson(
+          data); // Adjust based on your API response structure
     } else {
       throw Exception('Failed to check code');
     }
@@ -165,7 +164,8 @@ static Future<void> addMember(String name, String mail, String phoneNumber, Stri
 
   static Future<dynamic> keepSessionAlive(String sessionKey) async {
     final response = await http.get(
-      Uri.parse('$baseUrl/api/keepSessionKeyAlive'), // Replace with your API endpoint
+      Uri.parse(
+          '$baseUrl/api/keepSessionKeyAlive'), // Replace with your API endpoint
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
         'auth': sessionKey,
