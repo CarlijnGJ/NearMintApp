@@ -46,7 +46,7 @@ class _AddMemberPageState extends State<AddMemberPage> {
     final phoneNumber = phonenumberController.text;
 
     errors = List.filled(3, null);
-    if (!ValidateUser().validateUsername(username)) {
+    if (!ValidateUser().validateBasicString(username)) {
       errors[0] = 'Invalid username';
     }
 
