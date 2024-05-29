@@ -62,7 +62,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: TopBar(),
+      appBar: const TopBar(),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : isError
@@ -83,26 +83,26 @@ class _ProfilePageState extends State<ProfilePage> {
                                 // You can set other properties like fit, etc.
                               ),
                             )
-                          : SizedBox(), // Placeholder if no avatar
+                          : const SizedBox(), // Placeholder if no avatar
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Padding(padding: const EdgeInsets.only(bottom: 16.0)),
+                          const Padding(padding: EdgeInsets.only(bottom: 16.0)),
                           Text(
                             'Nickname: ${nickname ?? ''}',
-                            style: TextStyle(fontSize: 24.0),
+                            style: const TextStyle(fontSize: 24.0),
                           ),
                           Text(
                             'Name: ${name ?? ''}',
-                            style: TextStyle(fontSize: 16.0),
+                            style: const TextStyle(fontSize: 16.0),
                           ),
                                                     Text(
                             'Gender: ${gender ?? ''}',
-                            style: TextStyle(fontSize: 16.0),
+                            style: const TextStyle(fontSize: 16.0),
                           ),
                           Text(
                             'Prefered game: ${preferedGame ?? ''}',
-                            style: TextStyle(fontSize: 16.0),
+                            style: const TextStyle(fontSize: 16.0),
                           ),
                         ],
                       ),

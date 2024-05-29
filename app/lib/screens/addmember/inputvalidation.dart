@@ -26,4 +26,10 @@ class ValidateUser {
     RegExp regex = RegExp(pattern);
     return regex.hasMatch(password);
   }
+  
+  static bool validateToken(String token){
+    String pattern = r'^[0-9a-zA-Z]{6}$';
+    RegExp regex = RegExp(pattern);
+    return regex.hasMatch(token);
+  }
 }
