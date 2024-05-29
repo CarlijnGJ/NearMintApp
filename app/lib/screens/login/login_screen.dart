@@ -66,13 +66,19 @@ class _LoginPageState extends State<LoginPage> {
 
   void checkValidity() async {
     final code = codeController.text;
+    String hashedCode = generateHashCode(code);
+
+    log(hashedCode);
 
     try {
-      final exists = await APIService.checkCode(code);
+      final exists = await APIService.checkCode(hashedCode);
 
       if (exists.result) {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString('token', hashedCode);
+
         Navigator.pop(context);
-        Navigator.pushNamed(context, '/setup', arguments: exists.name);
+        Navigator.pushNamed(context, '/setup');
         eventBus.fire(RefreshTopbarEvent(true));
       } else {
         //TO-DO: Add logic to display error visually

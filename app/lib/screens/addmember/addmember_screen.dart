@@ -29,7 +29,7 @@ class _AddMemberPageState extends State<AddMemberPage> {
 
   String generateRandomCode() {
     var random = Random();
-      int code = 100000 + random.nextInt(900000); // Generates a number between 100000 and 999999
+    int code = 100000 + random.nextInt(900000); // Generates a number between 100000 and 999999
     return code.toString();
   }
 
@@ -69,12 +69,12 @@ errors = List.filled(3, null);
       final iv = encrypt.IV.fromLength(16); // 16 bytes for AES
       final encrypter = encrypt.Encrypter(encrypt.AES(key));
       final secret = generateRandomCode();
+      print(secret);
       String hashedSecret = generateHashCode(secret);
       final encryptedUsername = encrypter.encrypt(username, iv: iv).base64;
       final encryptedEmail = encrypter.encrypt(email, iv: iv).base64;
       final encryptedPhoneNumber = encrypter.encrypt(phoneNumber, iv: iv).base64;
       await APIService.addMember(encryptedUsername, encryptedEmail, encryptedPhoneNumber, hashedSecret);
-      print('click');
     }
 
     catch(e){

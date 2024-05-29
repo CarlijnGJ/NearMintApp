@@ -7,6 +7,7 @@ const authRouter = require('./routes/auth');
 const membersRouter = require('./routes/members');
 const rolesRouter = require('./routes/roles');
 const addmemberRouter = require('./routes/addmember');
+const updatememberRouter = require('./routes/updatemember');
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.use('/api', authRouter);
 app.use('/api', membersRouter);
 app.use('/api', rolesRouter);
 app.use('/api', addmemberRouter);
+app.use('/api', updatememberRouter);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;
