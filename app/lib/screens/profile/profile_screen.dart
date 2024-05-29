@@ -13,6 +13,8 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   String? nickname;
   String? name;
+  String? gender;
+  String? preferedGame;
   String? avatar;
   bool isLoading = true;
   bool isError = false;
@@ -36,6 +38,8 @@ class _ProfilePageState extends State<ProfilePage> {
           nickname = memberData['nickname'];
           name = memberData['name'];
           avatar = memberData['avatar'];
+          gender = memberData['gender'];
+          preferedGame = memberData['preferedGame'];
           isLoading = false;
           isError = false;
         });
@@ -90,6 +94,14 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                           Text(
                             'Name: ${name ?? ''}',
+                            style: TextStyle(fontSize: 16.0),
+                          ),
+                                                    Text(
+                            'Gender: ${gender ?? ''}',
+                            style: TextStyle(fontSize: 16.0),
+                          ),
+                          Text(
+                            'Prefered game: ${preferedGame ?? ''}',
                             style: TextStyle(fontSize: 16.0),
                           ),
                         ],
