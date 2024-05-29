@@ -8,7 +8,7 @@ class ValidateUser {
 
   // Method to validate the email
   bool validateEmail(String email) {
-    String pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$';
+    String pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,128}$';
     RegExp regex = RegExp(pattern);
     return regex.hasMatch(email);
   }
