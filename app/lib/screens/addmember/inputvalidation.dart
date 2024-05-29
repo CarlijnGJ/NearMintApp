@@ -1,9 +1,9 @@
 class ValidateUser {
   // Method to validate the username
-  bool validateUsername(String username) {
-    String pattern = r'^[a-zA-Z0-9_]{3,16}$';
+  bool validateBasicString(String basicString) {
+    String pattern = r'^[a-zA-Z0-9_]{3,128}$';
     RegExp regex = RegExp(pattern);
-    return regex.hasMatch(username);
+    return regex.hasMatch(basicString);
   }
 
   // Method to validate the email
@@ -20,4 +20,10 @@ class ValidateUser {
     return regex.hasMatch(phoneNumber);
   }
 
+  // Method to validate the password
+  bool validatePassword(String password) {
+    String pattern = r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{12,128}$';
+    RegExp regex = RegExp(pattern);
+    return regex.hasMatch(password);
+  }
 }
