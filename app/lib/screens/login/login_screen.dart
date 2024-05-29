@@ -1,12 +1,10 @@
-import 'dart:developer';
 import 'dart:convert';
-import 'dart:io';
-
 import 'package:app/components/customexception.dart';
 import 'package:app/components/tealgradleft.dart';
 import 'package:app/components/tealgradright.dart';
 import 'package:app/components/topbar/topbar.dart';
 import 'package:app/components/button.dart';
+import 'package:app/screens/addmember/inputvalidation.dart';
 import 'package:app/services/api_service.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +24,7 @@ class _LoginPageState extends State<LoginPage> {
   final passwordController = TextEditingController();
   final codeController = TextEditingController();
   String? errorMessage;
+  String? setupErrorMessage;
 
   String generateHashCode(String code) {
     var bytes = utf8.encode(code); // Convert the code to bytes
@@ -45,7 +44,9 @@ class _LoginPageState extends State<LoginPage> {
       final sessionKey = token['session_key'];
       prefs.setString('session_key', sessionKey);
       // Navigate to the home page
+      // ignore: use_build_context_synchronously
       Navigator.pop(context);
+      // ignore: use_build_context_synchronously
       Navigator.pushNamed(context, '/');
       eventBus.fire(RefreshTopbarEvent(true));
     } catch (e) {
@@ -66,23 +67,36 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void checkValidity() async {
+    setupErrorMessage = null;
     final code = codeController.text;
 
+    if(!ValidateUser.validateToken(code)){
+      setupErrorMessage = 'Code must be 6 characters!';
+      setState(() {});
+      return;
+
+    }
+    
     try {
       final exists = await APIService.checkCode(code);
 
       if (exists.result) {
+        // ignore: use_build_context_synchronously
         Navigator.pop(context);
+        // ignore: use_build_context_synchronously
         Navigator.pushNamed(context, '/setup', arguments: exists.name);
         eventBus.fire(RefreshTopbarEvent(true));
       } else {
-        //TO-DO: Add logic to display error visually
-        log('Code does not exist');
+        setupErrorMessage = 'Code does not exist';
+        setState(() {});
+        return;
       }
     } catch (e) {
       //TO-DO: Add logic to display error visually
-      log('Register nav failed: $e');
-    }
+        setupErrorMessage = 'Connection failed';
+        setState(() {});
+        return;
+  }
   }
 
   @override
@@ -166,6 +180,8 @@ class _LoginPageState extends State<LoginPage> {
                       controller: codeController,
                       hintText: 'Token',
                       obscureText: false,
+                      errorText: setupErrorMessage,
+
                     ),
 
                     const SizedBox(height: 20),

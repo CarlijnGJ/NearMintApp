@@ -100,14 +100,14 @@ import 'package:app/screens/members/components/userservice.dart';
                 children: [
                   ElevatedButton(
                     onPressed: page > 0 ? previousPage : null,
-                    child: Text('Previous'),
+                    child: const Text('Previous'),
                   ),
                   SizedBox(width: 20),
                   ElevatedButton(
                     onPressed: (page + 1) * pageSize < membersList.length
                         ? nextPage
                         : null,
-                    child: Text('Next'),
+                    child: const Text('Next'),
                   ),
                 ],
               ),

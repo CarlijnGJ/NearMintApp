@@ -7,6 +7,8 @@ const authRouter = require('./routes/auth');
 const membersRouter = require('./routes/members');
 const rolesRouter = require('./routes/roles');
 const addmemberRouter = require('./routes/addmember');
+const keepSessionKeyAlive = require('./routes/keep-sessionkey-alive');
+
 
 const app = express();
 
@@ -19,12 +21,13 @@ app.use('/api', authRouter);
 app.use('/api', membersRouter);
 app.use('/api', rolesRouter);
 app.use('/api', addmemberRouter);
+app.use('/api', keepSessionKeyAlive);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;
 
-const server = app.listen(3000, () => {
-    console.log('Server is running on port 3000');
-  });
-  
+const server = app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
+
 module.exports = server;

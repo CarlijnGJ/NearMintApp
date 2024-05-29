@@ -28,11 +28,24 @@ class _AddMemberPageState extends State<AddMemberPage> {
   final emailController = TextEditingController();
   final phonenumberController = TextEditingController();
 
-  String generateRandomCode() {
+String generateRandomCode() {
+    const String chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
     var random = Random();
-    int code = 100000 + random.nextInt(900000); // Generates a number between 100000 and 999999
-    return code.toString();
-  }
+    String code = '';
+    int prevIndex = -1; // Store the index of the previously selected character
+    
+    for (int i = 0; i < 6; i++) {
+        int index;
+        do {
+            index = random.nextInt(chars.length);
+        } while (index == prevIndex || (i > 0 && code[i - 1] == chars[index])); // Repeat if the current character is the same as the previous one
+        
+        code += chars[index];
+        prevIndex = index;
+    }
+    
+    return code;
+}
 
   String generateHashCode(String code) {
     var bytes = utf8.encode(code); // Convert the code to bytes
@@ -46,7 +59,7 @@ class _AddMemberPageState extends State<AddMemberPage> {
     final phoneNumber = phonenumberController.text;
 
     errors = List.filled(3, null);
-    if (!ValidateUser().validateUsername(username)) {
+    if (!ValidateUser().validateBasicString(username)) {
       errors[0] = 'Invalid username';
     }
 
@@ -70,6 +83,7 @@ class _AddMemberPageState extends State<AddMemberPage> {
       final iv = encrypt.IV.fromLength(16); // 16 bytes for AES
       final encrypter = encrypt.Encrypter(encrypt.AES(key));
       final secret = generateRandomCode();
+      print(secret);
       String hashedSecret = generateHashCode(secret);
       final encryptedUsername = encrypter.encrypt(username, iv: iv).base64;
       final encryptedEmail = encrypter.encrypt(email, iv: iv).base64;
@@ -126,7 +140,7 @@ class _AddMemberPageState extends State<AddMemberPage> {
           ? Center(
               child: Text(
                 errorMessage,
-                style: TextStyle(color: Colors.red, fontSize: 18),
+                style: const TextStyle(color: Colors.red, fontSize: 18),
               ),
             )
           : Stack(
