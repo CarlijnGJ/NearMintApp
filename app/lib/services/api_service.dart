@@ -3,11 +3,6 @@ import 'dart:html';
 import 'package:app/components/customexception.dart';
 import 'package:app/screens/members/components/user.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-
-final String username = dotenv.env['API_USERNAME']!;
-final String password = dotenv.env['API_PASSWORD']!;
-String basicAuth = 'Basic ${base64Encode(utf8.encode('$username:$password'))}';
 
 class APIService {  
   static const String baseUrl =
@@ -18,7 +13,6 @@ class APIService {
     final response = await http.post(
       Uri.parse('$baseUrl/api/login'),
       headers: <String, String>{
-        'Authorization': basicAuth,
         'Content-Type': 'application/json; charset=UTF-8',
       },
       body: jsonEncode(<String, String>{
@@ -43,7 +37,7 @@ class APIService {
     final response = await http.delete(
       Uri.parse('$baseUrl/api/logout'),
       headers: <String, String>{
-        'Authorization': basicAuth,
+        'Content-Type': 'application/json; charset=UTF-8',
         'auth': sessionKey,
       },
     );
@@ -60,7 +54,6 @@ class APIService {
     final response = await http.get(
       Uri.parse('$baseUrl/api/member?session_key=$sessionKey'),
       headers: <String, String>{
-        'Authorization': basicAuth,
         'Content-Type': 'application/json; charset=UTF-8',
         'auth': sessionKey
       },
@@ -77,7 +70,6 @@ class APIService {
     final response = await http.get(
       Uri.parse('$baseUrl/api/members'),
       headers: <String, String>{
-        'Authorization': basicAuth,
         'Content-Type': 'application/json; charset=UTF-8',
         'auth': sessionKey
       },
@@ -100,7 +92,7 @@ class APIService {
 
 static Future<void> addMember(String name, String mail, String phoneNumber, String secret) async {
   // Define the API endpoint
-  final String apiUrl = '$baseUrl/api/addmember';
+  const String apiUrl = '$baseUrl/api/addmember';
 
   // Prepare the request body
   Map<String, dynamic> data = {
@@ -118,7 +110,6 @@ static Future<void> addMember(String name, String mail, String phoneNumber, Stri
     final response = await http.post(
       Uri.parse(apiUrl),
       headers: <String, String>{
-        'Authorization': basicAuth,
         'Content-Type': 'application/json; charset=UTF-8',
       },
       body: requestBody, // Send the request body
@@ -143,7 +134,6 @@ static Future<void> addMember(String name, String mail, String phoneNumber, Stri
     final response = await http.get(
       Uri.parse('$baseUrl/api/getRole'), // Replace with your API endpoint
       headers: {
-        'Authorization': basicAuth,
         'Content-Type': 'application/json; charset=UTF-8',
         'auth': sessionKey,
       },
@@ -161,7 +151,6 @@ static Future<void> addMember(String name, String mail, String phoneNumber, Stri
     final response = await http.get(
       Uri.parse('$baseUrl/api/member/code'),
       headers: {
-        'Authorization': basicAuth,
         'Content-Type': 'application/json; charset=UTF-8',
         'Code': code,
       },
@@ -174,6 +163,7 @@ static Future<void> addMember(String name, String mail, String phoneNumber, Stri
       throw Exception('Failed to check code');
     }
   }
+
 
   static Future<void> updateMember(String code, String nickname, String password, String avatar, String gender, String prefgame) async {
 
@@ -199,6 +189,22 @@ static Future<void> addMember(String name, String mail, String phoneNumber, Stri
       print("Registration complete.");
     } else {
       throw Exception("Couldn't move data");
+    }
+  }
+  
+  static Future<dynamic> keepSessionAlive(String sessionKey) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/keepSessionKeyAlive'), // Replace with your API endpoint
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'auth': sessionKey,
+      },
+    );
+
+    if (response.statusCode == 201) {
+      return true; // User is active and keeps being logged in
+    } else {
+      return false; // User is inactive and is logged out
     }
   }
 }

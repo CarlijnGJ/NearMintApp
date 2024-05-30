@@ -8,6 +8,7 @@ import 'package:app/services/api_service.dart';
 import 'package:crypto/crypto.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:app/components/button.dart';
+import 'package:app/screens/addmember/inputvalidation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -20,6 +21,7 @@ class SetupPage extends StatefulWidget {
 }
 
 class _SetupPageState extends State<SetupPage> {
+  List<String?> errors = [];
 
   final nicknameController = TextEditingController();
   final passwordController = TextEditingController();
@@ -57,6 +59,36 @@ class _SetupPageState extends State<SetupPage> {
     String pwcheck = pwcheckController.text;
     String gender = genderController.text;
     String prefgame = gameController.text;
+    
+    errors = List.filled(5, null);
+    if (!ValidateUser().validateBasicString(nicknameController.text)) {
+      errors[0] = 'Invalid username';
+    }
+
+    if (!ValidateUser().validatePassword(passwordController.text)) {
+      errors[1] = 'Invalid password';
+    }
+
+    if (pwcheckController.text != passwordController.text) {
+      errors[2] = 'Passwords don\'t match';
+    }
+
+    if (!ValidateUser().validateBasicString(genderController.text) && genderController.text != '') {
+      errors[3] = 'Invalid gender';
+    }
+
+    if (!ValidateUser().validateBasicString(gameController.text) && gameController.text != '') {
+      errors[4] = 'Invalid prefered game';
+    }
+    
+
+    if (errors.any((error) => error != null)) {
+      setState(() {
+        print('Errors: $errors'); // Debugging check
+      });
+      return;
+    }
+    setState((){});
 
     try{
       //Retrieve token
@@ -130,6 +162,7 @@ class _SetupPageState extends State<SetupPage> {
                             controller: nicknameController,
                             hintText: 'Nickname*',
                             obscureText: false,
+                            errorText: errors.isNotEmpty ? errors[0] : null,
                           ),
 
                           const SizedBox(height: 10),
@@ -141,6 +174,8 @@ class _SetupPageState extends State<SetupPage> {
                                   controller: passwordController,
                                   hintText: 'Password*',
                                   obscureText: true,
+                                  errorText: errors.isNotEmpty ? errors[1] : null,
+
                                 ),
                               ),
 
@@ -151,6 +186,8 @@ class _SetupPageState extends State<SetupPage> {
                                   controller: pwcheckController,
                                   hintText: 'Repeat Password*',
                                   obscureText: true,
+                                  errorText: errors.isNotEmpty ? errors[2] : null,
+
                                 ),
                               ),
                             ],
@@ -169,6 +206,7 @@ class _SetupPageState extends State<SetupPage> {
                                   controller: genderController,
                                   hintText: 'Gender',
                                   obscureText: false,
+                                  errorText: errors.isNotEmpty ? errors[3] : null,
                                 ),
                               ),
 
@@ -179,6 +217,7 @@ class _SetupPageState extends State<SetupPage> {
                                   controller: gameController,
                                   hintText: 'Preferred Game',
                                   obscureText: false,
+                                  errorText: errors.isNotEmpty ? errors[4] : null,
                                 ),
                               ),
                             ],

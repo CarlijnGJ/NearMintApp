@@ -120,18 +120,18 @@ class _TopBarState extends State<TopBar> {
   Future<List<Widget>> getTopbarButtons(String role) async {
   if (role == 'Admin') {
     return <Widget>[
-      TopbarMembersButton(),
-      TopbarProfileButton(),
+      const TopbarMembersButton(),
+      const TopbarProfileButton(),
       TopbarLogoutButton(onTap: onTap), // Remove await here
     ];
   } else if (role == 'Member') {
     return <Widget>[
-      TopbarProfileButton(),
+      const TopbarProfileButton(),
       TopbarLogoutButton(onTap: onTap), // Remove await here
     ];
   } else {
     return <Widget>[
-      TopbarLoginButton(),
+      const TopbarLoginButton(),
     ];
   }
 }
@@ -143,7 +143,7 @@ Widget build(BuildContext context) {
     builder: (context, snapshot) {
       if (snapshot.connectionState == ConnectionState.waiting) {
         // Display a loading indicator if data is still loading
-        return CircularProgressIndicator();
+        return const CircularProgressIndicator();
       } else if (snapshot.hasError) {
         // Display an error message if an error occurred
         return Text('Error: ${snapshot.error}');
