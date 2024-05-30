@@ -42,7 +42,7 @@ router.post('/updatemember', (req, res) => {
         return res.status(400).json({ error: 'Nickname and password are required: ' + code + nickname + password });
     }
 
-    const dataQuery = 'INSERT INTO Members (name, nickname, password, avatar, gender, preferedgame, role_id) SELECT name, ? AS nickname, ? AS password, ? as avatar, ? AS gender, ? as preferedgame, 2 FROM NewMembers WHERE secret = ?';
+    const dataQuery = 'INSERT INTO Members (name, nickname, password, avatar, gender, preferedgame, role_id) SELECT name, ? AS nickname, ? AS password, ? as avatar, ? AS gender, ? as preferedgame, 1 FROM NewMembers WHERE secret = ?';
     connection.query(dataQuery, [nickname, password, avatar, gender, prefgame, code], (err, results) => {
         if (err) {
             console.error('Error executing MySQL query:', err);

@@ -179,7 +179,6 @@ static Future<void> addMember(String name, String mail, String phoneNumber, Stri
     final response = await http.post(
       Uri.parse('$baseUrl/api/updatemember'),
       headers: {
-        'Authorization': basicAuth,
         'Content-Type': 'application/json; charset=UTF-8',
       },
       body: jsonEncode(initData),

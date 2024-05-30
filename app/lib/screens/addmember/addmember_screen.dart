@@ -85,11 +85,14 @@ String generateRandomCode() {
       final secret = generateRandomCode();
       print(secret);
       String hashedSecret = generateHashCode(secret);
-      final encryptedUsername = encrypter.encrypt(username, iv: iv).base64;
+      // final encryptedUsername = encrypter.encrypt(username, iv: iv).base64;
       final encryptedEmail = encrypter.encrypt(email, iv: iv).base64;
       final encryptedPhoneNumber = encrypter.encrypt(phoneNumber, iv: iv).base64;
-      await APIService.addMember(encryptedUsername, encryptedEmail, encryptedPhoneNumber, hashedSecret);
-      print('click');
+      await APIService.addMember(username, encryptedEmail, encryptedPhoneNumber, hashedSecret);
+      // ignore: use_build_context_synchronously
+      Navigator.pop(context);
+      // ignore: use_build_context_synchronously
+      Navigator.pushNamed(context, '/members');
     } catch (e) {
       setState(() {
         isError = true;
