@@ -121,7 +121,7 @@ class _HomePageState extends State<HomePage> {
       body: SingleChildScrollView(
         child: Container(
           constraints: BoxConstraints(
-            minHeight: MediaQuery.of(context).size.height,
+            maxHeight: MediaQuery.of(context).size.height,
           ),
           child: Stack(
             children: [
@@ -147,8 +147,13 @@ class _HomePageState extends State<HomePage> {
                             children: buildButtonsForRole(),
                           );
                         } else {
-                          return Column(
-                            children: buildButtonsForRole(),
+                          return SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.7, // You can adjust this value according to your needs
+                            child: GridView.count(
+                              crossAxisCount: 2,
+                              shrinkWrap: true,
+                              children: buildButtonsForRole(),
+                            ),
                           );
                         }
                       },

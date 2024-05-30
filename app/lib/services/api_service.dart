@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:html';
 import 'package:app/components/customexception.dart';
 import 'package:app/screens/members/components/user.dart';
 import 'package:http/http.dart' as http;
@@ -148,7 +149,7 @@ static Future<void> addMember(String name, String mail, String phoneNumber, Stri
 
   static Future<dynamic> checkCode(String code) async {
     final response = await http.get(
-      Uri.parse('$baseUrl/api/member/code'), // Replace with your API endpoint
+      Uri.parse('$baseUrl/api/member/code'),
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
         'Code': code,
@@ -157,12 +158,40 @@ static Future<void> addMember(String name, String mail, String phoneNumber, Stri
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      return CodeInfo.fromJson(data); // Adjust based on your API response structure
+      return CodeInfo.fromJson(data);
     } else {
       throw Exception('Failed to check code');
     }
   }
 
+
+  static Future<void> updateMember(String code, String nickname, String password, String avatar, String gender, String prefgame) async {
+
+    Map<String, dynamic> initData = {
+      'code': code,
+      'nickname': nickname,
+      'password': password,
+      'avatar': avatar,
+      'gender': gender,
+      'prefgame': prefgame
+    };
+
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/updatemember'),
+      headers: {
+        'Authorization': basicAuth,
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(initData),
+    );
+
+    if (response.statusCode == 200) {
+      print("Registration complete.");
+    } else {
+      throw Exception("Couldn't move data");
+    }
+  }
+  
   static Future<dynamic> keepSessionAlive(String sessionKey) async {
     final response = await http.get(
       Uri.parse('$baseUrl/api/keepSessionKeyAlive'), // Replace with your API endpoint

@@ -44,14 +44,14 @@ class NavButton extends StatelessWidget {
           navigate(context);
         },
         child: Container(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 8.0, bottom: 1.0),
           color: const Color.fromRGBO(0, 0, 0, 0.25),
           child: Column(
             children: [
-              Image.asset(assetname),
+              Image.asset(assetname, fit: BoxFit.contain,),
               Text(
                 description,
-                style: const TextStyle(fontSize: 32),
+                style: const TextStyle(fontSize: 16,),
               )
             ],
           )

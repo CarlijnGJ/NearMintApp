@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:app/components/customexception.dart';
 import 'package:app/components/tealgradleft.dart';
 import 'package:app/components/tealgradright.dart';
@@ -69,6 +70,9 @@ class _LoginPageState extends State<LoginPage> {
   void checkValidity() async {
     setupErrorMessage = null;
     final code = codeController.text;
+    String hashedCode = generateHashCode(code);
+
+    log(hashedCode);
 
     if(!ValidateUser.validateToken(code)){
       setupErrorMessage = 'Code must be 6 characters!';
@@ -78,13 +82,14 @@ class _LoginPageState extends State<LoginPage> {
     }
     
     try {
-      final exists = await APIService.checkCode(code);
+      final exists = await APIService.checkCode(hashedCode);
 
       if (exists.result) {
-        // ignore: use_build_context_synchronously
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString('token', hashedCode);
+
         Navigator.pop(context);
-        // ignore: use_build_context_synchronously
-        Navigator.pushNamed(context, '/setup', arguments: exists.name);
+        Navigator.pushNamed(context, '/setup');
         eventBus.fire(RefreshTopbarEvent(true));
       } else {
         setupErrorMessage = 'Code does not exist';
