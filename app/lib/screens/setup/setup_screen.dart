@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:app/components/tealgradleft.dart';
 import 'package:app/components/tealgradright.dart';
 import 'package:app/components/textfield.dart';
+import 'package:app/components/topbar/topbar.dart';
 import 'package:app/services/api_service.dart';
 import 'package:crypto/crypto.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
@@ -94,25 +95,33 @@ class _SetupPageState extends State<SetupPage> {
       //Retrieve token
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String code = prefs.getString('token').toString();
-
       //Hash or encrypt everything
       final key = encrypt.Key.fromLength(32); // 32 bytes for AES256 encryption
       final iv = encrypt.IV.fromLength(16); // 16 bytes for AES
       final encrypter = encrypt.Encrypter(encrypt.AES(key));
-      final encryptedNickname = encrypter.encrypt(nickname, iv: iv).base64;
+      // final encryptedNickname = encrypter.encrypt(nickname, iv: iv).base64;
       final String hashedPassword;
-
       if (password == pwcheck) {
         hashedPassword = generateHashCode(password);
       } else {
         throw Exception("Passwords don't match");
       }
-
-      final encryptedGender = encrypter.encrypt(gender, iv: iv).base64;
-      final encryptedPrefGame = encrypter.encrypt(prefgame, iv: iv).base64;
+      String encryptedGender = 'empty';
+      if(gender != '') {
+        encryptedGender = encrypter.encrypt(gender, iv: iv).base64;
+      }
+      
+      String encryptedPrefGame = 'empty';
+      if(prefgame != '') {
+        encryptedPrefGame = encrypter.encrypt(prefgame, iv: iv).base64;
+      }
 
       //Throw everything into the database
-      await APIService.updateMember(code, encryptedNickname, hashedPassword, selectedImage.toString(), encryptedGender, encryptedPrefGame);
+      await APIService.updateMember(code, nickname, hashedPassword, selectedImage.toString(), encryptedGender, encryptedPrefGame);
+            // ignore: use_build_context_synchronously
+      Navigator.pop(context);
+      // ignore: use_build_context_synchronously
+      Navigator.pushNamed(context, '/login');
     }
 
     catch(e){
@@ -123,6 +132,7 @@ class _SetupPageState extends State<SetupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: const TopBar(),
       body: LayoutBuilder(
         builder: (context, constraints) {
           return SingleChildScrollView(

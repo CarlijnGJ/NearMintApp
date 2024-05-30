@@ -72,8 +72,6 @@ class _LoginPageState extends State<LoginPage> {
     final code = codeController.text;
     String hashedCode = generateHashCode(code);
 
-    log(hashedCode);
-
     if(!ValidateUser.validateToken(code)){
       setupErrorMessage = 'Code must be 6 characters!';
       setState(() {});
