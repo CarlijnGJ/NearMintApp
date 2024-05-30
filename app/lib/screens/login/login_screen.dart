@@ -44,13 +44,10 @@ class _LoginPageState extends State<LoginPage> {
       final sessionKey = token['session_key'];
       prefs.setString('session_key', sessionKey);
       // Navigate to the home page
-      // ignore: use_build_context_synchronously
       Navigator.pop(context);
-      // ignore: use_build_context_synchronously
       Navigator.pushNamed(context, '/');
       eventBus.fire(RefreshTopbarEvent(true));
     } catch (e) {
-      
       setState(() {
         if (e is HttpExceptionWithStatusCode) {
           errorMessage = e.message;
@@ -58,7 +55,6 @@ class _LoginPageState extends State<LoginPage> {
           errorMessage = 'Connection failed';
         }
       });
-      
     }
   }
 
@@ -70,13 +66,12 @@ class _LoginPageState extends State<LoginPage> {
     setupErrorMessage = null;
     final code = codeController.text;
 
-    if(!ValidateUser.validateToken(code)){
+    if (!ValidateUser.validateToken(code)) {
       setupErrorMessage = 'Code must be 6 characters!';
       setState(() {});
       return;
-
     }
-    
+
     try {
       final exists = await APIService.checkCode(code);
 
@@ -93,10 +88,10 @@ class _LoginPageState extends State<LoginPage> {
       }
     } catch (e) {
       //TO-DO: Add logic to display error visually
-        setupErrorMessage = 'Connection failed';
-        setState(() {});
-        return;
-  }
+      setupErrorMessage = 'Connection failed';
+      setState(() {});
+      return;
+    }
   }
 
   @override
@@ -181,7 +176,6 @@ class _LoginPageState extends State<LoginPage> {
                       hintText: 'Token',
                       obscureText: false,
                       errorText: setupErrorMessage,
-
                     ),
 
                     const SizedBox(height: 20),

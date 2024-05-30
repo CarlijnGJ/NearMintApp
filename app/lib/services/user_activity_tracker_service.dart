@@ -15,8 +15,7 @@ class _UserActivityTrackerState extends State<UserActivityTracker> {
   Timer _activityTimer = Timer(Duration(seconds: 5), () {});
   Timer _idleTimer = Timer(Duration(seconds: 5), () {});
   bool _isUserActive = false;
-  Duration _activityCheckInterval =
-      Duration(seconds: 5); // Activity check interval
+  Duration _activityCheckInterval = Duration(seconds: 5);
 
   @override
   void initState() {
