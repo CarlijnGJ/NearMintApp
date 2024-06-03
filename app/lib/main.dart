@@ -1,4 +1,6 @@
 import 'package:app/screens/addmember/addmember_screen.dart';
+import 'package:app/screens/addtransaction/addtransaction.dart';
+import 'package:app/screens/members/components/user.dart';
 import 'package:app/screens/members/member_list.dart';
 import 'package:app/screens/profile/profile_screen.dart';
 import 'package:app/screens/setup/setup_screen.dart';
@@ -34,6 +36,7 @@ class AppBarApp extends StatelessWidget {
         '/profile': (context) => const ProfilePage(),
         '/addmember': (context) => const AddMemberPage(),
         '/setup': (context) => const SetupPage(),
+        '/addtransaction': (context) => AddTransactionPage(member: ModalRoute.of(context)!.settings.arguments as User),
       },
     );
   }

@@ -1,0 +1,134 @@
+const express = require('express');
+const router = express.Router();
+const validateSessionKey = require('../middleware/validate-sessionkey');
+const connection = require('../config/db');
+
+// Define transaction-related routes
+
+/**
+ * @swagger
+ * /api/getTransactions:
+ *   get:
+ *     summary: Retrieve the transactions of a member
+ *     description: Retrieve a list of all transactions for a member from the database
+ *     parameters:
+ *      - in: header
+ *        name: auth
+ *        schema:
+ *          type: string
+ *        required: true
+ *        description: Session key of the user to retrieve transactions
+ *     responses:
+ *       200:
+ *         description: A JSON array of the transactions of a member
+ *       404:
+ *         description: User not found or no transactions available
+ *       500:
+ *         description: Internal server error
+ */
+router.get('/getTransactions', validateSessionKey, (req, res) => {
+    const sessionKey = req.headers.auth;
+    const sessionQuery = `SELECT t.amount, t.description, t.date
+                          FROM Session s
+                          JOIN Members m ON s.member_id = m.member_id
+                          JOIN Transactions t ON m.member_id = t.member_id
+                          WHERE s.session_key = ?`;
+
+    connection.query(sessionQuery, [sessionKey], (err, results) => {
+        if (err) {
+            console.error('Error executing MySQL query:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({ error: 'User not found or no transactions available' });
+        }
+
+        res.status(200).json({ transactions: results });
+    });
+});
+
+/**
+ * @swagger
+ * /api/addTransaction:
+ *   post:
+ *     summary: Add a new transaction for a member
+ *     description: Add a new transaction for the member associated with the provided session key
+ *     parameters:
+ *       - in: header
+ *         name: auth
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Session key of the user to add transaction for
+ *       - in: body
+ *         name: transaction
+ *         description: Transaction details
+ *         required: true
+ *         schema:
+ *           type: object
+ *           properties:
+ *             member_id:
+ *               type: integer
+ *               description: ID of the member to add transaction for
+ *             amount:
+ *               type: number
+ *               description: Amount of the transaction
+ *             description:
+ *               type: string
+ *               description: Description of the transaction
+ *             date:
+ *               type: string
+ *               format: date-time
+ *               description: Date of the transaction in ISO 8601 format
+ *     responses:
+ *       201:
+ *         description: Transaction added successfully
+ *       400:
+ *         description: Bad request
+ *       500:
+ *         description: Internal server error
+ */
+router.post('/addTransaction', validateSessionKey, (req, res) => {
+    const sessionKey = req.headers.auth;
+    const { member_id, amount, description, date } = req.body;
+
+    if (!member_id || !amount || !date) {
+        return res.status(400).json({ error: 'Member ID, amount, and date are required' });
+    }
+
+    // Retrieve member_id from session
+    const getMemberQuery = `SELECT member_id FROM Session WHERE session_key = ?`;
+
+    connection.query(getMemberQuery, [sessionKey], (err, results) => {
+        if (err) {
+            console.error('Error executing MySQL query:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({ error: 'Session not found' });
+        }
+
+        const sessionMemberId = results[0].member_id;
+
+        if (sessionMemberId !== member_id) {
+            return res.status(403).json({ error: 'Forbidden: Member ID does not match the session' });
+        }
+
+        // Insert new transaction
+        const insertTransactionQuery = `INSERT INTO Transactions (amount, description, date, member_id) VALUES (?, ?, ?, ?)`;
+
+        connection.query(insertTransactionQuery, [amount, description, date, member_id], (err, results) => {
+            if (err) {
+                console.error('Error executing MySQL query:', err);
+                return res.status(500).json({ error: 'Internal server error' });
+            }
+
+            res.status(201).json({ message: 'Transaction added successfully' });
+        });
+    });
+});
+
+
+module.exports = router;

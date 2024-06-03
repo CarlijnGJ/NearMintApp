@@ -92,7 +92,7 @@ String generateRandomCode() {
       // ignore: use_build_context_synchronously
       Navigator.pop(context);
       // ignore: use_build_context_synchronously
-      Navigator.pushNamed(context, '/members');
+      Navigator.pushNamed(context, '/members ');
     } catch (e) {
       setState(() {
         isError = true;
