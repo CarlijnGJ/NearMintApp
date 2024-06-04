@@ -223,11 +223,32 @@ class _SetupPageState extends State<SetupPage> {
                               const SizedBox(width: 10),
 
                               Expanded(
-                                child: CustomTextField(
-                                  controller: gameController,
-                                  hintText: 'Preferred Game',
-                                  obscureText: false,
-                                  errorText: errors.isNotEmpty ? errors[4] : null,
+                                child: DropdownButtonFormField<String>(
+                                  value: 'None',
+                                  decoration: InputDecoration(
+                                    labelText: 'Preferred Game',
+                                    errorText: errors.isNotEmpty ? errors[4] : null,
+                                  ),
+                                  items: <String>[
+                                    'None',
+                                    'Magic the Gathering',
+                                    'Warhammer',
+                                    'One piece card game',
+                                    'Vanguard',
+                                    'The Pokemon Trading Card Game',
+                                    'Disney Lorcana',
+                                    'Video Games',
+                                  ].map<DropdownMenuItem<String>>((String value) {
+                                    return DropdownMenuItem<String>(
+                                      value: value,
+                                      child: Text(value),
+                                    );
+                                  }).toList(),
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      gameController.text = newValue!;
+                                    });
+                                  },
                                 ),
                               ),
                             ],

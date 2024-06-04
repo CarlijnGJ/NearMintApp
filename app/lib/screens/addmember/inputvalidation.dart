@@ -1,7 +1,7 @@
 class ValidateUser {
   // Method to validate the username
   static bool validateBasicString(String basicString) {
-    String pattern = r'^[a-zA-Z0-9_]{3,128}$';
+    String pattern = r'^[a-zA-Z0-9_ ]{3,128}$';
     RegExp regex = RegExp(pattern);
     return regex.hasMatch(basicString);
   }
