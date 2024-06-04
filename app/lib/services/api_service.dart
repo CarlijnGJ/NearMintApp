@@ -226,7 +226,8 @@ static Future<void> addMember(String name, String mail, String phoneNumber, Stri
     }
 }
 
-static Future<void> addTransaction(int memberId, double amount, String description, String date) async {
+
+static Future<void> addTransaction(int memberId, double amount, String description, String date, String sessionKey) async {
   // Define the API endpoint
   const String apiUrl = '$baseUrl/api/addTransaction';
 
@@ -247,6 +248,7 @@ static Future<void> addTransaction(int memberId, double amount, String descripti
       Uri.parse(apiUrl),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
+        'auth': sessionKey, // Include the session key in the headers
       },
       body: requestBody, // Send the request body
     );
@@ -257,12 +259,15 @@ static Future<void> addTransaction(int memberId, double amount, String descripti
     } else {
       // Handle error response
       print('Failed to add transaction: ${response.statusCode}');
+      print('Response body: ${response.body}');
     }
   } catch (e) {
     // Handle network errors
     print('Error adding transaction: $e');
   }
 }
+
+
 }
 
 //Needed for checkCode, needs to be moved or recoded

@@ -59,7 +59,7 @@ String generateRandomCode() {
     final phoneNumber = phonenumberController.text;
 
     errors = List.filled(3, null);
-    if (!ValidateUser().validateBasicString(username)) {
+    if (!ValidateUser.validateBasicString(username)) {
       errors[0] = 'Invalid username';
     }
 

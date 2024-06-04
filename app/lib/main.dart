@@ -36,8 +36,15 @@ class AppBarApp extends StatelessWidget {
         '/profile': (context) => const ProfilePage(),
         '/addmember': (context) => const AddMemberPage(),
         '/setup': (context) => const SetupPage(),
-        '/addtransaction': (context) => AddTransactionPage(member: ModalRoute.of(context)!.settings.arguments as User),
-      },
+'/addtransaction': (context) {
+  final arguments = ModalRoute.of(context)!.settings.arguments;
+  if (arguments == null || !(arguments is User)) {
+    return AddTransactionPage(member: null);
+  }
+  final User member = arguments as User;
+  return AddTransactionPage(member: member);
+},
+    },
     );
   }
 

@@ -97,23 +97,21 @@ router.post('/addTransaction', validateSessionKey, (req, res) => {
         return res.status(400).json({ error: 'Member ID, amount, and date are required' });
     }
 
-    // Retrieve member_id from session
-    const getMemberQuery = `SELECT member_id FROM Session WHERE session_key = ?`;
-
-    connection.query(getMemberQuery, [sessionKey], (err, results) => {
+    // Retrieve role and member_id from session using the session key
+    const getRoleQuery = `
+    SELECT u.member_id, ur.role_id
+    FROM Session s
+    JOIN Members u ON s.member_id = u.member_id
+    JOIN RoleTypes ur ON u.role_id = ur.role_id
+    WHERE s.session_key = ? AND ur.role_id = 2`;
+    connection.query(getRoleQuery, [sessionKey], (err, results) => {
         if (err) {
             console.error('Error executing MySQL query:', err);
             return res.status(500).json({ error: 'Internal server error' });
         }
 
         if (results.length === 0) {
-            return res.status(404).json({ error: 'Session not found' });
-        }
-
-        const sessionMemberId = results[0].member_id;
-
-        if (sessionMemberId !== member_id) {
-            return res.status(403).json({ error: 'Forbidden: Member ID does not match the session' });
+            return res.status(403).json({ error: 'Forbidden: User is not an admin or session not found' });
         }
 
         // Insert new transaction
@@ -129,6 +127,9 @@ router.post('/addTransaction', validateSessionKey, (req, res) => {
         });
     });
 });
+
+
+
 
 
 module.exports = router;
