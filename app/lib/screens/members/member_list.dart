@@ -33,10 +33,16 @@ import 'package:app/screens/members/components/userservice.dart';
             final newRole = await APIService.getRole(sessionKey);
             if (mounted) {
               if(newRole == 'Admin'){
-              final members = await APIService.getMembers(sessionKey);
-              setState(() {
-                membersList = members;
-              });
+                final membersData = await APIService.getMembers(sessionKey);
+                final List<User> members = membersData.map((data) => User(
+                  id: data['memberId'],
+                  name: data['name'],
+                  nickname: data['nickname'],
+                  credits: data['credits'],
+                )).toList();
+                setState(() {
+                  membersList = members;
+                });
               }
             }
           } catch (e) {

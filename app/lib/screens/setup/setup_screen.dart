@@ -1,16 +1,21 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:app/components/tealgradleft.dart';
 import 'package:app/components/tealgradright.dart';
 import 'package:app/components/textfield.dart';
+import 'package:app/components/topbar/topbar.dart';
+import 'package:app/services/api_service.dart';
+import 'package:crypto/crypto.dart';
+import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:app/components/button.dart';
 import 'package:app/screens/addmember/inputvalidation.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SetupPage extends StatefulWidget {
-  final String name;
 
-  const SetupPage(this.name, {Key? key}) : super(key: key);
+  const SetupPage({Key? key}) : super(key: key);
 
   @override
   _SetupPageState createState() => _SetupPageState();
@@ -41,14 +46,27 @@ class _SetupPageState extends State<SetupPage> {
     {'name': 'OnePiece', 'path': '../../Images/ProfilePics/PFP6.png'},
   ];
 
-  void finishRegister() {
-    log("Data: ${nicknameController.text}, ${passwordController.text}, ${pwcheckController.text}, ${genderController.text}, ${gameController.text}.");
+  String generateHashCode(String code) {
+    var bytes = utf8.encode(code); // Convert the code to bytes
+    var digest = sha256.convert(bytes); // Perform SHA-256 hashing
+    return digest.toString(); // Convert the digest to a string
+  }
+
+  void finishRegister() async {
+    log("Data: ${nicknameController.text}, ${passwordController.text}, ${selectedImage.toString()} ${pwcheckController.text}, ${genderController.text}, ${gameController.text}.");
+
+    String nickname = nicknameController.text;
+    String password = passwordController.text;
+    String pwcheck = pwcheckController.text;
+    String gender = genderController.text;
+    String prefgame = gameController.text;
+    
     errors = List.filled(5, null);
-    if (!ValidateUser().validateBasicString(nicknameController.text)) {
+    if (!ValidateUser.validateBasicString(nicknameController.text)) {
       errors[0] = 'Invalid username';
     }
 
-    if (!ValidateUser().validatePassword(passwordController.text)) {
+    if (!ValidateUser.validatePassword(passwordController.text)) {
       errors[1] = 'Invalid password';
     }
 
@@ -56,11 +74,11 @@ class _SetupPageState extends State<SetupPage> {
       errors[2] = 'Passwords don\'t match';
     }
 
-    if (!ValidateUser().validateBasicString(genderController.text) && genderController.text != '') {
+    if (!ValidateUser.validateBasicString(genderController.text) && genderController.text != '') {
       errors[3] = 'Invalid gender';
     }
 
-    if (!ValidateUser().validateBasicString(gameController.text) && gameController.text != '') {
+    if (!ValidateUser.validateBasicString(gameController.text) && gameController.text != '') {
       errors[4] = 'Invalid prefered game';
     }
     
@@ -72,11 +90,49 @@ class _SetupPageState extends State<SetupPage> {
       return;
     }
     setState((){});
+
+    try{
+      //Retrieve token
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String code = prefs.getString('token').toString();
+      //Hash or encrypt everything
+      final key = encrypt.Key.fromLength(32); // 32 bytes for AES256 encryption
+      final iv = encrypt.IV.fromLength(16); // 16 bytes for AES
+      final encrypter = encrypt.Encrypter(encrypt.AES(key));
+      // final encryptedNickname = encrypter.encrypt(nickname, iv: iv).base64;
+      final String hashedPassword;
+      if (password == pwcheck) {
+        hashedPassword = generateHashCode(password);
+      } else {
+        throw Exception("Passwords don't match");
+      }
+      String encryptedGender = 'empty';
+      if(gender != '') {
+        encryptedGender = encrypter.encrypt(gender, iv: iv).base64;
+      }
+      
+      String encryptedPrefGame = 'empty';
+      if(prefgame != '') {
+        encryptedPrefGame = encrypter.encrypt(prefgame, iv: iv).base64;
+      }
+
+      //Throw everything into the database
+      await APIService.updateMember(code, nickname, hashedPassword, selectedImage.toString(), encryptedGender, encryptedPrefGame);
+            // ignore: use_build_context_synchronously
+      Navigator.pop(context);
+      // ignore: use_build_context_synchronously
+      Navigator.pushNamed(context, '/login');
+    }
+
+    catch(e){
+      print('Registering member failed! $e');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: const TopBar(),
       body: LayoutBuilder(
         builder: (context, constraints) {
           return SingleChildScrollView(
@@ -96,9 +152,9 @@ class _SetupPageState extends State<SetupPage> {
                         children: [
                           const SizedBox(height: 20),
 
-                          Text(
-                            'Hello, ${widget.name}',
-                            style: const TextStyle(
+                          const Text(
+                            'Hello, new user!',
+                            style: TextStyle(
                               fontSize: 32,
                             ),
                           ),
@@ -114,7 +170,7 @@ class _SetupPageState extends State<SetupPage> {
                           
                           CustomTextField(
                             controller: nicknameController,
-                            hintText: 'Nickname',
+                            hintText: 'Nickname*',
                             obscureText: false,
                             errorText: errors.isNotEmpty ? errors[0] : null,
                           ),
@@ -126,7 +182,7 @@ class _SetupPageState extends State<SetupPage> {
                               Expanded(
                                 child: CustomTextField(
                                   controller: passwordController,
-                                  hintText: 'Password',
+                                  hintText: 'Password*',
                                   obscureText: true,
                                   errorText: errors.isNotEmpty ? errors[1] : null,
 
@@ -138,7 +194,7 @@ class _SetupPageState extends State<SetupPage> {
                               Expanded(
                                 child: CustomTextField(
                                   controller: pwcheckController,
-                                  hintText: 'Repeat Password',
+                                  hintText: 'Repeat Password*',
                                   obscureText: true,
                                   errorText: errors.isNotEmpty ? errors[2] : null,
 
@@ -158,7 +214,7 @@ class _SetupPageState extends State<SetupPage> {
                               Expanded(
                                 child: CustomTextField(
                                   controller: genderController,
-                                  hintText: 'Gender*',
+                                  hintText: 'Gender',
                                   obscureText: false,
                                   errorText: errors.isNotEmpty ? errors[3] : null,
                                 ),
@@ -167,11 +223,32 @@ class _SetupPageState extends State<SetupPage> {
                               const SizedBox(width: 10),
 
                               Expanded(
-                                child: CustomTextField(
-                                  controller: gameController,
-                                  hintText: 'Preferred Game*',
-                                  obscureText: false,
-                                  errorText: errors.isNotEmpty ? errors[4] : null,
+                                child: DropdownButtonFormField<String>(
+                                  value: 'None',
+                                  decoration: InputDecoration(
+                                    labelText: 'Preferred Game',
+                                    errorText: errors.isNotEmpty ? errors[4] : null,
+                                  ),
+                                  items: <String>[
+                                    'None',
+                                    'Magic the Gathering',
+                                    'Warhammer',
+                                    'One piece card game',
+                                    'Vanguard',
+                                    'The Pokemon Trading Card Game',
+                                    'Disney Lorcana',
+                                    'Video Games',
+                                  ].map<DropdownMenuItem<String>>((String value) {
+                                    return DropdownMenuItem<String>(
+                                      value: value,
+                                      child: Text(value),
+                                    );
+                                  }).toList(),
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      gameController.text = newValue!;
+                                    });
+                                  },
                                 ),
                               ),
                             ],
@@ -210,13 +287,6 @@ class _SetupPageState extends State<SetupPage> {
                                 selectedImage = newValue.toString();
                               });
                             },
-                          ),
-
-                          const Text(
-                            '* = Optional',
-                            style: TextStyle(
-                              fontSize: 16,
-                            ),
                           ),
 
                           CustomButton(text: 'Finish registration', onTap: finishRegister)
