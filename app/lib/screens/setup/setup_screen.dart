@@ -62,11 +62,11 @@ class _SetupPageState extends State<SetupPage> {
     String prefgame = gameController.text;
     
     errors = List.filled(5, null);
-    if (!ValidateUser().validateBasicString(nicknameController.text)) {
+    if (!ValidateUser.validateBasicString(nicknameController.text)) {
       errors[0] = 'Invalid username';
     }
 
-    if (!ValidateUser().validatePassword(passwordController.text)) {
+    if (!ValidateUser.validatePassword(passwordController.text)) {
       errors[1] = 'Invalid password';
     }
 
@@ -74,11 +74,11 @@ class _SetupPageState extends State<SetupPage> {
       errors[2] = 'Passwords don\'t match';
     }
 
-    if (!ValidateUser().validateBasicString(genderController.text) && genderController.text != '') {
+    if (!ValidateUser.validateBasicString(genderController.text) && genderController.text != '') {
       errors[3] = 'Invalid gender';
     }
 
-    if (!ValidateUser().validateBasicString(gameController.text) && gameController.text != '') {
+    if (!ValidateUser.validateBasicString(gameController.text) && gameController.text != '') {
       errors[4] = 'Invalid prefered game';
     }
     

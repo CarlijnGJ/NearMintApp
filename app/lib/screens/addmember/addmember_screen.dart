@@ -59,7 +59,7 @@ String generateRandomCode() {
     final phoneNumber = phonenumberController.text;
 
     errors = List.filled(3, null);
-    if (!ValidateUser().validateBasicString(username)) {
+    if (!ValidateUser.validateBasicString(username)) {
       errors[0] = 'Invalid username';
     }
 
@@ -92,7 +92,7 @@ String generateRandomCode() {
       // ignore: use_build_context_synchronously
       Navigator.pop(context);
       // ignore: use_build_context_synchronously
-      Navigator.pushNamed(context, '/members');
+      Navigator.pushNamed(context, '/members ');
     } catch (e) {
       setState(() {
         isError = true;

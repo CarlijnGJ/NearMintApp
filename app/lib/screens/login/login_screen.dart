@@ -127,7 +127,8 @@ class _LoginPageState extends State<LoginPage> {
                     // username textfield
                     CustomTextField(
                       controller: usernameController,
-                      hintText: 'Username',
+                      labelText: 'Username',
+                      hintText: 'Peter',
                       obscureText: false,
                     ),
 
@@ -136,7 +137,7 @@ class _LoginPageState extends State<LoginPage> {
                     // password textfield
                     CustomTextField(
                       controller: passwordController,
-                      hintText: 'Password',
+                      labelText: 'Password',
                       obscureText: true,
                       errorText: errorMessage,
                     ),
@@ -181,7 +182,8 @@ class _LoginPageState extends State<LoginPage> {
                     //code textfield
                     CustomTextField(
                       controller: codeController,
-                      hintText: 'Token',
+                      labelText: 'Token',
+                      hintText: '6 characters',
                       obscureText: false,
                       errorText: setupErrorMessage,
 
