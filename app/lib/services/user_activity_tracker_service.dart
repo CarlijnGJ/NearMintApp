@@ -17,14 +17,17 @@ class UserActivityTracker extends StatefulWidget {
 }
 
 class _UserActivityTrackerState extends State<UserActivityTracker> {
-  Timer _activityTimer = Timer(Duration(seconds: 5), () {});
-  Timer _idleTimer = Timer(Duration(seconds: 5), () {});
-  Timer? _keepAliveTimer;
-
   bool _isUserActive = false;
   bool _isUserLoggedIn = false;
-  Duration _activityCheckInterval = Duration(seconds: 5);
-  Duration _keepAliveInterval = Duration(minutes: 1);
+
+  //Double to make sure the timers are started correctlys
+  final Duration _activityCheckInterval = const Duration(seconds: 30);
+  final Duration _idleCheckInterval = const Duration(minutes: 10);
+  final Duration _keepAliveInterval = const Duration(minutes: 5);
+
+  Timer _activityTimer = Timer(const Duration(seconds: 30), () {});
+  Timer _idleTimer = Timer(const Duration(minutes: 10), () {});
+  Timer _keepAliveTimer = Timer(const Duration(minutes: 5), () {});
 
   @override
   void initState() {
@@ -44,7 +47,7 @@ class _UserActivityTrackerState extends State<UserActivityTracker> {
         _isUserLoggedIn = false;
         _idleTimer.cancel();
         _activityTimer.cancel();
-        _keepAliveTimer?.cancel();
+        _keepAliveTimer.cancel();
       });
     });
   }
@@ -79,7 +82,7 @@ class _UserActivityTrackerState extends State<UserActivityTracker> {
 
   void _startIdleTimer() {
     _idleTimer.cancel();
-    _idleTimer = Timer(widget.idleTimeout, _onUserIdle);
+    _idleTimer = Timer(_idleCheckInterval, _onUserIdle);
   }
 
   void _resetActivityTimer() {
@@ -128,7 +131,7 @@ class _UserActivityTrackerState extends State<UserActivityTracker> {
   }
 
   void _startKeepAliveTimer() {
-    _keepAliveTimer?.cancel();
+    _keepAliveTimer.cancel();
     _keepAliveTimer = Timer.periodic(_keepAliveInterval, (timer) async {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? sessionKey = prefs.getString('session_key');
