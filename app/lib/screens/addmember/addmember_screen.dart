@@ -28,24 +28,29 @@ class _AddMemberPageState extends State<AddMemberPage> {
   final emailController = TextEditingController();
   final phonenumberController = TextEditingController();
 
-String generateRandomCode() {
-    const String chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  String generateRandomCode() {
+    const String chars =
+        '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
     var random = Random();
     String code = '';
     int prevIndex = -1; // Store the index of the previously selected character
-    
+
     for (int i = 0; i < 6; i++) {
-        int index;
-        do {
-            index = random.nextInt(chars.length);
-        } while (index == prevIndex || (i > 0 && code[i - 1] == chars[index])); // Repeat if the current character is the same as the previous one
-        
-        code += chars[index];
-        prevIndex = index;
+      int index;
+      do {
+        index = random.nextInt(chars.length);
+      } while (index == prevIndex ||
+          (i > 0 &&
+              code[i - 1] ==
+                  chars[
+                      index])); // Repeat if the current character is the same as the previous one
+
+      code += chars[index];
+      prevIndex = index;
     }
-    
+
     return code;
-}
+  }
 
   String generateHashCode(String code) {
     var bytes = utf8.encode(code); // Convert the code to bytes
@@ -87,12 +92,13 @@ String generateRandomCode() {
       String hashedSecret = generateHashCode(secret);
       // final encryptedUsername = encrypter.encrypt(username, iv: iv).base64;
       final encryptedEmail = encrypter.encrypt(email, iv: iv).base64;
-      final encryptedPhoneNumber = encrypter.encrypt(phoneNumber, iv: iv).base64;
-      await APIService.addMember(username, encryptedEmail, encryptedPhoneNumber, hashedSecret);
-      // ignore: use_build_context_synchronously
+      final encryptedPhoneNumber =
+          encrypter.encrypt(phoneNumber, iv: iv).base64;
+      await APIService.addMember(
+          username, encryptedEmail, encryptedPhoneNumber, hashedSecret);
+
       Navigator.pop(context);
-      // ignore: use_build_context_synchronously
-      Navigator.pushNamed(context, '/members ');
+      Navigator.pushNamed(context, '/members');
     } catch (e) {
       setState(() {
         isError = true;

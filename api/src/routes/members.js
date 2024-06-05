@@ -40,7 +40,7 @@ const connection = require('../config/db');
 router.get('/member', validateSessionKey, (req, res) => {
     const memberId = req.memberId;
 
-    const memberQuery = 'SELECT nickname, name, avatar, gender, preferedgame FROM Members WHERE member_id = ?';
+    const memberQuery = 'SELECT nickname, name, credits, avatar, gender, preferedgame FROM Members WHERE member_id = ?';
     connection.query(memberQuery, [memberId], (err, results) => {
         if (err) {
             console.error('Error executing MySQL query:', err);
@@ -54,6 +54,7 @@ router.get('/member', validateSessionKey, (req, res) => {
         res.status(200).json({
             nickname: results[0].nickname,
             name: results[0].name,
+            balance: results[0].credits,
             avatar: results[0].avatar,
             gender: results[0].gender,
             preferedGame: results[0].preferedgame
