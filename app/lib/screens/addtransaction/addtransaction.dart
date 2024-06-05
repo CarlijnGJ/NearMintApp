@@ -12,7 +12,8 @@ class AddTransactionPage extends StatefulWidget {
   const AddTransactionPage({Key? key, required this.member}) : super(key: key);
 
   @override
-  _AddTransactionPageState createState() => _AddTransactionPageState(member: member);
+  _AddTransactionPageState createState() =>
+      _AddTransactionPageState(member: member);
 }
 
 class _AddTransactionPageState extends State<AddTransactionPage> {
@@ -78,20 +79,20 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
               errorText: amountError,
             ),
             CustomTextField(
-              controller: descriptionController,
-              labelText: 'Description:', 
-              obscureText: false,
-              errorText: desciptionError),
+                controller: descriptionController,
+                labelText: 'Description:',
+                obscureText: false,
+                errorText: desciptionError),
             const SizedBox(height: 10),
             CustomButton(
               text: 'Add Transaction',
               onTap: () async {
-                  bool success = await addTransaction(member!);
-                  if (success) {
-                    Navigator.of(context).pushReplacementNamed('/members');
-                  }
-                },
-              ),
+                bool success = await addTransaction(member!);
+                if (success) {
+                  Navigator.of(context).pushReplacementNamed('/members');
+                }
+              },
+            ),
           ],
         ),
       ),
@@ -120,20 +121,25 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
         amountError = 'Invalid amount';
       });
     }
-    if (descriptionController.text != '' && !ValidateUser.validateLongString(descriptionController.text)) {
+    if (descriptionController.text != '' &&
+        !ValidateUser.validateLongString(descriptionController.text)) {
       setState(() {
         desciptionError = 'Invalid description';
       });
     }
-    if(amountError != null || desciptionError != null){
+    if (amountError != null || desciptionError != null) {
       return false;
     }
     final prefs = await SharedPreferences.getInstance();
     final sessionKey = prefs.getString('session_key');
-    try{
-    await APIService.addTransaction(member.id, double.parse(amountController.text), descriptionController.text, DateTime.now().toString(), sessionKey!);
-    }
-    catch(e){
+    try {
+      await APIService.addTransaction(
+          member.id,
+          double.parse(amountController.text),
+          descriptionController.text,
+          DateTime.now().toString(),
+          sessionKey!);
+    } catch (e) {
       amountError = 'Failed to add transaction';
       return false;
     }

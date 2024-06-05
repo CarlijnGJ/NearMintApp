@@ -21,6 +21,7 @@ class _ProfilePageState extends State<ProfilePage> {
   String? gender;
   String? preferedGame;
   String? avatar;
+  String? balance;
 
   bool isLoading = true;
   bool isError = false;
@@ -48,15 +49,15 @@ class _ProfilePageState extends State<ProfilePage> {
       if (sessionKey != null) {
         Map<String, dynamic> memberData =
             await APIService.getMember(sessionKey);
-            try{
-              print(await APIService.getTransactions(sessionKey));
-            }
-            catch(e){
-              print(e);
-            }
+        try {
+          print(await APIService.getTransactions(sessionKey));
+        } catch (e) {
+          print(e);
+        }
         setState(() {
           nickname = memberData['nickname'];
           name = memberData['name'];
+          balance = memberData['balance'].toString();
           avatar = memberData['avatar'];
           gender = memberData['gender'];
           preferedGame = memberData['preferedGame'];
@@ -97,13 +98,13 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const TopBar(),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : isError
-              ? Center(child: Text(errorMessage))
-              : SingleChildScrollView(
-                  child: Row(
+        appBar: const TopBar(),
+        body: isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : isError
+                ? Center(child: Text(errorMessage))
+                : SingleChildScrollView(
+                    child: Row(
                       children: [
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -113,13 +114,15 @@ class _ProfilePageState extends State<ProfilePage> {
                                 border: Border.all(color: Colors.white),
                               ),
                               child: Padding(
-                                padding: const EdgeInsets.only(left: 16.0, top: 16.0, right: 16.0),
+                                padding: const EdgeInsets.only(
+                                    left: 16.0, top: 16.0, right: 16.0),
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
                                     avatar != null
                                         ? Padding(
-                                            padding: const EdgeInsets.only(right: 16.0),
+                                            padding: const EdgeInsets.only(
+                                                right: 16.0),
                                             child: Image.asset(
                                               avatar!,
                                               width: 100,
@@ -128,25 +131,31 @@ class _ProfilePageState extends State<ProfilePage> {
                                           )
                                         : const SizedBox(),
                                     Padding(
-                                      padding: const EdgeInsets.only(bottom: 16.0),
+                                      padding:
+                                          const EdgeInsets.only(bottom: 16.0),
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: <Widget>[
                                           Text(
                                             'Nickname: ${nickname ?? 'Empty'}',
-                                            style: const TextStyle(fontSize: 16.0),
+                                            style:
+                                                const TextStyle(fontSize: 16.0),
                                           ),
                                           Text(
                                             'Name: ${name ?? 'Empty'}',
-                                            style: const TextStyle(fontSize: 16.0),
+                                            style:
+                                                const TextStyle(fontSize: 16.0),
                                           ),
                                           Text(
                                             'Gender: ${gender ?? 'Empty'}',
-                                            style: const TextStyle(fontSize: 16.0),
+                                            style:
+                                                const TextStyle(fontSize: 16.0),
                                           ),
                                           Text(
                                             'Preferred game: ${preferedGame ?? 'Empty'}',
-                                            style: const TextStyle(fontSize: 16.0),
+                                            style:
+                                                const TextStyle(fontSize: 16.0),
                                           ),
                                         ],
                                       ),
@@ -160,16 +169,18 @@ class _ProfilePageState extends State<ProfilePage> {
                               decoration: BoxDecoration(
                                 border: Border.all(color: Colors.white),
                               ),
-                              child: const Padding(
+                              child: Padding(
                                 padding: EdgeInsets.all(16.0),
                                 child: Column(
                                   children: [
                                     Text(
                                       'Balance: ',
-                                      style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+                                      style: TextStyle(
+                                          fontSize: 20.0,
+                                          fontWeight: FontWeight.bold),
                                     ),
                                     Text(
-                                      '{Insert balance here}',
+                                      balance ?? 'Not found',
                                       style: TextStyle(fontSize: 24.0),
                                     ),
                                   ],
@@ -189,7 +200,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                   children: [
                                     const Text(
                                       'Filter',
-                                      style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+                                      style: TextStyle(
+                                          fontSize: 20.0,
+                                          fontWeight: FontWeight.bold),
                                     ),
                                     Row(
                                       children: [
@@ -266,19 +279,19 @@ class _ProfilePageState extends State<ProfilePage> {
                         Column(
                           children: [
                             ConstrainedBox(
-                              constraints: BoxConstraints(minWidth: 20.0, maxWidth: 600.0),
+                              constraints: BoxConstraints(
+                                  minWidth: 20.0, maxWidth: 600.0),
                               child: Container(
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.white),
-                                ),
-                                child: TransactionList(transactions: transactionList)
-                              ),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.white),
+                                  ),
+                                  child: TransactionList(
+                                      transactions: transactionList)),
                             )
                           ],
                         ),
                       ],
                     ),
-              )
-      );
+                  ));
   }
 }
