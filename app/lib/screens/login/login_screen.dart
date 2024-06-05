@@ -1,13 +1,13 @@
-import 'dart:convert';
-
 import 'package:app/components/customexception.dart';
 import 'package:app/components/tealgradleft.dart';
 import 'package:app/components/tealgradright.dart';
 import 'package:app/components/topbar/topbar.dart';
 import 'package:app/components/button.dart';
+import 'package:app/events/login_events.dart';
 import 'package:app/screens/addmember/inputvalidation.dart';
 import 'package:app/services/api_service.dart';
-import 'package:crypto/crypto.dart';
+import 'package:app/util/cypto_util.dart';
+import 'package:app/util/eventbus_util.dart';
 import 'package:flutter/material.dart';
 import 'package:app/components/textfield.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -27,17 +27,11 @@ class _LoginPageState extends State<LoginPage> {
   String? errorMessage;
   String? setupErrorMessage;
 
-  String generateHashCode(String code) {
-    var bytes = utf8.encode(code); // Convert the code to bytes
-    var digest = sha256.convert(bytes); // Perform SHA-256 hashing
-    return digest.toString(); // Convert the digest to a string
-  }
-
   void loginUser() async {
     errorMessage = null;
     final username = usernameController.text;
     final password = passwordController.text;
-    final hashedPassword = generateHashCode(password);
+    final hashedPassword = CryptoUtil.generateHashCode(password);
     try {
       // Call the login method from APIService
       final token = await APIService.login(username, hashedPassword);
@@ -45,13 +39,11 @@ class _LoginPageState extends State<LoginPage> {
       final sessionKey = token['session_key'];
       prefs.setString('session_key', sessionKey);
       // Navigate to the home page
-      // ignore: use_build_context_synchronously
+      eventBus.fire(LoginEvent());
       Navigator.pop(context);
-      // ignore: use_build_context_synchronously
       Navigator.pushNamed(context, '/');
       eventBus.fire(RefreshTopbarEvent(true));
     } catch (e) {
-      
       setState(() {
         if (e is HttpExceptionWithStatusCode) {
           errorMessage = e.message;
@@ -59,7 +51,6 @@ class _LoginPageState extends State<LoginPage> {
           errorMessage = 'Connection failed';
         }
       });
-      
     }
   }
 
@@ -70,15 +61,14 @@ class _LoginPageState extends State<LoginPage> {
   void checkValidity() async {
     setupErrorMessage = null;
     final code = codeController.text;
-    String hashedCode = generateHashCode(code);
+    String hashedCode = CryptoUtil.generateHashCode(code);
 
-    if(!ValidateUser.validateToken(code)){
+    if (!ValidateUser.validateToken(code)) {
       setupErrorMessage = 'Code must be 6 characters!';
       setState(() {});
       return;
-
     }
-    
+
     try {
       final exists = await APIService.checkCode(hashedCode);
 
@@ -96,10 +86,10 @@ class _LoginPageState extends State<LoginPage> {
       }
     } catch (e) {
       //TO-DO: Add logic to display error visually
-        setupErrorMessage = 'Connection failed';
-        setState(() {});
-        return;
-  }
+      setupErrorMessage = 'Connection failed';
+      setState(() {});
+      return;
+    }
   }
 
   @override
@@ -186,7 +176,6 @@ class _LoginPageState extends State<LoginPage> {
                       hintText: '6 characters',
                       obscureText: false,
                       errorText: setupErrorMessage,
-
                     ),
 
                     const SizedBox(height: 20),
