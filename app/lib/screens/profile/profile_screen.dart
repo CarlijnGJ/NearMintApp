@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:app/components/topbar/topbar.dart';
+import 'package:app/screens/profile/components/transaction.dart';
 import 'package:app/screens/profile/components/transactionlist.dart';
 import 'package:flutter/material.dart';
 import 'package:app/services/api_service.dart';
@@ -28,13 +31,14 @@ class _ProfilePageState extends State<ProfilePage> {
   DateTime selectedStart = DateTime.now();
   DateTime selectedEnd = DateTime.now();
 
-  List<dynamic> transactions = [];
+  List<Transaction> transactionList = [];
 
   @override
   void initState() {
     super.initState();
     // Fetch member data when the profile page initializes
     fetchMemberData();
+    fetchTransactions();
   }
 
   Future<void> fetchMemberData() async {
@@ -66,6 +70,21 @@ class _ProfilePageState extends State<ProfilePage> {
         isError = true;
         errorMessage = 'Failed to fetch member data: $e';
       });
+    }
+  }
+
+  Future<void> fetchTransactions() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final sessionKey = prefs.getString('session_key');
+      if (sessionKey != null) {
+        final transactions = await APIService.getTransactions(sessionKey);
+        setState(() {
+          transactionList = transactions;
+        });
+      }
+    } catch (e) {
+      log(e.toString());
     }
   }
 
@@ -246,7 +265,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 decoration: BoxDecoration(
                                   border: Border.all(color: Colors.white),
                                 ),
-                                child: TransactionList(transactions: transactions)
+                                child: TransactionList(transactions: transactionList)
                               ),
                             )
                           ],

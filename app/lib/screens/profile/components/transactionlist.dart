@@ -17,10 +17,10 @@ class TransactionList extends StatelessWidget {
       ],
       rows: transactions
           .map(
-            (user) => DataRow(cells: [
-              DataCell(Text(user.name)),
-              DataCell(Text(user.nickname)),
-              DataCell(Text(user.credits.toString())),
+            (transaction) => DataRow(cells: [
+              DataCell(Text(transaction.change.toString())),
+              DataCell(Text(transaction.date.toString())),
+              DataCell(Text(transaction.description)),
             ]),
           )
           .toList(),
