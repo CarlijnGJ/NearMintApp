@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:app/components/customexception.dart';
+import 'package:app/screens/members/components/user.dart';
+import 'package:app/screens/profile/components/transaction.dart';
 import 'package:http/http.dart' as http;
 
 class APIService {
@@ -205,8 +207,8 @@ class APIService {
       return false; // User is inactive and is logged out
     }
   }
-
-  static Future<List<dynamic>> getTransactions(String sessionKey) async {
+  
+  static Future<List<Transaction>> getTransactions(String sessionKey) async {
     final response = await http.get(
       Uri.parse('$baseUrl/api/getTransactions'),
       headers: {
@@ -216,13 +218,13 @@ class APIService {
     );
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return data[
-          'transactions']; // Assuming transactions are returned as a list from the API
+      final List<dynamic> data = jsonDecode(response.body)['transactions'];
+      return data.map((json) => Transaction.fromJson(json)).toList();
     } else {
       throw Exception('Failed to get transactions');
     }
   }
+}
 
   static Future<void> addTransaction(int memberId, double amount,
       String description, String date, String sessionKey) async {
@@ -251,19 +253,20 @@ class APIService {
         body: requestBody, // Send the request body
       );
 
-      // Check if the request was successful (status code 201)
-      if (response.statusCode == 201) {
-        print('Transaction added successfully');
-      } else {
-        // Handle error response
-        print('Failed to add transaction: ${response.statusCode}');
-        print('Response body: ${response.body}');
-      }
-    } catch (e) {
-      // Handle network errors
-      print('Error adding transaction: $e');
+    // Check if the request was successful (status code 201)
+    if (response.statusCode == 201) {
+      print('Transaction added successfully');
+    } else {
+      // Handle error response
+      print('Failed to add transaction: ${response.statusCode}');
+      print('Response body: ${response.body}');
     }
+  } catch (e) {
+    // Handle network errors
+    print('Error adding transaction: $e');
   }
+}
+
 }
 
 //Needed for checkCode, needs to be moved or recoded
