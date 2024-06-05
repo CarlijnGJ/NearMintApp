@@ -1,20 +1,11 @@
 import 'dart:async';
-
 import 'package:app/components/topbar/components/topbarbuttons.dart';
+import 'package:app/util/eventbus_util.dart';
+import 'package:app/util/navigate_util.dart';
 import 'package:flutter/material.dart';
-import 'package:app/screens/home/home_screen.dart';
-import 'package:event_bus/event_bus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:app/services/api_service.dart';
-
-
-EventBus eventBus = EventBus();
-
-class RefreshTopbarEvent {
-  final bool isLoggedIn;
-
-  RefreshTopbarEvent(this.isLoggedIn);
-}
+import 'package:app/events/refrest_widget_after_session_update_event.dart';
 
 class TopBar extends StatefulWidget implements PreferredSizeWidget {
   const TopBar({Key? key}) : super(key: key);
@@ -32,30 +23,22 @@ class _TopBarState extends State<TopBar> {
   String role = 'Visitor';
   String loginButtonText = 'Login'; // Default text for login button
 
-  late StreamSubscription<RefreshTopbarEvent> _eventSubscription;
+  late StreamSubscription _subscription;
 
   @override
   void initState() {
-    _eventSubscription = eventBus.on<RefreshTopbarEvent>().listen((event) {
-      if (event.isLoggedIn != isLoggedIn) {
-        fetchRoleAndInitialize();
-      } else {
-        if (mounted) {
-          setState(() {
-            isLoggedIn = event.isLoggedIn;
-            loginButtonText = isLoggedIn ? 'Logout' : 'Login';
-          });
-        }
-      }
-    });
     fetchRoleAndInitialize();
     super.initState();
-    currentScreen = const HomePage();
+    _subscription =
+        eventBus.on<RefreshWidgetAfterSessionUpdateEvent>().listen((event) {
+      //fetchRoleAndInitialize();
+      NavigateUtil.navigateTo(context, '/');
+    });
   }
 
   @override
   void dispose() {
-    _eventSubscription.cancel(); // Remove the event listener
+    _subscription.cancel();
     super.dispose();
   }
 
@@ -87,24 +70,24 @@ class _TopBarState extends State<TopBar> {
   }
 
   Future<void> onTap() async {
-  try {
-    final prefs = await SharedPreferences.getInstance();
-    final sessionKey = prefs.getString('session_key');
-    if(sessionKey != null){
-      await APIService.logout(sessionKey);
-      await prefs.remove('session_key'); // Remove the session key from SharedPreferences
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final sessionKey = prefs.getString('session_key');
+      if (sessionKey != null) {
+        await APIService.logout(sessionKey);
+        await prefs.remove(
+            'session_key'); // Remove the session key from SharedPreferences
+      } else {
+        print('session key not found');
+      }
+      eventBus.fire(RefreshWidgetAfterSessionUpdateEvent());
+    } catch (e) {
+      print("Logout failed: $e");
     }
-    else{
-      print('session key not found');
-    }
-    eventBus.fire(RefreshTopbarEvent(false));
-  } catch (e) {
-    print("Logout failed: $e");
-  }
 
     //     try {
     //   // Call the login method from APIService
-    //   // final token = 
+    //   // final token =
     //   await APIService.login(username, password);
     //   // SharedPreferences prefs = await SharedPreferences.getInstance();
     //   // final sessionKey = token['session_key'];
@@ -114,47 +97,46 @@ class _TopBarState extends State<TopBar> {
     // } catch (e) {
     //   // Handle login error (e.g., show an error message)
     //   print('Login failed: $e');
-    
   }
 
   Future<List<Widget>> getTopbarButtons(String role) async {
-  if (role == 'Admin') {
-    return <Widget>[
-      const TopbarMembersButton(),
-      const TopbarProfileButton(),
-      TopbarLogoutButton(onTap: onTap), // Remove await here
-    ];
-  } else if (role == 'Member') {
-    return <Widget>[
-      const TopbarProfileButton(),
-      TopbarLogoutButton(onTap: onTap), // Remove await here
-    ];
-  } else {
-    return <Widget>[
-      const TopbarLoginButton(),
-    ];
+    if (role == 'Admin') {
+      return <Widget>[
+        const TopbarMembersButton(),
+        const TopbarProfileButton(),
+        TopbarLogoutButton(onTap: onTap), // Remove await here
+      ];
+    } else if (role == 'Member') {
+      return <Widget>[
+        const TopbarProfileButton(),
+        TopbarLogoutButton(onTap: onTap), // Remove await here
+      ];
+    } else {
+      return <Widget>[
+        const TopbarLoginButton(),
+      ];
+    }
   }
-}
 
-@override
-Widget build(BuildContext context) {
-  return FutureBuilder<List<Widget>>(
-    future: getTopbarButtons(role),
-    builder: (context, snapshot) {
-      if (snapshot.connectionState == ConnectionState.waiting) {
-        // Display a loading indicator if data is still loading
-        return const CircularProgressIndicator();
-      } else if (snapshot.hasError) {
-        // Display an error message if an error occurred
-        return Text('Error: ${snapshot.error}');
-      } else {
-        // Display the AppBar with fetched top bar buttons
-        return AppBar(
-          title: const TopbarHomeButton(),
-          actions: snapshot.data ?? [], // Use snapshot data as the actions
-        );
-      }
-    },
-  );
-}
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<Widget>>(
+      future: getTopbarButtons(role),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          // Display a loading indicator if data is still loading
+          return const CircularProgressIndicator();
+        } else if (snapshot.hasError) {
+          // Display an error message if an error occurred
+          return Text('Error: ${snapshot.error}');
+        } else {
+          // Display the AppBar with fetched top bar buttons
+          return AppBar(
+            title: const TopbarHomeButton(),
+            actions: snapshot.data ?? [], // Use snapshot data as the actions
+          );
+        }
+      },
+    );
+  }
 }

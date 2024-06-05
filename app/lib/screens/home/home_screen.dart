@@ -1,7 +1,10 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:app/components/tealgradleft.dart';
 import 'package:app/components/tealgradright.dart';
+import 'package:app/events/refrest_widget_after_session_update_event.dart';
+import 'package:app/util/eventbus_util.dart';
 import 'package:flutter/material.dart';
 
 //import 'package:app/components/topbar/topbar.dart';
@@ -21,6 +24,15 @@ class _HomePageState extends State<HomePage> {
   bool isLoggedIn = false;
   String role = 'Visitor';
   bool isLoading = true;
+
+  late StreamSubscription _subscription;
+
+  @override
+  void dispose() {
+    // Cancel the subscription to prevent memory leaks
+    _subscription.cancel();
+    super.dispose();
+  }
 
   Future<void> fetchRoleAndInitialize() async {
     final prefs = await SharedPreferences.getInstance();
@@ -56,8 +68,12 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    super.initState();
     fetchRoleAndInitialize();
+    super.initState();
+    _subscription =
+        eventBus.on<RefreshWidgetAfterSessionUpdateEvent>().listen((event) {
+      fetchRoleAndInitialize();
+    });
   }
 
   List<Widget> buildButtonsForRole() {
@@ -78,10 +94,9 @@ class _HomePageState extends State<HomePage> {
     } else if (role == 'Member') {
       return [
         const NavButton(
-          assetname: '../../../Images/user-3-xxl.png',
-          description: 'Profile',
-          url: '/profile'
-        ),
+            assetname: '../../../Images/user-3-xxl.png',
+            description: 'Profile',
+            url: '/profile'),
         const NavButton(
           assetname: '../../../Images/account-login-xxl.png',
           description: 'Log out',
@@ -91,20 +106,17 @@ class _HomePageState extends State<HomePage> {
     } else if (role == 'Admin') {
       return [
         const NavButton(
-          assetname: '../../../Images/user-3-xxl.png',
-          description: 'Profile',
-          url: '/profile'
-        ),
+            assetname: '../../../Images/user-3-xxl.png',
+            description: 'Profile',
+            url: '/profile'),
         const NavButton(
-          assetname: '../../../Images/add-user-2-xxl.png',
-          description: 'Members',
-          url: '/members'
-        ),
+            assetname: '../../../Images/add-user-2-xxl.png',
+            description: 'Members',
+            url: '/members'),
         const NavButton(
-          assetname: '../../../Images/account-login-xxl.png',
-          description: 'Log out',
-          url: '/'
-        ),
+            assetname: '../../../Images/account-login-xxl.png',
+            description: 'Log out',
+            url: '/'),
       ];
     }
     return [];
@@ -121,7 +133,7 @@ class _HomePageState extends State<HomePage> {
       body: SingleChildScrollView(
         child: Container(
           constraints: BoxConstraints(
-            maxHeight: MediaQuery.of(context).size.height,
+            minHeight: MediaQuery.of(context).size.height,
           ),
           child: Stack(
             children: [
@@ -133,7 +145,8 @@ class _HomePageState extends State<HomePage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     SizedBox(
-                      height: MediaQuery.of(context).padding.top + kToolbarHeight,
+                      height:
+                          MediaQuery.of(context).padding.top + kToolbarHeight,
                     ), // Adjust based on app bar height
                     const TitleSection(
                       name: 'Welcome!',
@@ -147,13 +160,8 @@ class _HomePageState extends State<HomePage> {
                             children: buildButtonsForRole(),
                           );
                         } else {
-                          return SizedBox(
-                            height: MediaQuery.of(context).size.height * 0.7, // You can adjust this value according to your needs
-                            child: GridView.count(
-                              crossAxisCount: 2,
-                              shrinkWrap: true,
-                              children: buildButtonsForRole(),
-                            ),
+                          return Column(
+                            children: buildButtonsForRole(),
                           );
                         }
                       },

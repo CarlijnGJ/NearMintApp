@@ -124,7 +124,7 @@ router.get('/member/code', (req, res) => {
  *         description: Internal server error
  */
 router.get('/members', validateSessionKey, (req, res) => {
-    const query = 'CALL GetMembers()';
+    const query = 'SELECT * FROM Members';
     connection.query(query, (err, results) => {
         if (err) {
             console.error('Error executing MySQL query:', err);
@@ -133,5 +133,4 @@ router.get('/members', validateSessionKey, (req, res) => {
         res.status(200).json(results);
     });
 });
-
 module.exports = router;

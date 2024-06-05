@@ -1,13 +1,15 @@
-import 'dart:convert';
-
 import 'package:app/components/customexception.dart';
 import 'package:app/components/tealgradleft.dart';
 import 'package:app/components/tealgradright.dart';
 import 'package:app/components/topbar/topbar.dart';
 import 'package:app/components/button.dart';
+import 'package:app/events/refrest_widget_after_session_update_event.dart';
 import 'package:app/screens/addmember/inputvalidation.dart';
 import 'package:app/services/api_service.dart';
-import 'package:crypto/crypto.dart';
+import 'package:app/events/login_events.dart';
+import 'package:app/util/cypto_util.dart';
+import 'package:app/util/eventbus_util.dart';
+import 'package:app/util/navigate_util.dart';
 import 'package:flutter/material.dart';
 import 'package:app/components/textfield.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -27,27 +29,19 @@ class _LoginPageState extends State<LoginPage> {
   String? errorMessage;
   String? setupErrorMessage;
 
-  String generateHashCode(String code) {
-    var bytes = utf8.encode(code); // Convert the code to bytes
-    var digest = sha256.convert(bytes); // Perform SHA-256 hashing
-    return digest.toString(); // Convert the digest to a string
-  }
-
   void loginUser() async {
     errorMessage = null;
     final username = usernameController.text;
     final password = passwordController.text;
-    final hashedPassword = generateHashCode(password);
+    final hashedPassword = CryptoUtil.generateHashCode(password);
     try {
       // Call the login method from APIService
       final token = await APIService.login(username, hashedPassword);
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final sessionKey = token['session_key'];
       prefs.setString('session_key', sessionKey);
-      // Navigate to the home page
-      Navigator.pop(context);
-      Navigator.pushNamed(context, '/');
-      eventBus.fire(RefreshTopbarEvent(true));
+      eventBus.fire(LoginEvent());
+      NavigateUtil.navigateTo(context, '/');
     } catch (e) {
       setState(() {
         if (e is HttpExceptionWithStatusCode) {
@@ -66,7 +60,6 @@ class _LoginPageState extends State<LoginPage> {
   void checkValidity() async {
     setupErrorMessage = null;
     final code = codeController.text;
-    String hashedCode = generateHashCode(code);
 
     if (!ValidateUser.validateToken(code)) {
       setupErrorMessage = 'Code must be 6 characters!';
@@ -75,15 +68,14 @@ class _LoginPageState extends State<LoginPage> {
     }
 
     try {
-      final exists = await APIService.checkCode(hashedCode);
+      final exists = await APIService.checkCode(code);
 
       if (exists.result) {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setString('token', hashedCode);
-
+        // ignore: use_build_context_synchronously
         Navigator.pop(context);
-        Navigator.pushNamed(context, '/setup');
-        eventBus.fire(RefreshTopbarEvent(true));
+        // ignore: use_build_context_synchronously
+        Navigator.pushNamed(context, '/setup', arguments: exists.name);
+        eventBus.fire(RefreshWidgetAfterSessionUpdateEvent());
       } else {
         setupErrorMessage = 'Code does not exist';
         setState(() {});
@@ -122,8 +114,7 @@ class _LoginPageState extends State<LoginPage> {
                     // username textfield
                     CustomTextField(
                       controller: usernameController,
-                      labelText: 'Username',
-                      hintText: 'Peter',
+                      hintText: 'Username',
                       obscureText: false,
                     ),
 
@@ -132,7 +123,7 @@ class _LoginPageState extends State<LoginPage> {
                     // password textfield
                     CustomTextField(
                       controller: passwordController,
-                      labelText: 'Password',
+                      hintText: 'Password',
                       obscureText: true,
                       errorText: errorMessage,
                     ),
@@ -177,8 +168,7 @@ class _LoginPageState extends State<LoginPage> {
                     //code textfield
                     CustomTextField(
                       controller: codeController,
-                      labelText: 'Token',
-                      hintText: '6 characters',
+                      hintText: 'Token',
                       obscureText: false,
                       errorText: setupErrorMessage,
                     ),

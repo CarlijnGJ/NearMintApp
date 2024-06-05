@@ -30,4 +30,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - Images/
     - Images/Avatars/
+    - Images/ProfilePics/
+    - assets/
