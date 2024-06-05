@@ -16,7 +16,7 @@ class ListWidget extends StatelessWidget {
                     DataColumn(label: Text('Name')),
                     DataColumn(label: Text('Nickname')),
                     DataColumn(label: Text('Credits')),
-                    DataColumn(label: Text('Options')),
+                    DataColumn(label: Text('Add transaction')),
                   ],
                   rows: memberList
                       .map(
@@ -26,9 +26,9 @@ class ListWidget extends StatelessWidget {
                           DataCell(Text(user.credits.toString())),
                           DataCell(
                             IconButton(
-                              icon: const Icon(Icons.more_vert),
+                              icon: const Icon(Icons.add),
                               onPressed: () {
-                                // Implement your options functionality here
+                              Navigator.pushNamed(context, '/addtransaction', arguments: user);
                               },
                             ),
                           ),

@@ -48,6 +48,12 @@ class _ProfilePageState extends State<ProfilePage> {
       if (sessionKey != null) {
         Map<String, dynamic> memberData =
             await APIService.getMember(sessionKey);
+            try{
+              print(await APIService.getTransactions(sessionKey));
+            }
+            catch(e){
+              print(e);
+            }
         setState(() {
           nickname = memberData['nickname'];
           name = memberData['name'];
