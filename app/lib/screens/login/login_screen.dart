@@ -60,6 +60,7 @@ class _LoginPageState extends State<LoginPage> {
   void checkValidity() async {
     setupErrorMessage = null;
     final code = codeController.text;
+    String hashedCode = CryptoUtil.generateHashCode(code);
 
     if (!ValidateUser.validateToken(code)) {
       setupErrorMessage = 'Code must be 6 characters!';
@@ -68,7 +69,7 @@ class _LoginPageState extends State<LoginPage> {
     }
 
     try {
-      final exists = await APIService.checkCode(code);
+      final exists = await APIService.checkCode(hashedCode);
 
       if (exists.result) {
         // ignore: use_build_context_synchronously

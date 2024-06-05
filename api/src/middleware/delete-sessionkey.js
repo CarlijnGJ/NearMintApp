@@ -10,7 +10,7 @@ function deleteSessionKey(req, res, next) {
         return res.status(400).json({ error: 'Session key not provided in header' });
     }
 
-    const deleteQuery = 'CALL DeleteSession(?)';
+    const deleteQuery = 'DELETE FROM Session WHERE session_key = ?';
     connection.query(deleteQuery, [sessionKey], (err, results) => {
         if (err) {
             console.error('Error executing MySQL query:', err);

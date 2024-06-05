@@ -56,7 +56,7 @@ router.post('/login', (req, res) => {
         return res.status(400).json({ error: 'Nickname and password are required' });
     }
 
-    const query = 'CALL Login(?, ?)';
+    const query = 'SELECT * FROM Members WHERE nickname = ?';
     connection.query(query, [nickname, password], (err, results) => {
         if (err) {
             console.error('Error executing MySQL query:', err);

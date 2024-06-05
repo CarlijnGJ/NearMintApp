@@ -56,7 +56,7 @@ router.post('/addmember', (req, res) => {
         return res.status(400).json({ error: 'All fields are required: ' + name + mail + phonenumber + secret });
     }
 
-    const insertQuery = 'CALL AddMember(?, ?, ?, ?)';
+    const insertQuery = 'INSERT INTO NewMembers (name, email, phonenumber, secret) VALUES (?, ?, ?, ?)';
     connection.query(insertQuery, [name, mail, phonenumber, secret], (err, results) => {
         if (err) {
             console.error('Error executing MySQL query:', err);
