@@ -5,7 +5,6 @@ import 'package:app/screens/profile/components/transaction.dart';
 import 'package:app/screens/profile/components/transactionlist.dart';
 import 'package:flutter/material.dart';
 import 'package:app/services/api_service.dart';
-import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -31,13 +30,13 @@ class _ProfilePageState extends State<ProfilePage> {
   bool isIncomeChecked = false;
   DateTime selectedStart = DateTime.now();
   DateTime selectedEnd = DateTime.now();
+  bool showStartPicker = true;
 
   List<Transaction> transactionList = [];
 
   @override
   void initState() {
     super.initState();
-    // Fetch member data when the profile page initializes
     fetchMemberData();
     fetchTransactions();
   }
@@ -47,13 +46,7 @@ class _ProfilePageState extends State<ProfilePage> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final sessionKey = prefs.getString('session_key');
       if (sessionKey != null) {
-        Map<String, dynamic> memberData =
-            await APIService.getMember(sessionKey);
-        try {
-          print(await APIService.getTransactions(sessionKey));
-        } catch (e) {
-          print(e);
-        }
+        Map<String, dynamic> memberData = await APIService.getMember(sessionKey);
         setState(() {
           nickname = memberData['nickname'];
           name = memberData['name'];
@@ -98,96 +91,22 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: const TopBar(),
-        body: isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : isError
-                ? Center(child: Text(errorMessage))
-                : SingleChildScrollView(
-                    child: Row(
-                      children: [
-                        Column(
+      appBar: const TopBar(),
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : isError
+              ? Center(child: Text(errorMessage))
+              : Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.white),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 16.0, top: 16.0, right: 16.0),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    avatar != null
-                                        ? Padding(
-                                            padding: const EdgeInsets.only(
-                                                right: 16.0),
-                                            child: Image.asset(
-                                              avatar!,
-                                              width: 100,
-                                              height: 100,
-                                            ),
-                                          )
-                                        : const SizedBox(),
-                                    Padding(
-                                      padding:
-                                          const EdgeInsets.only(bottom: 16.0),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          Text(
-                                            'Nickname: ${nickname ?? 'Empty'}',
-                                            style:
-                                                const TextStyle(fontSize: 16.0),
-                                          ),
-                                          Text(
-                                            'Name: ${name ?? 'Empty'}',
-                                            style:
-                                                const TextStyle(fontSize: 16.0),
-                                          ),
-                                          Text(
-                                            'Gender: ${gender ?? 'Empty'}',
-                                            style:
-                                                const TextStyle(fontSize: 16.0),
-                                          ),
-                                          Text(
-                                            'Preferred game: ${preferedGame ?? 'Empty'}',
-                                            style:
-                                                const TextStyle(fontSize: 16.0),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            Container(
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.white),
-                              ),
-                              child: Padding(
-                                padding: EdgeInsets.all(16.0),
-                                child: Column(
-                                  children: [
-                                    Text(
-                                      'Balance: ',
-                                      style: TextStyle(
-                                          fontSize: 20.0,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    Text(
-                                      balance ?? 'Not found',
-                                      style: TextStyle(fontSize: 24.0),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 10),
+                            // Profile Container
                             Container(
                               decoration: BoxDecoration(
                                 border: Border.all(color: Colors.white),
@@ -196,13 +115,85 @@ class _ProfilePageState extends State<ProfilePage> {
                                 padding: const EdgeInsets.all(16.0),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        avatar != null
+                                            ? Padding(
+                                                padding: const EdgeInsets.only(right: 16.0),
+                                                child: Image.asset(
+                                                  avatar!,
+                                                  width: 50,
+                                                  height: 50,
+                                                ),
+                                              )
+                                            : const Icon(Icons.person, size: 50),
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'Nickname: ${nickname ?? 'Empty'}',
+                                              style: const TextStyle(fontSize: 16.0),
+                                            ),
+                                            Text(
+                                              'Name: ${name ?? 'Empty'}',
+                                              style: const TextStyle(fontSize: 16.0),
+                                            ),
+                                            Text(
+                                              'Gender: ${gender ?? 'Empty'}',
+                                              style: const TextStyle(fontSize: 16.0),
+                                            ),
+                                            Text(
+                                              'Preferred game: ${preferedGame ?? 'Empty'}',
+                                              style: const TextStyle(fontSize: 16.0),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            // Balance Container
+                            Container(
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.white),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'Balance',
+                                      style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+                                    ),
+                                    Text(
+                                      balance ?? 'Not found',
+                                      style: const TextStyle(fontSize: 24.0),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            // Filter Container
+                            Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.white),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     const Text(
                                       'Filter',
-                                      style: TextStyle(
-                                          fontSize: 20.0,
-                                          fontWeight: FontWeight.bold),
+                                      style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
                                     ),
                                     Row(
                                       children: [
@@ -237,28 +228,61 @@ class _ProfilePageState extends State<ProfilePage> {
                                       ],
                                     ),
                                     const Text(
-                                      'Startdate',
+                                      'Start date',
                                       style: TextStyle(fontSize: 16.0),
                                     ),
-                                    SizedBox(
-                                      width: 250,
+                                    GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          showStartPicker = true;
+                                        });
+                                      },
+                                      child: Text(
+                                        '${selectedStart.toLocal()}'.split(' ')[0],
+                                        style: const TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.blue),
+                                      ),
+                                    ),
+                                    if (showStartPicker)
+                                      SizedBox(
+                                      height: 220,
+                                      width: 300,
                                       child: CalendarDatePicker(
-                                        initialDate: selectedStart,
+                                        initialDate: selectedEnd,
                                         firstDate: DateTime(2024, 1, 1),
                                         lastDate: DateTime(2074, 12, 31),
                                         onDateChanged: (DateTime selected) {
                                           setState(() {
-                                            selectedStart = selected;
+                                            selectedEnd = selected;
                                           });
                                         },
                                       ),
                                     ),
+                                    const SizedBox(height: 10),
                                     const Text(
-                                      'Enddate',
+                                      'End date',
                                       style: TextStyle(fontSize: 16.0),
                                     ),
-                                    SizedBox(
-                                      width: 250,
+                                    GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          showStartPicker = false;
+                                        });
+                                      },
+                                      child: Text(
+                                        '${selectedEnd.toLocal()}'.split(' ')[0],
+                                        style: const TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.blue),
+                                      ),
+                                    ),
+                                    if (!showStartPicker)
+                                      SizedBox(
+                                      height: 220,
+                                      width: 300,
                                       child: CalendarDatePicker(
                                         initialDate: selectedEnd,
                                         firstDate: DateTime(2024, 1, 1),
@@ -276,22 +300,38 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                           ],
                         ),
-                        Column(
-                          children: [
-                            ConstrainedBox(
-                              constraints: BoxConstraints(
-                                  minWidth: 20.0, maxWidth: 600.0),
-                              child: Container(
-                                  decoration: BoxDecoration(
-                                    border: Border.all(color: Colors.white),
-                                  ),
-                                  child: TransactionList(
-                                      transactions: transactionList)),
-                            )
-                          ],
+                      ),
+                      const SizedBox(width: 16.0),
+                      // Transaction List Container
+                      Expanded(
+                        flex: 5,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.white),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Padding(  // History
+                                padding: EdgeInsets.all(16.0),
+                                child: Text(
+                                  'History',
+                                  style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              Expanded(
+                                child: TransactionList(
+                                  transactions: transactionList,
+                                  width: 900, 
+                              ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ],
-                    ),
-                  ));
+                      ),
+                    ],
+                  ),
+                ),
+    );
   }
 }
