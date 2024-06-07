@@ -44,14 +44,7 @@ class AppBarApp extends StatelessWidget {
             final User member = arguments as User;
             return AddTransactionPage(member: member);
           },
-          '/editmember': (context) {
-            final arguments = ModalRoute.of(context)!.settings.arguments;
-            if (arguments == null || !(arguments is String)) {
-              return EditMemberPage(sessionKey: '');
-            }
-            final String sessionKey = arguments as String;
-            return EditMemberPage(sessionKey: sessionKey);
-          },
+          '/editmember': (context) => const EditMemberPage()
         },
       ),
     );

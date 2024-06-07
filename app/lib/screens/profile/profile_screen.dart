@@ -129,6 +129,12 @@ class _ProfilePageState extends State<ProfilePage> {
                                                 ),
                                               )
                                             : const Icon(Icons.person, size: 50),
+                                        IconButton(
+                                          icon: const Icon(Icons.edit),
+                                          onPressed: () {
+                                            Navigator.pushNamed(context, '/editmember');
+                                          },
+                                        ),
                                         Column(
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
