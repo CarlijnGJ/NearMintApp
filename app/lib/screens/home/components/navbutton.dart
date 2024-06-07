@@ -15,10 +15,10 @@ class NavButton extends StatelessWidget {
   final String description;
   final String url;
 
-  void navigate(BuildContext context) {
-    Navigator.pop(context);
-    Navigator.pushNamed(context, url);
-  }
+void navigate(BuildContext context) {
+  Navigator.popUntil(context, ModalRoute.withName('/'));
+  Navigator.pushNamed(context, url);
+}
 
   @override
   Widget build(BuildContext context) {

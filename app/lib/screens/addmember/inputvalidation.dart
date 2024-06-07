@@ -40,8 +40,8 @@ class ValidateUser {
   }
 
   static bool validateFloatingPointNumber(String number){
-    //number from 0 to 999.99 
-    String pattern = r'^\d{1,3}(\.\d{1,2})?$';
+    //number from -9999.99 to 9999.99 
+    String pattern = r'^-?(?:\d{1,4}(?:,\d{3})*|\d{1,4})(?:\.\d{1,2})?$';
     RegExp regex = RegExp(pattern);
     return regex.hasMatch(number);
   }
