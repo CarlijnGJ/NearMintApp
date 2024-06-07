@@ -6,8 +6,10 @@ import 'package:app/components/tealgradleft.dart';
 import 'package:app/components/tealgradright.dart';
 import 'package:app/components/textfield.dart';
 import 'package:app/components/topbar/topbar.dart';
+import 'package:app/events/login_events.dart';
 import 'package:app/services/api_service.dart';
 import 'package:app/util/error_util.dart';
+import 'package:app/util/eventbus_util.dart';
 import 'package:crypto/crypto.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:app/components/button.dart';
@@ -111,10 +113,15 @@ class _SetupPageState extends State<SetupPage> {
 
       //Throw everything into the database
       await APIService.updateMember(code, nickname, hashedPassword, selectedImage.toString(), encryptedGender, encryptedPrefGame);
-            // ignore: use_build_context_synchronously
+      final token = await APIService.login(nickname, hashedPassword);
+
+      final sessionKey = token['session_key'];
+      prefs.setString('session_key', sessionKey);
+      // Navigate to the home page
+      eventBus.fire(LoginEvent());
       Navigator.pop(context);
-      // ignore: use_build_context_synchronously
-      Navigator.pushNamed(context, '/login');
+      Navigator.pushNamed(context, '/');
+      eventBus.fire(RefreshTopbarEvent(true));
     }
 
     catch(e){

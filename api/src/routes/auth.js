@@ -63,6 +63,7 @@ router.post('/login', (req, res) => {
         }
 
         if (results.length === 0 || results[0].password !== password) {
+            console.error('Error authorizing: ', err);
             return res.status(401).json({ error: 'Incorrect nickname or password' });
         }
 

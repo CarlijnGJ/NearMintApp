@@ -119,7 +119,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                     Row(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        avatar != null
+                                        avatar != 'null' && avatar != null
                                             ? Padding(
                                                 padding: const EdgeInsets.only(right: 16.0),
                                                 child: Image.asset(
