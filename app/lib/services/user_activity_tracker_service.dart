@@ -21,13 +21,13 @@ class _UserActivityTrackerState extends State<UserActivityTracker> {
   bool _isUserLoggedIn = false;
 
   //Double to make sure the timers are started correctlys
-  final Duration _activityCheckInterval = const Duration(seconds: 10);
-  final Duration _idleCheckInterval = const Duration(seconds: 10);
-  final Duration _keepAliveInterval = const Duration(minutes: 1);
+  final Duration _activityCheckInterval = const Duration(minutes: 10);
+  final Duration _idleCheckInterval = const Duration(minutes: 10);
+  final Duration _keepAliveInterval = const Duration(hours: 1);
 
-  Timer _activityTimer = Timer(const Duration(seconds: 10), () {});
-  Timer _idleTimer = Timer(const Duration(seconds: 10), () {});
-  Timer _keepAliveTimer = Timer(const Duration(minutes: 1), () {});
+  Timer _activityTimer = Timer(const Duration(minutes: 10), () {});
+  Timer _idleTimer = Timer(const Duration(minutes: 10), () {});
+  Timer _keepAliveTimer = Timer(const Duration(hours: 1), () {});
 
   @override
   void initState() {

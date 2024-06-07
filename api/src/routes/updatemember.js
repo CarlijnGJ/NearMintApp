@@ -58,4 +58,93 @@ router.post('/updatemember', (req, res) => {
     });
 });
 
+/**
+ * @swagger
+ * /api/editmember:
+ *  post:
+ *    summary: Update member data in the database
+ *    description: Update an existing member's data in the database
+ *    requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            properties:
+ *              member_id:
+ *                type: string
+ *              nickname:
+ *                type: string
+ *              avatar:
+ *                type: string
+ *              gender:
+ *                type: string
+ *              prefgame:
+ *                type: string
+ *    responses:
+ *      200:
+ *        description: Successful operation
+ *      400:
+ *        description: Bad request
+ *      500:
+ *        description: Internal server error
+ */
+router.post('/editmember', (req, res) => {
+    const { member_id, nickname, avatar, gender, prefgame } = req.body;
+
+    console.log('Request body:', req.body);
+
+    if (!member_id) {
+        return res.status(400).json({ error: 'Member ID is required' });
+    }
+
+    let dataQuery = 'UPDATE Members SET';
+    const queryParams = [];
+    const queryValues = [];
+
+    if (nickname) {
+        queryParams.push('nickname = ?');
+        queryValues.push(nickname);
+    }
+
+    if (avatar) {
+        queryParams.push('avatar = ?');
+        queryValues.push(avatar);
+    }
+
+    if (gender) {
+        queryParams.push('gender = ?');
+        queryValues.push(gender);
+    }
+
+    if (prefgame) {
+        queryParams.push('preferedgame = ?');
+        queryValues.push(prefgame);
+    }
+
+    if (queryParams.length === 0) {
+        return res.status(400).json({ error: 'No data provided for update' });
+    }
+
+    dataQuery += ' ' + queryParams.join(', ');
+    dataQuery += ' WHERE member_id = ?';
+    queryValues.push(member_id);
+
+    console.log('SQL Query:', dataQuery);
+    console.log('Query Values:', queryValues);
+
+    connection.query(dataQuery, queryValues, (err, results) => {
+        if (err) {
+            console.error('Error executing MySQL query:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+
+        res.status(200).json({
+            result: true
+        });
+    });
+});
+
+
+
 module.exports = router;

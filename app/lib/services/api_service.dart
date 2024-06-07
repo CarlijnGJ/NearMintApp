@@ -131,6 +131,47 @@ class APIService {
     }
   }
 
+static Future<void> editMember({
+  required String sessionKey,
+  String? nickname,
+  String? avatar,
+  String? gender,
+  String? prefgame,
+}) async {
+  final Uri url = Uri.parse('$baseUrl/api/editmember');
+
+  // Fetch member ID using session key
+  final Map<String, dynamic> memberData = await getMember(sessionKey);
+  final String? memberId = memberData['memberId']?.toString(); // Ensure the key matches
+
+  if (memberId == null) {
+    throw 'Failed to retrieve member_id';
+  }
+
+  print('Member ID: $memberId');
+
+  final Map<String, dynamic> requestBody = {
+    'member_id': memberId, // Ensure the key matches the backend expectation
+    if (nickname != null) 'nickname': nickname else 'nickname': memberData['nickname'],
+    if (avatar != null) 'avatar': avatar else 'avatar': memberData['avatar'],
+    if (gender != null) 'gender': gender else 'gender': memberData['gender'],
+    if (prefgame != null) 'prefgame': prefgame else 'prefgame': memberData['preferedGame'], // Ensure the key matches
+  };
+
+  final response = await http.post(
+    url,
+    headers: {
+      'Content-Type': 'application/json; charset=UTF-8',
+      'auth': sessionKey,
+    },
+    body: jsonEncode(requestBody),
+  );
+
+  if (response.statusCode != 200) {
+    throw 'Failed to edit member';
+  }
+}
+
   static Future<String> getRole(String sessionKey) async {
     final response = await http.get(
       Uri.parse('$baseUrl/api/getRole'), // Replace with your API endpoint
