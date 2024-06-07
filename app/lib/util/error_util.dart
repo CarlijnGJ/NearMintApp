@@ -29,7 +29,19 @@ class ErrorUtil {
   }
 
   static List<String?> generateEditErrors(List<TextEditingController> controllers) {
-    List<String?> errors = List.filled(5, null);
+    List<String?> errors = List.filled(3, null);
+
+    if (!ValidateUser.validateBasicString(controllers[0].text)) {
+      errors[0] = 'Invalid username';
+    }
+
+    if (!ValidateUser.validateBasicString(controllers[1].text) && controllers[1].text != '') {
+      errors[1] = 'Invalid gender';
+    }
+
+    if (!ValidateUser.validateBasicString(controllers[2].text) && controllers[2].text != '') {
+      errors[2] = 'Invalid preferred game';
+    }
 
     return errors;
   }
