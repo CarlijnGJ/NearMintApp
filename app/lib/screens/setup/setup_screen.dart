@@ -7,10 +7,10 @@ import 'package:app/components/tealgradright.dart';
 import 'package:app/components/textfield.dart';
 import 'package:app/components/topbar/topbar.dart';
 import 'package:app/services/api_service.dart';
+import 'package:app/util/error_util.dart';
 import 'package:crypto/crypto.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:app/components/button.dart';
-import 'package:app/screens/addmember/inputvalidation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -31,9 +31,20 @@ class _SetupPageState extends State<SetupPage> {
   final genderController = TextEditingController();
   final gameController = TextEditingController();
 
+  late List<TextEditingController> controllers;
+
+
   @override
   void initState() {
     super.initState();
+
+    controllers = [
+      nicknameController,
+      passwordController,
+      pwcheckController,
+      genderController,
+      gameController,
+    ];
   }
 
   String? selectedImage;
@@ -62,26 +73,7 @@ class _SetupPageState extends State<SetupPage> {
     String gender = genderController.text;
     String prefgame = gameController.text;
     
-    errors = List.filled(5, null);
-    if (!ValidateUser.validateBasicString(nicknameController.text)) {
-      errors[0] = 'Invalid username';
-    }
-
-    if (!ValidateUser.validatePassword(passwordController.text)) {
-      errors[1] = 'Invalid password';
-    }
-
-    if (pwcheckController.text != passwordController.text) {
-      errors[2] = 'Passwords don\'t match';
-    }
-
-    if (!ValidateUser.validateBasicString(genderController.text) && genderController.text != '') {
-      errors[3] = 'Invalid gender';
-    }
-
-    if (!ValidateUser.validateBasicString(gameController.text) && gameController.text != '') {
-      errors[4] = 'Invalid prefered game';
-    }
+    errors = ErrorUtil.generateSetupErrors(controllers);
     
 
     if (errors.any((error) => error != null)) {
