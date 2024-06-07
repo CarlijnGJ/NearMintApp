@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:app/components/customexception.dart';
 import 'package:app/components/tealgradleft.dart';
 import 'package:app/components/tealgradright.dart';
 import 'package:app/components/textfield.dart';
@@ -125,6 +126,13 @@ class _SetupPageState extends State<SetupPage> {
     }
 
     catch(e){
+      if (e is HttpExceptionWithStatusCode) {
+        errors[0] = "This nickname is already in use";
+        setState(() {
+          
+        });
+      }
+
       print('Registering member failed! $e');
     }
   }

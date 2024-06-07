@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:app/components/customexception.dart';
 import 'package:app/screens/profile/components/transaction.dart';
 import 'package:http/http.dart' as http;
@@ -184,7 +185,9 @@ class APIService {
     );
 
     if (response.statusCode == 200) {
-      print("Registration complete.");
+      log("Registration complete.");
+    } else if (response.statusCode == 503) {
+      throw HttpExceptionWithStatusCode("Duplicate entry in database", 503);
     } else {
       throw Exception("Couldn't move data");
     }
