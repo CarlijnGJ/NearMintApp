@@ -123,10 +123,21 @@ router.post('/addTransaction', validateSessionKey, (req, res) => {
                 return res.status(500).json({ error: 'Internal server error' });
             }
 
-            res.status(201).json({ message: 'Transaction added successfully' });
+            // Update credits in Members table
+            const updateCreditsQuery = `UPDATE Members SET credits = credits + ? WHERE member_id = ?`;
+
+            connection.query(updateCreditsQuery, [amount, member_id], (err, results) => {
+                if (err) {
+                    console.error('Error executing MySQL query:', err);
+                    return res.status(500).json({ error: 'Internal server error' });
+                }
+
+                res.status(201).json({ message: 'Transaction added successfully' });
+            });
         });
     });
 });
+
 
 
 
