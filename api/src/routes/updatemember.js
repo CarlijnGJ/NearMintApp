@@ -51,8 +51,19 @@ router.post('/updatemember', (req, res) => {
             console.error('Error executing MySQL query:', err);
             return res.status(500).json({ error: 'Internal server error' });
         }
+    });
 
-        res.status(200).json({
+    const removeQuery = 'DELETE FROM NewMembers WHERE secret = ?';
+    connection.query(removeQuery, [code], (err, results) => {
+
+        console.log('Result = ' + results.toString());
+
+        if (err) {
+            console.error('Error executing MySQL query:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+
+        return res.status(200).json({
             result: true
         });
     });

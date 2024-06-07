@@ -1,5 +1,5 @@
   class Transaction {
-    final int change;
+    final double change;
     final DateTime date;
     final String description;
 
