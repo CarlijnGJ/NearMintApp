@@ -52,6 +52,7 @@ router.get('/member', validateSessionKey, (req, res) => {
         }
 
         res.status(200).json({
+            memberId: memberId,
             nickname: results[0].nickname,
             name: results[0].name,
             balance: results[0].credits,
