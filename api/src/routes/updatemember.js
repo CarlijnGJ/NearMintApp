@@ -45,6 +45,9 @@ router.post('/updatemember', (req, res) => {
     const dataQuery = 'INSERT INTO Members (name, nickname, password, avatar, gender, preferedgame, role_id) SELECT name, ? AS nickname, ? AS password, ? as avatar, ? AS gender, ? as preferedgame, 1 FROM NewMembers WHERE secret = ?';
     connection.query(dataQuery, [nickname, password, avatar, gender, prefgame, code], (err, results) => {
         if (err) {
+            if (err.message.includes('Duplicate entry')) {
+                return res.status(503).json({ error: 'Duplicate field entry'});
+            }
             console.error('Error executing MySQL query:', err);
             return res.status(500).json({ error: 'Internal server error' });
         }
