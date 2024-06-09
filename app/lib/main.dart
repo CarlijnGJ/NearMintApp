@@ -5,23 +5,29 @@ import 'package:app/screens/members/components/user.dart';
 import 'package:app/screens/members/member_list.dart';
 import 'package:app/screens/profile/profile_screen.dart';
 import 'package:app/screens/setup/setup_screen.dart';
+import 'package:app/services/state_manager/session_manager.dart';
+import 'package:app/services/state_manager/session_provider.dart';
 import 'package:app/services/user_activity_tracker_service.dart';
 import 'package:flutter/material.dart';
 import 'package:app/components/themes/maintheme.dart'; //import the main theme for the app
 import 'package:app/screens/home/home_screen.dart'; // Import the necessary widgets
 import 'package:app/screens/login/login_screen.dart';
+import 'package:provider/provider.dart';
 
 void main() async {
   //WidgetsFlutterBinding.ensureInitialized();
 
   //WidgetsBinding.instance.addObserver(LifecycleObserver());
-
-  runApp(const AppBarApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => SessionManager(),
+      child: NMGApp(),
+    ),
+  );
 }
-//void main() => runApp(const AppBarApp());
 
-class AppBarApp extends StatelessWidget {
-  const AppBarApp({Key? key}) : super(key: key);
+class NMGApp extends StatelessWidget {
+  const NMGApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

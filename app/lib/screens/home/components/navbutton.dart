@@ -1,4 +1,7 @@
+import 'package:app/services/state_manager/session_events.dart';
+import 'package:app/services/state_manager/session_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:app/services/api_service.dart';
@@ -22,41 +25,49 @@ class NavButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final sessionManager = Provider.of<SessionManager>(context, listen: false);
+
     return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: GestureDetector(
-        onTap: () async {
-          if (description == 'Log out') {
-            try {
-              final prefs = await SharedPreferences.getInstance();
-              final sessionKey = prefs.getString('session_key');
-              if(sessionKey != null){
-                await APIService.logout(sessionKey);
-                await prefs.remove('session_key'); // Remove the session key from SharedPreferences
+        padding: const EdgeInsets.all(8.0),
+        child: GestureDetector(
+          onTap: () async {
+            if (description == 'Log out') {
+              try {
+                final prefs = await SharedPreferences.getInstance();
+                final sessionKey = prefs.getString('session_key');
+                if (sessionKey != null) {
+                  await APIService.logout(sessionKey);
+                  await prefs.remove(
+                      'session_key'); // Remove the session key from SharedPreferences
+                  sessionManager
+                      .handleEvent(LoggedOut()); // Update the session state
+                } else {
+                  print('session key not found');
+                }
+              } catch (e) {
+                print("Logout failed: $e");
               }
-              else{
-                print('session key not found');
-              }
-            } catch (e) {
-              print("Logout failed: $e");
             }
-          }
-          navigate(context);
-        },
-        child: Container(
-          padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 8.0, bottom: 1.0),
-          color: const Color.fromRGBO(0, 0, 0, 0.25),
-          child: Column(
-            children: [
-              Image.asset(assetname, fit: BoxFit.contain,),
-              Text(
-                description,
-                style: const TextStyle(fontSize: 16,),
-              )
-            ],
-          )
-        ),
-      )
-    );
+            navigate(context);
+          },
+          child: Container(
+              padding: const EdgeInsets.only(
+                  left: 16.0, right: 16.0, top: 8.0, bottom: 1.0),
+              color: const Color.fromRGBO(0, 0, 0, 0.25),
+              child: Column(
+                children: [
+                  Image.asset(
+                    assetname,
+                    fit: BoxFit.contain,
+                  ),
+                  Text(
+                    description,
+                    style: const TextStyle(
+                      fontSize: 16,
+                    ),
+                  )
+                ],
+              )),
+        ));
   }
 }

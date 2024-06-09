@@ -3,7 +3,6 @@ import 'package:app/events/refrest_widget_after_session_update_event.dart';
 import 'package:app/services/api_service.dart';
 import 'package:app/events/login_events.dart';
 import 'package:app/util/eventbus_util.dart';
-import 'package:app/util/navigate_util.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -49,7 +48,6 @@ class _UserActivityTrackerState extends State<UserActivityTracker> {
         _activityTimer.cancel();
         _keepAliveTimer.cancel();
       });
-      NavigateUtil.navigateToHome(context);
     });
   }
 
@@ -107,10 +105,6 @@ class _UserActivityTrackerState extends State<UserActivityTracker> {
     } else {
       print('session key not found');
     }
-    // Navigate to the home page
-    print("Refresh buttons homepage");
-    eventBus.fire(RefreshWidgetAfterSessionUpdateEvent());
-    print('User is idle. Logging out...');
   }
 
   void _onUserActivity(PointerEvent details) {

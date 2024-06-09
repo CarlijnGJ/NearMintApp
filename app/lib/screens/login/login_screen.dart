@@ -3,13 +3,15 @@ import 'package:app/components/tealgradleft.dart';
 import 'package:app/components/tealgradright.dart';
 import 'package:app/components/topbar/topbar.dart';
 import 'package:app/components/button.dart';
-import 'package:app/events/login_events.dart';
 import 'package:app/screens/addmember/inputvalidation.dart';
 import 'package:app/services/api_service.dart';
+import 'package:app/services/state_manager/session_events.dart';
+import 'package:app/services/state_manager/session_provider.dart';
 import 'package:app/util/cypto_util.dart';
 import 'package:app/util/eventbus_util.dart';
 import 'package:flutter/material.dart';
 import 'package:app/components/textfield.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
@@ -34,12 +36,15 @@ class _LoginPageState extends State<LoginPage> {
     final hashedPassword = CryptoUtil.generateHashCode(password);
     try {
       // Call the login method from APIService
-      final token = await APIService.login(username, hashedPassword);
+      final loginToken = await APIService.login(username, hashedPassword);
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      final sessionKey = token['session_key'];
+      final sessionKey = loginToken['session_key'];
       prefs.setString('session_key', sessionKey);
+      final role = await APIService.getRole(sessionKey);
       // Navigate to the home page
-      eventBus.fire(LoginEvent());
+      final sessionProvider =
+          Provider.of<SessionProvider>(context, listen: false);
+      sessionProvider.handleEvent(LoggedIn(role, sessionKey));
       Navigator.pop(context);
       Navigator.pushNamed(context, '/');
       eventBus.fire(RefreshTopbarEvent(true));

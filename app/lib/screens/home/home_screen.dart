@@ -2,10 +2,11 @@ import 'dart:developer';
 
 import 'package:app/components/tealgradleft.dart';
 import 'package:app/components/tealgradright.dart';
-import 'package:app/events/login_events.dart';
-import 'package:app/util/eventbus_util.dart';
-import 'package:app/util/navigate_util.dart';
+import 'package:app/services/state_manager/session_events.dart';
+import 'package:app/services/state_manager/session_provider.dart';
+import 'package:app/services/state_manager/session_states.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 //import 'package:app/components/topbar/topbar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -21,9 +22,13 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  bool isLoggedIn = false;
-  String role = 'Visitor';
   bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchRoleAndInitialize();
+  }
 
   Future<void> fetchRoleAndInitialize() async {
     final prefs = await SharedPreferences.getInstance();
@@ -32,9 +37,10 @@ class _HomePageState extends State<HomePage> {
       try {
         final newRole = await APIService.getRole(sessionKey);
         if (mounted) {
+          final sessionProvider =
+              Provider.of<SessionProvider>(context, listen: false);
+          sessionProvider.handleEvent(LoggedIn(newRole, sessionKey));
           setState(() {
-            isLoggedIn = true;
-            role = newRole;
             isLoading = false;
           });
         }
@@ -49,22 +55,14 @@ class _HomePageState extends State<HomePage> {
     } else {
       if (mounted) {
         setState(() {
-          isLoggedIn = false;
-          role = 'Visitor';
           isLoading = false;
         });
       }
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    fetchRoleAndInitialize();
-  }
-
-  List<Widget> buildButtonsForRole() {
-    if (role == 'Visitor') {
+  List<Widget> buildButtonsForRole(SessionState currentState) {
+    if (currentState is VisitorState) {
       return [
         const NavButton(
           assetname: '../../../Images/account-login-xxl.png',
@@ -78,7 +76,7 @@ class _HomePageState extends State<HomePage> {
           url: '/login',
         ),
       ];
-    } else if (role == 'Member') {
+    } else if (currentState is MemberState) {
       return [
         const NavButton(
             assetname: '../../../Images/user-3-xxl.png',
@@ -90,7 +88,7 @@ class _HomePageState extends State<HomePage> {
           url: '/',
         ),
       ];
-    } else if (role == 'Admin') {
+    } else if (currentState is AdminState) {
       return [
         const NavButton(
             assetname: '../../../Images/user-3-xxl.png',
@@ -111,6 +109,9 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final sessionProvider = Provider.of<SessionProvider>(context);
+    var currentState = sessionProvider.currentState;
+
     if (isLoading) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
@@ -144,7 +145,7 @@ class _HomePageState extends State<HomePage> {
                         if (constraints.maxWidth > 600) {
                           return Row(
                             mainAxisAlignment: MainAxisAlignment.center,
-                            children: buildButtonsForRole(),
+                            children: buildButtonsForRole(currentState),
                           );
                         } else {
                           return SizedBox(
@@ -153,7 +154,7 @@ class _HomePageState extends State<HomePage> {
                             child: GridView.count(
                               crossAxisCount: 2,
                               shrinkWrap: true,
-                              children: buildButtonsForRole(),
+                              children: buildButtonsForRole(currentState),
                             ),
                           );
                         }

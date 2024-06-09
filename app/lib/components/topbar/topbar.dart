@@ -1,9 +1,14 @@
 import 'dart:async';
 
 import 'package:app/components/topbar/components/topbarbuttons.dart';
+import 'package:app/services/state_manager/session_events.dart';
+import 'package:app/services/state_manager/session_manager.dart';
+import 'package:app/services/state_manager/session_provider.dart';
+import 'package:app/services/state_manager/session_states.dart';
 import 'package:app/util/eventbus_util.dart';
 import 'package:flutter/material.dart';
 import 'package:app/screens/home/home_screen.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:app/services/api_service.dart';
 
@@ -27,7 +32,7 @@ class _TopBarState extends State<TopBar> {
   late Widget currentScreen;
   bool isLoggedIn = false;
   String role = 'Visitor';
-  String loginButtonText = 'Login'; // Default text for login button
+  String loginButtonText = 'Login';
 
   // to be able to clean up the events on dispose
 
@@ -71,6 +76,7 @@ class _TopBarState extends State<TopBar> {
   }
 
   Future<void> onTap() async {
+    final sessionManager = Provider.of<SessionManager>(context, listen: false);
     try {
       final prefs = await SharedPreferences.getInstance();
       final sessionKey = prefs.getString('session_key');
@@ -78,6 +84,7 @@ class _TopBarState extends State<TopBar> {
         await APIService.logout(sessionKey);
         await prefs.remove(
             'session_key'); // Remove the session key from SharedPreferences
+        sessionManager.handleEvent(LoggedOut());
       } else {
         print('session key not found');
       }
@@ -100,19 +107,20 @@ class _TopBarState extends State<TopBar> {
     //   print('Login failed: $e');
   }
 
-  Future<List<Widget>> getTopbarButtons(String role) async {
-    if (role == 'Admin') {
+  Future<List<Widget>> getTopbarButtons(SessionState currentState) async {
+    if (currentState is AdminState) {
       return <Widget>[
         const TopbarMembersButton(),
         const TopbarProfileButton(),
         TopbarLogoutButton(onTap: onTap), // Remove await here
       ];
-    } else if (role == 'Member') {
+    } else if (currentState is MemberState) {
       return <Widget>[
         const TopbarProfileButton(),
         TopbarLogoutButton(onTap: onTap), // Remove await here
       ];
     } else {
+      //currentState is VisitorState
       return <Widget>[
         const TopbarLoginButton(),
       ];
@@ -121,8 +129,11 @@ class _TopBarState extends State<TopBar> {
 
   @override
   Widget build(BuildContext context) {
+    final sessionProvider = Provider.of<SessionProvider>(context);
+    var currentState = sessionProvider.currentState;
+
     return FutureBuilder<List<Widget>>(
-      future: getTopbarButtons(role),
+      future: getTopbarButtons(currentState),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           // Display a loading indicator if data is still loading
