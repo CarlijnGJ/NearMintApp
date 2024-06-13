@@ -8,28 +8,27 @@ class APIService {
   static const String baseUrl =
       'http://localhost:3000'; // Replace this with your API base URL
 
-  static Future<Map<String, dynamic>> login(
-      String nickname, String password) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/api/login'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, String>{
-        'nickname': nickname,
-        'password': password,
-      }),
-    );
+static Future<Map<String, dynamic>> login(String nickname, String password) async {
+  final response = await http.post(
+    Uri.parse('$baseUrl/api/login'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(<String, String>{
+      'nickname': nickname,
+      'password': password,
+    }),
+  );
 
-    if (response.statusCode == 201) {
-      return jsonDecode(response.body);
-    } else if (response.statusCode == 400) {
-      throw HttpExceptionWithStatusCode(
-          'Incorrect username and password combination', 400);
-    } else {
-      throw 'Connection failed';
-    }
+  if (response.statusCode == 201) {
+    return jsonDecode(response.body);
+  } else if (response.statusCode == 400) {
+    throw HttpExceptionWithStatusCode('Incorrect username and password combination', 400);
+  } else {
+    throw Exception('Incorrect username and password combination');
   }
+}
+
 
   static Future<void> logout(String sessionKey) async {
     final response = await http.delete(

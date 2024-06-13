@@ -27,6 +27,7 @@ class _AddMemberPageState extends State<AddMemberPage> {
   final usernameController = TextEditingController();
   final emailController = TextEditingController();
   final phonenumberController = TextEditingController();
+  var secret = '';
 
   String generateRandomCode() {
     const String chars =
@@ -87,18 +88,22 @@ class _AddMemberPageState extends State<AddMemberPage> {
       final key = encrypt.Key.fromLength(32); // 32 bytes for AES256 encryption
       final iv = encrypt.IV.fromLength(16); // 16 bytes for AES
       final encrypter = encrypt.Encrypter(encrypt.AES(key));
-      final secret = generateRandomCode();
-      print(secret);
+
+      secret = generateRandomCode();
+      
       String hashedSecret = generateHashCode(secret);
       // final encryptedUsername = encrypter.encrypt(username, iv: iv).base64;
       final encryptedEmail = encrypter.encrypt(email, iv: iv).base64;
       final encryptedPhoneNumber =
           encrypter.encrypt(phoneNumber, iv: iv).base64;
       await APIService.addMember(
-          username, encryptedEmail, encryptedPhoneNumber, hashedSecret);
+          username, email, phoneNumber, hashedSecret);
 
-      Navigator.pop(context);
-      Navigator.pushNamed(context, '/members');
+      // Navigator.pop(context);
+      // Navigator.pushNamed(context, '/members');
+      setState(() {
+        
+      });
     } catch (e) {
       setState(() {
         isError = true;
@@ -188,6 +193,7 @@ class _AddMemberPageState extends State<AddMemberPage> {
                         ),
                         const SizedBox(height: 10),
                         CustomButton(text: 'Send code', onTap: addMember),
+                        Text(secret ?? ''),
                       ],
                     ),
                   ),
