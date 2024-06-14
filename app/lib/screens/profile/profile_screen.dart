@@ -1,4 +1,5 @@
 import 'package:app/components/topbar/topbar.dart';
+import 'package:app/screens/profile/components/filter_container.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:app/services/api_service.dart';
@@ -129,6 +130,8 @@ class _ProfilePageState extends State<ProfilePage> {
                             BalanceContainer(
                               balance: balance,
                             ),
+                            const SizedBox(height: 10),
+                            FilterContainer(),
                           ],
                         ),
                       ),

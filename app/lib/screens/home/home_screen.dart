@@ -67,7 +67,8 @@ class _HomePageState extends State<HomePage> {
     if (role == 'Visitor') {
       return [
         const NavButton(
-          assetname: '../../../Images/account-login-xxl.png',
+          //go to asset map
+          assetname: '../assets/images/user-3-xxl.png'  ,
           description: 'Log in',
           url: '/login',
         ),
@@ -75,11 +76,11 @@ class _HomePageState extends State<HomePage> {
     } else if (role == 'Member') {
       return [
         const NavButton(
-            assetname: '../../../Images/user-3-xxl.png',
+            assetname: '../assets/images/user-3-xxl.png',
             description: 'Profile',
             url: '/profile'),
         const NavButton(
-          assetname: '../../../Images/account-login-xxl.png',
+          assetname: '../assets/images/account-login-xxl.png',
           description: 'Log out',
           url: '/',
         ),
@@ -87,15 +88,15 @@ class _HomePageState extends State<HomePage> {
     } else if (role == 'Admin') {
       return [
         const NavButton(
-            assetname: '../../../Images/user-3-xxl.png',
+            assetname: '../assets/images/user-3-xxl.png',
             description: 'Profile',
             url: '/profile'),
         const NavButton(
-            assetname: '../../../Images/add-user-2-xxl.png',
+            assetname: '../assets/images/add-user-2-xxl.png',
             description: 'Members',
             url: '/members'),
         const NavButton(
-            assetname: '../../../Images/account-login-xxl.png',
+            assetname: '../assets/images/account-login-xxl.png',
             description: 'Log out',
             url: '/'),
       ];
