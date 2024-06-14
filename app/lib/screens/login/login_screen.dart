@@ -48,7 +48,7 @@ class _LoginPageState extends State<LoginPage> {
         if (e is HttpExceptionWithStatusCode) {
           errorMessage = e.message;
         } else {
-          errorMessage = 'Connection failed';
+          errorMessage = 'Wrong username or password';
         }
       });
     }
@@ -105,7 +105,7 @@ class _LoginPageState extends State<LoginPage> {
                 child: Column(
                   children: [
                     const SizedBox(height: 20),
-
+                    
                     const Text(
                       'Credentials',
                       style: TextStyle(
@@ -130,24 +130,6 @@ class _LoginPageState extends State<LoginPage> {
                       labelText: 'Password',
                       obscureText: true,
                       errorText: errorMessage,
-                    ),
-
-                    const SizedBox(height: 10),
-
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          TextButton(
-                            onPressed: forgotPassword,
-                            child: const Text(
-                              'Forgot Password?',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ),
-                        ],
-                      ),
                     ),
 
                     const SizedBox(height: 10),

@@ -89,7 +89,8 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
               onTap: () async {
                 bool success = await addTransaction(member!);
                 if (success) {
-                  Navigator.of(context).pushReplacementNamed('/members');
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, '/members'); 
                 }
               },
             ),
@@ -116,6 +117,8 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
   Future<bool> addTransaction(User member) async {
     amountError = null;
     desciptionError = null;
+//convert ,s to .s
+    amountController.text = amountController.text.replaceAll(',', '.');
     if (!ValidateUser.validateFloatingPointNumber(amountController.text)) {
       setState(() {
         amountError = 'Invalid amount';

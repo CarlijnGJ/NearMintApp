@@ -27,6 +27,7 @@ class AppBarApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return UserActivityTracker(
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         theme: mainTheme,
         initialRoute: '/',
         routes: {

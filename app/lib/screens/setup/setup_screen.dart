@@ -1,23 +1,21 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:app/components/customexception.dart';
 import 'package:app/components/tealgradleft.dart';
 import 'package:app/components/tealgradright.dart';
 import 'package:app/components/textfield.dart';
 import 'package:app/components/topbar/topbar.dart';
-import 'package:app/events/login_events.dart';
+import 'package:app/screens/setup/components/prefered_game_picker.dart';
+import 'package:app/screens/setup/components/profile_image_picker.dart';
 import 'package:app/services/api_service.dart';
-import 'package:app/util/error_util.dart';
-import 'package:app/util/eventbus_util.dart';
 import 'package:crypto/crypto.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:app/components/button.dart';
+import 'package:app/screens/addmember/inputvalidation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SetupPage extends StatefulWidget {
-
   const SetupPage({Key? key}) : super(key: key);
 
   @override
@@ -33,20 +31,9 @@ class _SetupPageState extends State<SetupPage> {
   final genderController = TextEditingController();
   final gameController = TextEditingController();
 
-  late List<TextEditingController> controllers;
-
-
   @override
   void initState() {
     super.initState();
-
-    controllers = [
-      nicknameController,
-      passwordController,
-      pwcheckController,
-      genderController,
-      gameController,
-    ];
   }
 
   String? selectedImage;
@@ -74,9 +61,29 @@ class _SetupPageState extends State<SetupPage> {
     String pwcheck = pwcheckController.text;
     String gender = genderController.text;
     String prefgame = gameController.text;
-    
-    errors = ErrorUtil.generateSetupErrors(controllers);
-    
+
+    errors = List.filled(5, null);
+    if (!ValidateUser.validateBasicString(nicknameController.text)) {
+      errors[0] = 'Invalid username';
+    }
+
+    if (!ValidateUser.validatePassword(passwordController.text)) {
+      errors[1] = 'Invalid password';
+    }
+
+    if (pwcheckController.text != passwordController.text) {
+      errors[2] = 'Passwords don\'t match';
+    }
+
+    if (!ValidateUser.validateBasicString(genderController.text) &&
+        genderController.text != '') {
+      errors[3] = 'Invalid gender';
+    }
+
+    if (!ValidateUser.validateBasicString(gameController.text) &&
+        gameController.text != '') {
+      errors[4] = 'Invalid prefered game';
+    }
 
     if (errors.any((error) => error != null)) {
       setState(() {
@@ -84,54 +91,47 @@ class _SetupPageState extends State<SetupPage> {
       });
       return;
     }
-    setState((){});
+    setState(() {});
 
-    try{
-      //Retrieve token
+    try {
+      // Retrieve token
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      String code = prefs.getString('token').toString();
-      //Hash or encrypt everything
+      String code = prefs.getString('token') ?? '';
+
+      // Hash or encrypt everything
       final key = encrypt.Key.fromLength(32); // 32 bytes for AES256 encryption
       final iv = encrypt.IV.fromLength(16); // 16 bytes for AES
       final encrypter = encrypt.Encrypter(encrypt.AES(key));
-      // final encryptedNickname = encrypter.encrypt(nickname, iv: iv).base64;
+
       final String hashedPassword;
       if (password == pwcheck) {
         hashedPassword = generateHashCode(password);
       } else {
         throw Exception("Passwords don't match");
       }
+
       String encryptedGender = 'empty';
-      if(gender != '') {
+      if (gender.isNotEmpty) {
         encryptedGender = encrypter.encrypt(gender, iv: iv).base64;
       }
-      
+
       String encryptedPrefGame = 'empty';
-      if(prefgame != '') {
+      if (prefgame.isNotEmpty) {
         encryptedPrefGame = encrypter.encrypt(prefgame, iv: iv).base64;
       }
 
-      //Throw everything into the database
-      await APIService.updateMember(code, nickname, hashedPassword, selectedImage.toString(), encryptedGender, encryptedPrefGame);
-      final token = await APIService.login(nickname, hashedPassword);
+      // Throw everything into the database
+      await APIService.updateMember(code, nickname, hashedPassword,
+          selectedImage.toString(), gender, prefgame);
 
-      final sessionKey = token['session_key'];
-      prefs.setString('session_key', sessionKey);
-      // Navigate to the home page
-      eventBus.fire(LoginEvent());
+      // Attempt login
+      await APIService.login(nickname, hashedPassword);
+
+      // Navigate to the home page after successful login
+      if (!mounted) return;
       Navigator.pop(context);
       Navigator.pushNamed(context, '/');
-      eventBus.fire(RefreshTopbarEvent(true));
-    }
-
-    catch(e){
-      if (e is HttpExceptionWithStatusCode) {
-        errors[0] = "This nickname is already in use";
-        setState(() {
-          
-        });
-      }
-
+    } catch (e) {
       print('Registering member failed! $e');
     }
   }
@@ -152,38 +152,31 @@ class _SetupPageState extends State<SetupPage> {
                   children: [
                     const TealGradLeft(),
                     const TealGradRight(),
-
                     SafeArea(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           const SizedBox(height: 20),
-
                           const Text(
                             'Hello, new user!',
                             style: TextStyle(
                               fontSize: 32,
                             ),
                           ),
-
                           const Text(
                             'Just a few more steps to register your account!',
                             style: TextStyle(
                               fontSize: 20,
                             ),
                           ),
-
                           const SizedBox(height: 20),
-                          
                           CustomTextField(
                             controller: nicknameController,
                             hintText: 'Nickname*',
                             obscureText: false,
                             errorText: errors.isNotEmpty ? errors[0] : null,
                           ),
-
                           const SizedBox(height: 10),
-
                           Row(
                             children: [
                               Expanded(
@@ -191,31 +184,25 @@ class _SetupPageState extends State<SetupPage> {
                                   controller: passwordController,
                                   hintText: 'Password*',
                                   obscureText: true,
-                                  errorText: errors.isNotEmpty ? errors[1] : null,
-
+                                  errorText:
+                                      errors.isNotEmpty ? errors[1] : null,
                                 ),
                               ),
-
                               const SizedBox(width: 10),
-
                               Expanded(
                                 child: CustomTextField(
                                   controller: pwcheckController,
                                   hintText: 'Repeat Password*',
                                   obscureText: true,
-                                  errorText: errors.isNotEmpty ? errors[2] : null,
-
+                                  errorText:
+                                      errors.isNotEmpty ? errors[2] : null,
                                 ),
                               ),
                             ],
                           ),
-
                           const SizedBox(height: 10),
-
                           const Divider(),
-
                           const SizedBox(height: 10),
-
                           Row(
                             children: [
                               Expanded(
@@ -223,80 +210,35 @@ class _SetupPageState extends State<SetupPage> {
                                   controller: genderController,
                                   hintText: 'Gender',
                                   obscureText: false,
-                                  errorText: errors.isNotEmpty ? errors[3] : null,
+                                  errorText:
+                                      errors.isNotEmpty ? errors[3] : null,
                                 ),
                               ),
-
                               const SizedBox(width: 10),
-
-                              Expanded(
-                                child: DropdownButtonFormField<String>(
-                                  value: 'None',
-                                  decoration: InputDecoration(
-                                    labelText: 'Preferred Game',
-                                    errorText: errors.isNotEmpty ? errors[4] : null,
-                                  ),
-                                  items: <String>[
-                                    'None',
-                                    'Magic the Gathering',
-                                    'Warhammer',
-                                    'One piece card game',
-                                    'Vanguard',
-                                    'The Pokemon Trading Card Game',
-                                    'Disney Lorcana',
-                                    'Video Games',
-                                  ].map<DropdownMenuItem<String>>((String value) {
-                                    return DropdownMenuItem<String>(
-                                      value: value,
-                                      child: Text(value),
-                                    );
-                                  }).toList(),
-                                  onChanged: (String? newValue) {
-                                    setState(() {
-                                      gameController.text = newValue!;
-                                    });
-                                  },
-                                ),
+                              PreferredGameDropdown(
+                                initialValue: 'None',
+                                errorText: errors.isNotEmpty ? errors[4] : null,
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    gameController.text = newValue ?? 'None';
+                                  });
+                                },
                               ),
                             ],
                           ),
-
                           const SizedBox(height: 10),
-
-                          if (selectedImage != null && selectedImage!.isNotEmpty)
-                            Image.asset(selectedImage!, width: 200, height: 200)
-                          else
-                            const SizedBox.shrink(),
-
-                          const SizedBox(height: 10),
-
-                          DropdownButton<String>(
-                            hint: const Text('Select an image'),
-                            value: selectedImage,
-                            items: images.map((image) {
-                              return DropdownMenuItem<String>(
-                                value: image['path'],
-                                child: Row(
-                                  children: [
-                                    Image.asset(
-                                      image['path']!,
-                                      width: 50,
-                                      height: 50,
-                                    ),
-                                    const SizedBox(width: 10),
-                                    Text(image['name']!),
-                                  ],
-                                ),
-                              );
-                            }).toList(),
-                            onChanged: (newValue) {
+                          ProfileImagePicker(
+                            selectedImage: selectedImage,
+                            images: images,
+                            onImageSelected: (String? image) {
                               setState(() {
-                                selectedImage = newValue.toString();
+                                selectedImage = image;
                               });
                             },
                           ),
-
-                          CustomButton(text: 'Finish registration', onTap: finishRegister)
+                          CustomButton(
+                              text: 'Finish registration',
+                              onTap: finishRegister)
                         ],
                       ),
                     ),
@@ -309,5 +251,4 @@ class _SetupPageState extends State<SetupPage> {
       ),
     );
   }
-
 }
