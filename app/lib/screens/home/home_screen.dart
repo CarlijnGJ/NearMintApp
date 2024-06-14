@@ -71,12 +71,6 @@ class _HomePageState extends State<HomePage> {
           description: 'Log in',
           url: '/login',
         ),
-        const SizedBox(height: 16.0),
-        const NavButton(
-          assetname: '../../../Images/add-user-2-xxl.png',
-          description: 'Register',
-          url: '/login',
-        ),
       ];
     } else if (role == 'Member') {
       return [
