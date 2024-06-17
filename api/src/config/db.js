@@ -16,7 +16,6 @@ switch (process.env.MODE_ENV) {
 };
 
 const hashedPassword = crypto.createHash('sha256').update(process.env.DB_PASSWORD, 'utf8').digest('hex');
-
 // Database connection
 const connection = mysql.createConnection({
     host: process.env.DB_HOST,
