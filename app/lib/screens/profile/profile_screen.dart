@@ -104,47 +104,32 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const TopBar(),
+      appBar: AppBar(
+        title: Text('Your App'),
+      ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : isError
               ? Center(child: Text(errorMessage))
               : Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Row(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        flex: 3,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ProfileInformation(
-                              avatar: avatar,
-                              nickname: nickname,
-                              name: name,
-                              gender: gender,
-                              preferedGame: preferedGame,
-                            ),
-                            const SizedBox(height: 10),
-                            BalanceContainer(
-                              balance: balance,
-                            ),
-                            const SizedBox(height: 10),
-                            FilterContainer(),
-                          ],
-                        ),
+                      ProfileInformation(
+                        avatar: avatar,
+                        nickname: nickname,
+                        name: name,
+                        gender: gender,
+                        preferedGame: preferedGame,
                       ),
-                      const SizedBox(width: 16.0),
-                      Expanded(
-                        flex: 5,
-                        child: HistorySection(
-                          transactions: transactionList,
-                          previousPage: previousPage,
-                          nextPage: nextPage,
-                          page: page,
-                          pageSize: pageSize,
-                        ),
+                      const SizedBox(height: 20),
+                      BalanceContainer(
+                        balance: balance,
+                      ),
+                      const SizedBox(height: 20),
+                      HistorySection(
+                        transactions: transactionList,
                       ),
                     ],
                   ),

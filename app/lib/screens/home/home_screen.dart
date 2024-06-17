@@ -24,7 +24,6 @@ class _HomePageState extends State<HomePage> {
   bool isLoggedIn = false;
   String role = 'Visitor';
   bool isLoading = true;
-
   Future<void> fetchRoleAndInitialize() async {
     final prefs = await SharedPreferences.getInstance();
     final sessionKey = prefs.getString('session_key');
@@ -106,6 +105,10 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    double btnSize = MediaQuery.of(context).size.height * 0.7;
+    if (btnSize > 300) {
+      btnSize = 300; // Limit maxHeight to 400px if it exceeds
+    }
     if (isLoading) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
@@ -119,8 +122,6 @@ class _HomePageState extends State<HomePage> {
           ),
           child: Stack(
             children: [
-              const TealGradLeft(),
-              const TealGradRight(),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Column(
@@ -136,17 +137,18 @@ class _HomePageState extends State<HomePage> {
                     const SizedBox(height: 16.0),
                     LayoutBuilder(
                       builder: (context, constraints) {
-                        if (constraints.maxWidth > 600) {
+                        if (constraints.maxWidth > 950) {
                           return Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: buildButtonsForRole(),
                           );
                         } else {
                           return SizedBox(
-                            height: MediaQuery.of(context).size.height *
-                                0.7, // You can adjust this value according to your needs
+                            
+                            height: btnSize,
+                            width: btnSize,
                             child: GridView.count(
-                              crossAxisCount: 2,
+                              crossAxisCount: role == 'Visitor' ? 1 : 2,
                               shrinkWrap: true,
                               children: buildButtonsForRole(),
                             ),

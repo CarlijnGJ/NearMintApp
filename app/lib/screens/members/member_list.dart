@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:app/screens/members/components/list.dart';
 import 'package:app/screens/members/components/page_selection.dart';
 import 'package:app/screens/members/components/user.dart';
@@ -98,7 +100,7 @@ class _MemberListState extends State<MemberList> {
                   ElevatedButton(
                     onPressed: addMemberButton,
                     child: const Text('Add member'),
-                  )
+                  ),
                 ],
               ),
               PageSelectionRow(
