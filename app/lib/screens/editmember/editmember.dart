@@ -27,12 +27,12 @@ class _EditMemberPageState extends State<EditMemberPage> {
   String? selectedImage;
 
   final List<Map<String, String>> images = [
-    {'name': 'Magic', 'path': '../../Images/ProfilePics/PFP1.png'},
-    {'name': 'Sea', 'path': '../../Images/ProfilePics/PFP2.png'},
-    {'name': 'Skull', 'path': '../../Images/ProfilePics/PFP3.png'},
-    {'name': 'Vanguard', 'path': '../../Images/ProfilePics/PFP4.png'},
-    {'name': 'Lorcana', 'path': '../../Images/ProfilePics/PFP5.png'},
-    {'name': 'OnePiece', 'path': '../../Images/ProfilePics/PFP6.png'},
+    {'name': 'Magic', 'path': '../assets/images/profilepics/PFP1.png'},
+    {'name': 'Sea', 'path':'../assets/images/profilepics/PFP2.png'},
+    {'name': 'Skull', 'path': '../assets/images/profilepics/PFP3.png'},
+    {'name': 'Vanguard', 'path': '../assets/images/profilepics/PFP4.png'},
+    {'name': 'Lorcana', 'path': '../assets/images/profilepics/PFP5.png'},
+    {'name': 'OnePiece', 'path': '../assets/images/profilepics/PFP6.png'},
   ];
 
   // Ensure prefgame is not null and is present in gameOptions
