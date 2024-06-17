@@ -1,7 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const validateSessionKey = require('../middleware/validate-sessionkey');
+const parseExcel = require('../middleware/parse-excel').default;
+const multer = require('multer');
+
 const connection = require('../config/db');
+const parsingExcelFile = require('../middleware/parse-excel');
+const upload = multer({ dest: 'uploads/' });
 
 // Define transaction-related routes
 
@@ -138,7 +143,20 @@ router.post('/addTransaction', validateSessionKey, (req, res) => {
     });
 });
 
-
+router.post('/upload-excel', upload.single('excelFile'), (req, res) => {
+    const filePath = req.file.path;
+    var filteredData = parsingExcelFile(filePath);
+    foreach(filteredData, function () {
+        const insertTransactionQuery = `INSERT INTO Transactions (amount, description, date, member_id) VALUES (?, ?, ?, ?)`;
+        connection.query(insertTransactionQuery, [filteredData.amount, filteredData.description, filteredData.date, filteredData.member_id], (err, results) => {
+            if (err) {
+                console.error('Error executing MySQL query:', err);
+                return res.status(500).json({ error: 'Internal server error' });
+            }
+        });
+    });
+    res.send('Excel file uploaded and parsed. Check the console for data.');
+});
 
 
 

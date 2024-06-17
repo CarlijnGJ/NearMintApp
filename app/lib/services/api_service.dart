@@ -8,27 +8,28 @@ class APIService {
   static const String baseUrl =
       'http://localhost:3000'; // Replace this with your API base URL
 
-static Future<Map<String, dynamic>> login(String nickname, String password) async {
-  final response = await http.post(
-    Uri.parse('$baseUrl/api/login'),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-    body: jsonEncode(<String, String>{
-      'nickname': nickname,
-      'password': password,
-    }),
-  );
+  static Future<Map<String, dynamic>> login(
+      String nickname, String password) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/login'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'nickname': nickname,
+        'password': password,
+      }),
+    );
 
-  if (response.statusCode == 201) {
-    return jsonDecode(response.body);
-  } else if (response.statusCode == 400) {
-    throw HttpExceptionWithStatusCode('Incorrect username and password combination', 400);
-  } else {
-    throw Exception('Incorrect username and password combination');
+    if (response.statusCode == 201) {
+      return jsonDecode(response.body);
+    } else if (response.statusCode == 400) {
+      throw HttpExceptionWithStatusCode(
+          'Incorrect username and password combination', 400);
+    } else {
+      throw Exception('Incorrect username and password combination');
+    }
   }
-}
-
 
   static Future<void> logout(String sessionKey) async {
     final response = await http.delete(
@@ -130,46 +131,53 @@ static Future<Map<String, dynamic>> login(String nickname, String password) asyn
     }
   }
 
-static Future<void> editMember({
-  required String sessionKey,
-  String? nickname,
-  String? avatar,
-  String? gender,
-  String? prefgame,
-}) async {
-  final Uri url = Uri.parse('$baseUrl/api/editmember');
+  static Future<void> editMember({
+    required String sessionKey,
+    String? nickname,
+    String? avatar,
+    String? gender,
+    String? prefgame,
+  }) async {
+    final Uri url = Uri.parse('$baseUrl/api/editmember');
 
-  // Fetch member ID using session key
-  final Map<String, dynamic> memberData = await getMember(sessionKey);
-  final String? memberId = memberData['memberId']?.toString(); // Ensure the key matches
+    // Fetch member ID using session key
+    final Map<String, dynamic> memberData = await getMember(sessionKey);
+    final String? memberId =
+        memberData['memberId']?.toString(); // Ensure the key matches
 
-  if (memberId == null) {
-    throw 'Failed to retrieve member_id';
+    if (memberId == null) {
+      throw 'Failed to retrieve member_id';
+    }
+
+    print('Member ID: $memberId');
+
+    final Map<String, dynamic> requestBody = {
+      'member_id': memberId, // Ensure the key matches the backend expectation
+      if (nickname != null)
+        'nickname': nickname
+      else
+        'nickname': memberData['nickname'],
+      if (avatar != null) 'avatar': avatar else 'avatar': memberData['avatar'],
+      if (gender != null) 'gender': gender else 'gender': memberData['gender'],
+      if (prefgame != null)
+        'prefgame': prefgame
+      else
+        'prefgame': memberData['preferedGame'], // Ensure the key matches
+    };
+
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'auth': sessionKey,
+      },
+      body: jsonEncode(requestBody),
+    );
+
+    if (response.statusCode != 200) {
+      throw 'Failed to edit member';
+    }
   }
-
-  print('Member ID: $memberId');
-
-  final Map<String, dynamic> requestBody = {
-    'member_id': memberId, // Ensure the key matches the backend expectation
-    if (nickname != null) 'nickname': nickname else 'nickname': memberData['nickname'],
-    if (avatar != null) 'avatar': avatar else 'avatar': memberData['avatar'],
-    if (gender != null) 'gender': gender else 'gender': memberData['gender'],
-    if (prefgame != null) 'prefgame': prefgame else 'prefgame': memberData['preferedGame'], // Ensure the key matches
-  };
-
-  final response = await http.post(
-    url,
-    headers: {
-      'Content-Type': 'application/json; charset=UTF-8',
-      'auth': sessionKey,
-    },
-    body: jsonEncode(requestBody),
-  );
-
-  if (response.statusCode != 200) {
-    throw 'Failed to edit member';
-  }
-}
 
   static Future<String> getRole(String sessionKey) async {
     final response = await http.get(
@@ -305,6 +313,23 @@ static Future<void> editMember({
     } catch (e) {
       // Handle network errors
       print('Error adding transaction: $e');
+    }
+  }
+
+  static Future<void> uploadExcel(List<int> fileBytes, String fileName) async {
+    String url = '$baseUrl/api/upload-excel';
+    var request = http.MultipartRequest('POST', Uri.parse(url))
+      ..files.add(http.MultipartFile.fromBytes(
+        'excelFile',
+        fileBytes,
+        filename: fileName,
+      ));
+
+    var response = await request.send();
+    if (response.statusCode == 200) {
+      print('File uploaded successfully');
+    } else {
+      print('File upload failed');
     }
   }
 }
