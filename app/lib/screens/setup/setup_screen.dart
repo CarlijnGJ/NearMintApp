@@ -40,7 +40,7 @@ class _SetupPageState extends State<SetupPage> {
 
   final List<Map<String, String>> images = [
     {'name': 'Magic', 'path': '../assets/images/profilepics/PFP1.png'},
-    {'name': 'Sea', 'path':'../assets/images/profilepics/PFP2.png'},
+    {'name': 'Sea', 'path': '../assets/images/profilepics/PFP2.png'},
     {'name': 'Skull', 'path': '../assets/images/profilepics/PFP3.png'},
     {'name': 'Vanguard', 'path': '../assets/images/profilepics/PFP4.png'},
     {'name': 'Lorcana', 'path': '../assets/images/profilepics/PFP5.png'},
@@ -150,96 +150,81 @@ class _SetupPageState extends State<SetupPage> {
               child: IntrinsicHeight(
                 child: Stack(
                   children: [
-                    const TealGradLeft(),
-                    const TealGradRight(),
                     SafeArea(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const SizedBox(height: 20),
-                          const Text(
-                            'Hello, new user!',
-                            style: TextStyle(
-                              fontSize: 32,
+                      child: Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const SizedBox(height: 20),
+                            const Text(
+                              'Hello, new user!',
+                              style: TextStyle(
+                                fontSize: 32,
+                              ),
                             ),
-                          ),
-                          const Text(
-                            'Just a few more steps to register your account!',
-                            style: TextStyle(
-                              fontSize: 20,
+                            const Text(
+                              'Just a few more steps to register your account!',
+                              style: TextStyle(
+                                fontSize: 20,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 20),
-                          CustomTextField(
-                            controller: nicknameController,
-                            hintText: 'Nickname*',
-                            obscureText: false,
-                            errorText: errors.isNotEmpty ? errors[0] : null,
-                          ),
-                          const SizedBox(height: 10),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: CustomTextField(
-                                  controller: passwordController,
-                                  hintText: 'Password*',
-                                  obscureText: true,
-                                  errorText:
-                                      errors.isNotEmpty ? errors[1] : null,
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: CustomTextField(
-                                  controller: pwcheckController,
-                                  hintText: 'Repeat Password*',
-                                  obscureText: true,
-                                  errorText:
-                                      errors.isNotEmpty ? errors[2] : null,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          const Divider(),
-                          const SizedBox(height: 10),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: CustomTextField(
-                                  controller: genderController,
-                                  hintText: 'Gender',
-                                  obscureText: false,
-                                  errorText:
-                                      errors.isNotEmpty ? errors[3] : null,
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              PreferredGameDropdown(
-                                initialValue: 'None',
-                                errorText: errors.isNotEmpty ? errors[4] : null,
-                                onChanged: (String? newValue) {
-                                  setState(() {
-                                    gameController.text = newValue ?? 'None';
-                                  });
-                                },
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          ProfileImagePicker(
-                            selectedImage: selectedImage,
-                            images: images,
-                            onImageSelected: (String? image) {
-                              setState(() {
-                                selectedImage = image;
-                              });
-                            },
-                          ),
-                          CustomButton(
-                              text: 'Finish registration',
-                              onTap: finishRegister)
-                        ],
+                            const SizedBox(height: 20),
+                            CustomTextField(
+                              controller: nicknameController,
+                              hintText: 'Nickname*',
+                              obscureText: false,
+                              errorText: errors.isNotEmpty ? errors[0] : null,
+                            ),
+                            const SizedBox(height: 10),
+                            CustomTextField(
+                              controller: passwordController,
+                              hintText: 'Password*',
+                              obscureText: true,
+                              errorText: errors.isNotEmpty ? errors[1] : null,
+                            ),
+                            const SizedBox(height: 10),
+                            CustomTextField(
+                              controller: pwcheckController,
+                              hintText: 'Repeat Password*',
+                              obscureText: true,
+                              errorText: errors.isNotEmpty ? errors[2] : null,
+                            ),
+                            const SizedBox(height: 10),
+                            const Divider(),
+                            const SizedBox(height: 10),
+                            CustomTextField(
+                              controller: genderController,
+                              hintText: 'Gender',
+                              obscureText: false,
+                              errorText: errors.isNotEmpty ? errors[3] : null,
+                            ),
+                            const SizedBox(height: 10),
+                            PreferredGameDropdown(
+                              initialValue: 'None',
+                              errorText: errors.isNotEmpty ? errors[4] : null,
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  gameController.text = newValue ?? 'None';
+                                });
+                              },
+                            ),
+                            const SizedBox(height: 10),
+                            ProfileImagePicker(
+                              selectedImage: selectedImage,
+                              images: images,
+                              onImageSelected: (String? image) {
+                                setState(() {
+                                  selectedImage = image;
+                                });
+                              },
+                            ),
+                            const SizedBox(height: 20),
+                            CustomButton(
+                                text: 'Finish registration',
+                                onTap: finishRegister),
+                          ],
+                        ),
                       ),
                     ),
                   ],

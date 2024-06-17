@@ -59,7 +59,8 @@ class _ProfilePageState extends State<ProfilePage> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final sessionKey = prefs.getString('session_key');
       if (sessionKey != null) {
-        Map<String, dynamic> memberData = await APIService.getMember(sessionKey);
+        Map<String, dynamic> memberData =
+            await APIService.getMember(sessionKey);
         setState(() {
           nickname = memberData['nickname'];
           name = memberData['name'];
@@ -101,38 +102,87 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  @override
+@override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Your App'),
-      ),
+      appBar: const TopBar(),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : isError
               ? Center(child: Text(errorMessage))
-              : Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ProfileInformation(
-                        avatar: avatar,
-                        nickname: nickname,
-                        name: name,
-                        gender: gender,
-                        preferedGame: preferedGame,
-                      ),
-                      const SizedBox(height: 20),
-                      BalanceContainer(
-                        balance: balance,
-                      ),
-                      const SizedBox(height: 20),
-                      HistorySection(
-                        transactions: transactionList,
-                      ),
-                    ],
-                  ),
+              : LayoutBuilder(
+                  builder: (context, constraints) {
+                    if (constraints.maxWidth > 950) {
+                      return Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              flex: 2,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  ProfileInformation(
+                                    avatar: avatar,
+                                    nickname: nickname,
+                                    name: name,
+                                    gender: gender,
+                                    preferedGame: preferedGame,
+                                  ),
+                                  const SizedBox(height: 10),
+                                  BalanceContainer(
+                                    balance: balance,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 20),
+                            Expanded(
+                              flex: 3,
+                              child: HistorySection(
+                                transactions: transactionList,
+                                previousPage: previousPage,
+                                nextPage: nextPage,
+                                page: page,
+                                pageSize: pageSize,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    } else {
+                      return SingleChildScrollView(
+                        child: Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ProfileInformation(
+                                avatar: avatar,
+                                nickname: nickname,
+                                name: name,
+                                gender: gender,
+                                preferedGame: preferedGame,
+                              ),
+                              const SizedBox(height: 10),
+                              BalanceContainer(
+                                balance: balance,
+                              ),
+                              const SizedBox(height: 10),
+                              HistorySection(
+                                transactions: transactionList,
+                                previousPage: previousPage,
+                                nextPage: nextPage,
+                                page: page,
+                                pageSize: pageSize,
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }
+                  },
                 ),
     );
   }

@@ -13,7 +13,8 @@ class PreferredGameDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxWidth: 300),  // Set maximum width constraint
       child: DropdownButtonFormField<String>(
         value: initialValue,
         decoration: InputDecoration(
@@ -40,4 +41,3 @@ class PreferredGameDropdown extends StatelessWidget {
     );
   }
 }
-  
