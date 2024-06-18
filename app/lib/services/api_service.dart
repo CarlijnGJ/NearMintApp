@@ -307,6 +307,23 @@ static Future<void> editMember({
       print('Error adding transaction: $e');
     }
   }
+
+    static Future<void> uploadExcel(List<int> fileBytes, String fileName) async {
+    String url = '$baseUrl/api/upload-excel';
+    var request = http.MultipartRequest('POST', Uri.parse(url))
+      ..files.add(http.MultipartFile.fromBytes(
+        'excelFile',
+        fileBytes,
+        filename: fileName,
+      ));
+
+    var response = await request.send();
+    if (response.statusCode == 200) {
+      print('File uploaded successfully');
+    } else {
+      print('File upload failed');
+    }
+  }
 }
 
 //Needed for checkCode, needs to be moved or recoded
