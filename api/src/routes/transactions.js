@@ -1,7 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const validateSessionKey = require('../middleware/validate-sessionkey');
+const parseExcel = require('../middleware/parse-excel').default;
+const multer = require('multer');
+const fs = require("fs");
+
 const connection = require('../config/db');
+const parsingExcelFile = require('../middleware/parse-excel');
+const upload = multer({ dest: 'uploads/' });
 
 // Define transaction-related routes
 
@@ -138,9 +144,35 @@ router.post('/addTransaction', validateSessionKey, (req, res) => {
     });
 });
 
+router.post('/upload-excel', upload.single('excelFile'), (req, res) => {
+    const filePath = req.file.path;
+    const filteredData = parsingExcelFile(filePath);
+    
+    var failedtransactionsPush = 0;
 
-
-
-
+    filteredData.forEach(data => {
+        if (data.__EMPTY !== undefined || data.__EMPTY_1 !== undefined) {
+        const insertTransactionQuery = `INSERT INTO NearMintGamingDB.TestTransactions (member_name, credit_total) VALUES (?, ?)`;
+        connection.query(insertTransactionQuery, [data.__EMPTY, data.__EMPTY_1], (err, results) => {
+            if (err) {
+                console.error('Error executing MySQL query:', err);
+                return res.status(500).json({ error: 'Internal server error' });
+            }
+        });
+        } else {
+            failedtransactionsPush++;
+        }
+    });
+    res.send('Excel file uploaded and parsed. Check the console for data. Failed transactions: ' + failedtransactionsPush);
+    let resultHandler = function (err) {
+        if (err) {
+            console.log("unlink failed", err);
+        } else {
+            console.log("file deleted");
+        }
+    }
+    fs.unlink(req.file.path, resultHandler);
+    failedtransactionsPush = 0;
+});
 
 module.exports = router;

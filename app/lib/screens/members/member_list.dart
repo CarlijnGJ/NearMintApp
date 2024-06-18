@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:app/components/topbar/topbar.dart';
 import 'package:app/services/api_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:file_picker/file_picker.dart';
 
 class MemberList extends StatefulWidget {
   const MemberList({Key? key}) : super(key: key);
@@ -75,6 +76,20 @@ class _MemberListState extends State<MemberList> {
     return userService.getUsersPerPage(page);
   }
 
+    void updateTransactionsButton() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['xlsx', 'xls'],
+    );
+
+    if (result != null && result.files.isNotEmpty) {
+      var fileBytes = result.files.first.bytes;
+      APIService.uploadExcel(fileBytes as List<int>, result.files.first.name);
+    } else {
+      print('No file selected');
+    }
+  }
+
   void addMemberButton() {
     Navigator.pop(context);
     Navigator.pushNamed(context, '/addmember');
@@ -101,6 +116,10 @@ class _MemberListState extends State<MemberList> {
                     onPressed: addMemberButton,
                     child: const Text('Add member'),
                   ),
+                                    ElevatedButton(
+                    onPressed: updateTransactionsButton,
+                    child: const Text('Update transactions'),
+                  )
                 ],
               ),
               SizedBox(height: 10),
