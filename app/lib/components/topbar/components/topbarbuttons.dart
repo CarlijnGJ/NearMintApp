@@ -93,6 +93,7 @@ class TopbarProfileButton extends StatelessWidget {
         Navigator.pushNamed(context, '/profile');
       },
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
             Icons.account_circle,

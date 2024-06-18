@@ -6,6 +6,26 @@ class TransactionList extends StatelessWidget {
 
   const TransactionList({Key? key, required this.transactions}) : super(key: key);
 
+  List<DataRow> checkTransactions() {
+    if (transactions.isEmpty) {
+      return [
+        const DataRow(cells: [
+          DataCell(Text('Empty')),
+          DataCell(Text('Empty')),
+          DataCell(Text('Empty')),
+        ]),
+      ];
+    } else {
+      return transactions.map(
+        (transaction) => DataRow(cells: [
+          DataCell(Text(transaction.change.toString())),
+          DataCell(Text(DateFormat('dd/MM/yyyy HH:mm').format(transaction.date))), // Format the date here
+          DataCell(Text(transaction.description)),
+        ]),
+      ).toList();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -16,13 +36,7 @@ class TransactionList extends StatelessWidget {
           DataColumn(label: Text('Date')),
           DataColumn(label: Text('Description')),
         ],
-        rows: transactions.map((transaction) => DataRow(
-          cells: [
-            DataCell(Text(transaction.change.toString())),
-            DataCell(Text(DateFormat('dd/MM/yyyy HH:mm').format(transaction.date))),
-            DataCell(Text(transaction.description)),
-          ],
-        )).toList(),
+        rows: checkTransactions(),
       ),
     );
   }
