@@ -1,19 +1,23 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:app/components/tealgradleft.dart';
-import 'package:app/components/tealgradright.dart';
-import 'package:app/components/textfield.dart';
-import 'package:app/components/topbar/topbar.dart';
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:crypto/crypto.dart';
+import 'package:encrypt/encrypt.dart' as encrypt;
+
+import 'package:app/components/button.dart';
+import 'package:app/components/textfield.dart'; // Make sure this import is correct and doesn't conflict with TextField from Flutter
 import 'package:app/screens/setup/components/prefered_game_picker.dart';
 import 'package:app/screens/setup/components/profile_image_picker.dart';
 import 'package:app/services/api_service.dart';
-import 'package:crypto/crypto.dart';
-import 'package:encrypt/encrypt.dart' as encrypt;
-import 'package:app/components/button.dart';
-import 'package:app/screens/addmember/inputvalidation.dart';
-import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:app/screens/addmember/inputvalidation.dart'; // Check if this import is correct and not conflicting
+
+// Other custom components imports that are used in your widget
+import 'package:app/components/tealgradleft.dart';
+import 'package:app/components/tealgradright.dart';
+import 'package:app/components/topbar/topbar.dart'; 
 
 class SetupPage extends StatefulWidget {
   const SetupPage({Key? key}) : super(key: key);
@@ -31,21 +35,12 @@ class _SetupPageState extends State<SetupPage> {
   final genderController = TextEditingController();
   final gameController = TextEditingController();
 
+  Map<String, String>? selectedImage; // Updated to Map<String, String>?
+
   @override
   void initState() {
     super.initState();
   }
-
-  String? selectedImage;
-
-  final List<Map<String, String>> images = [
-    {'name': 'Magic', 'path': '../assets/images/profilepics/PFP1.png'},
-    {'name': 'Sea', 'path': '../assets/images/profilepics/PFP2.png'},
-    {'name': 'Skull', 'path': '../assets/images/profilepics/PFP3.png'},
-    {'name': 'Vanguard', 'path': '../assets/images/profilepics/PFP4.png'},
-    {'name': 'Lorcana', 'path': '../assets/images/profilepics/PFP5.png'},
-    {'name': 'OnePiece', 'path': '../assets/images/profilepics/PFP6.png'},
-  ];
 
   String generateHashCode(String code) {
     var bytes = utf8.encode(code); // Convert the code to bytes
@@ -54,7 +49,7 @@ class _SetupPageState extends State<SetupPage> {
   }
 
   void finishRegister() async {
-    log("Data: ${nicknameController.text}, ${passwordController.text}, ${selectedImage.toString()} ${pwcheckController.text}, ${genderController.text}, ${gameController.text}.");
+    log("Data: ${nicknameController.text}, ${passwordController.text}, ${selectedImage?.toString()}, ${pwcheckController.text}, ${genderController.text}, ${gameController.text}.");
 
     String nickname = nicknameController.text;
     String password = passwordController.text;
@@ -122,7 +117,7 @@ class _SetupPageState extends State<SetupPage> {
 
       // Throw everything into the database
       await APIService.updateMember(code, nickname, hashedPassword,
-          selectedImage.toString(), gender, prefgame);
+          selectedImage?['path'] ?? '', gender, prefgame);
 
       // Attempt login
       await APIService.login(nickname, hashedPassword);
@@ -212,8 +207,7 @@ class _SetupPageState extends State<SetupPage> {
                             const SizedBox(height: 10),
                             ProfileImagePicker(
                               selectedImage: selectedImage,
-                              images: images,
-                              onImageSelected: (String? image) {
+                              onImageSelected: (Map<String, String>? image) {
                                 setState(() {
                                   selectedImage = image;
                                 });

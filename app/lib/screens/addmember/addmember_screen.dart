@@ -98,9 +98,6 @@ class _AddMemberPageState extends State<AddMemberPage> {
           encrypter.encrypt(phoneNumber, iv: iv).base64;
       await APIService.addMember(
           username, email, phoneNumber, hashedSecret);
-
-      // Navigator.pop(context);
-      // Navigator.pushNamed(context, '/members');
       setState(() {
         
       });
@@ -159,8 +156,6 @@ class _AddMemberPageState extends State<AddMemberPage> {
             )
           : Stack(
               children: [
-                const TealGradLeft(),
-                const TealGradRight(),
                 SafeArea(
                   child: Center(
                     child: Column(

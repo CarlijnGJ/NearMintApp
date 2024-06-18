@@ -13,8 +13,12 @@ class PreferredGameDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ConstrainedBox(
-      constraints: BoxConstraints(maxWidth: 300),  // Set maximum width constraint
+    // Calculate the width dynamically based on the screen size
+    double screenWidth = MediaQuery.of(context).size.width;
+    double dropdownWidth = screenWidth > 600 ? 500 : screenWidth * 0.9;
+
+    return Container(
+      width: dropdownWidth, // Use the calculated width here
       child: DropdownButtonFormField<String>(
         value: initialValue,
         decoration: InputDecoration(

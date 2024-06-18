@@ -1,11 +1,10 @@
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:app/components/button.dart';
 import 'package:app/components/textfield.dart';
 import 'package:app/screens/setup/components/prefered_game_picker.dart';
 import 'package:app/screens/setup/components/profile_image_picker.dart';
 import 'package:app/services/api_service.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class EditMemberPage extends StatefulWidget {
   const EditMemberPage({Key? key}) : super(key: key);
@@ -15,35 +14,20 @@ class EditMemberPage extends StatefulWidget {
 }
 
 class _EditMemberPageState extends State<EditMemberPage> {
-  String accountInfo = '';
   late TextEditingController nicknameController;
   late TextEditingController genderController;
   late TextEditingController prefgameController;
-  late String nickname = '';
-  late String gender = '';
-  late String prefgame = '';
-  late String avatar = '';
-
-  String? selectedImage;
-
-  final List<Map<String, String>> images = [
-    {'name': 'Magic', 'path': '../assets/images/profilepics/PFP1.png'},
-    {'name': 'Sea', 'path':'../assets/images/profilepics/PFP2.png'},
-    {'name': 'Skull', 'path': '../assets/images/profilepics/PFP3.png'},
-    {'name': 'Vanguard', 'path': '../assets/images/profilepics/PFP4.png'},
-    {'name': 'Lorcana', 'path': '../assets/images/profilepics/PFP5.png'},
-    {'name': 'OnePiece', 'path': '../assets/images/profilepics/PFP6.png'},
-  ];
-
-  // Ensure prefgame is not null and is present in gameOptions
-  String initialValue = 'None';
+  String nickname = '';
+  String gender = '';
+  String prefgame = '';
+  Map<String, String>? avatar;
 
   @override
   void initState() {
     super.initState();
-    nicknameController = TextEditingController(text: accountInfo);
-    genderController = TextEditingController(text: accountInfo);
-    prefgameController = TextEditingController(text: accountInfo);
+    nicknameController = TextEditingController();
+    genderController = TextEditingController();
+    prefgameController = TextEditingController();
     fetchMemberData();
   }
 
@@ -55,7 +39,6 @@ class _EditMemberPageState extends State<EditMemberPage> {
     super.dispose();
   }
 
-  //reuse
   Future<void> fetchMemberData() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -65,41 +48,25 @@ class _EditMemberPageState extends State<EditMemberPage> {
             await APIService.getMember(sessionKey);
         setState(() {
           nickname = memberData['nickname'];
-          avatar = memberData['avatar'];
-          bool avatarExistsInList =
-              images.any((element) => element['path'] == avatar);
-          if (!avatarExistsInList && avatar.isNotEmpty) {
-            images.insert(0, {'name': 'Avatar', 'path': avatar});
-          }
-          selectedImage = avatar; // Set selectedImage to the avatar path
-
+          avatar = {'name': 'Avatar', 'path': memberData['avatar']};
           gender = memberData['gender'];
-          prefgame = memberData['prefgame'];
-          initialValue = prefgame ?? 'None';
-          // isLoading = false;
-          // isError = false;
+          prefgame = memberData['prefgame'] ?? '';
+          nicknameController.text = nickname;
+          genderController.text = gender;
+          prefgameController.text = prefgame;
         });
       } else {
-        setState(() {
-          // isLoading = false;
-          // isError = true;
-          // errorMessage = 'Please login again'; //Session key is not available
-        });
+        // Handle session key not available
       }
     } catch (e) {
-      setState(() {
-        // isLoading = false;
-        // isError = true;
-        // errorMessage = 'Failed to fetch member data: $e';
-      });
+      // Handle fetch failure
     }
   }
 
-  Future<void> updateAccountInfo(String newInfo) async {
+  Future<void> updateAccountInfo() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final sessionKey = prefs.getString('session_key');
-
       await APIService.editMember(
         sessionKey: sessionKey!,
         nickname:
@@ -107,12 +74,12 @@ class _EditMemberPageState extends State<EditMemberPage> {
         gender: genderController.text.isNotEmpty ? genderController.text : null,
         prefgame:
             prefgameController.text.isNotEmpty ? prefgameController.text : null,
-        avatar: selectedImage,
+        avatar: avatar != null ? avatar!['path'] : null,
       );
-
       Navigator.pushReplacementNamed(context, '/profile');
     } catch (e) {
-      print(e);
+      print('Failed to update member: $e');
+      // Handle update failure
     }
   }
 
@@ -125,58 +92,43 @@ class _EditMemberPageState extends State<EditMemberPage> {
       body: Padding(
         padding: EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          
           children: [
             CustomTextField(
               controller: nicknameController,
               labelText: 'Nickname',
               obscureText: false,
-              hintText: nickname,
+              hintText: 'Enter nickname',
             ),
+            const SizedBox(height: 10),
             CustomTextField(
               controller: genderController,
               labelText: 'Gender',
               obscureText: false,
-              hintText: gender,
+              hintText: 'Enter gender',
             ),
-            Center(
-              child: Container(
-                width: 600,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      flex: 1,
-                      child: PreferredGameDropdown(
-                        initialValue: 'None',
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            prefgameController.text = newValue ?? 'None';
-                          });
-                        },
-                      ),
-                    ),
-                    SizedBox(width: 20),
-                    Expanded(
-                      flex: 1,
-                      child: ProfileImagePicker(
-                        selectedImage: selectedImage,
-                        images: images,
-                        onImageSelected: (String? image) {
-                          setState(() {
-                            selectedImage = image;
-                          });
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            const SizedBox(height: 10),
+            PreferredGameDropdown(
+              initialValue: 'None',
+              onChanged: (String? newValue) {
+                setState(() {
+                  prefgameController.text = newValue ?? 'None';
+                });
+              },
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 10),
+            ProfileImagePicker(
+              selectedImage: avatar,
+              onImageSelected: (Map<String, String>? image) {
+                setState(() {
+                  avatar = image;
+                });
+              },
+            ),
+            const SizedBox(height: 20),
             CustomButton(
               onTap: () {
-                updateAccountInfo('');
+                updateAccountInfo();
               },
               text: 'Save Changes',
             ),
