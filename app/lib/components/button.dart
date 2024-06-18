@@ -4,13 +4,18 @@ class CustomButton extends StatelessWidget {
   final Function()? onTap;
   final String text;
 
-  const CustomButton({super.key, required this.text, required this.onTap});
+  const CustomButton({Key? key, required this.text, required this.onTap}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+
+    // Calculate width based on screen size, scaling between 400 and 300
+    double buttonWidth = screenWidth > 600 ? 500 : screenWidth * 0.9;
+
     return Center(
-      child: ConstrainedBox(
-        constraints: BoxConstraints(maxWidth: 600),
+      child: Container(
+        width: buttonWidth,
         child: GestureDetector(
           onTap: onTap,
           child: Container(

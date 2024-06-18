@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:app/screens/members/components/list.dart';
+import 'package:app/screens/members/components/member_listwidget.dart';
 import 'package:app/screens/members/components/page_selection.dart';
 import 'package:app/screens/members/components/user.dart';
 import 'package:app/screens/members/components/userservice.dart';
@@ -91,7 +91,7 @@ class _MemberListState extends State<MemberList> {
               const SizedBox(height: 10),
               const Text('Members', style: TextStyle(fontSize: 20)),
               const SizedBox(height: 10),
-              ListWidget(
+              MemberListWidget(
                 memberList: usersPerPage(page),
               ),
               Row(
@@ -103,6 +103,7 @@ class _MemberListState extends State<MemberList> {
                   ),
                 ],
               ),
+              SizedBox(height: 10),
               PageSelectionRow(
                   page: page,
                   itemsPerPage: pageSize,

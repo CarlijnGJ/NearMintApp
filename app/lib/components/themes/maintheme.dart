@@ -9,7 +9,7 @@ final ThemeData mainTheme = ThemeData(
         onSecondary: Colors.white,
         tertiary: Color.fromRGBO(119, 176, 170, 1),
         onTertiary: Colors.black,
-        background: Color.fromRGBO(0, 60, 67, 1),
+        background: Color.fromRGBO(30, 37, 37, 1),
         onBackground: Colors.white,
         surface: Colors.black,
         onSurface: Colors.white,
