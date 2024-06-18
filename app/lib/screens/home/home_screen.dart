@@ -24,7 +24,6 @@ class _HomePageState extends State<HomePage> {
   bool isLoggedIn = false;
   String role = 'Visitor';
   bool isLoading = true;
-
   Future<void> fetchRoleAndInitialize() async {
     final prefs = await SharedPreferences.getInstance();
     final sessionKey = prefs.getString('session_key');
@@ -67,7 +66,8 @@ class _HomePageState extends State<HomePage> {
     if (role == 'Visitor') {
       return [
         const NavButton(
-          assetname: '../../../Images/account-login-xxl.png',
+          //go to asset map
+          assetname: '../assets/images/user-3-xxl.png'  ,
           description: 'Log in',
           url: '/login',
         ),
@@ -75,11 +75,11 @@ class _HomePageState extends State<HomePage> {
     } else if (role == 'Member') {
       return [
         const NavButton(
-            assetname: '../../../Images/user-3-xxl.png',
+            assetname: '../assets/images/user-3-xxl.png',
             description: 'Profile',
             url: '/profile'),
         const NavButton(
-          assetname: '../../../Images/account-login-xxl.png',
+          assetname: '../assets/images/account-login-xxl.png',
           description: 'Log out',
           url: '/',
         ),
@@ -87,15 +87,15 @@ class _HomePageState extends State<HomePage> {
     } else if (role == 'Admin') {
       return [
         const NavButton(
-            assetname: '../../../Images/user-3-xxl.png',
+            assetname: '../assets/images/user-3-xxl.png',
             description: 'Profile',
             url: '/profile'),
         const NavButton(
-            assetname: '../../../Images/add-user-2-xxl.png',
+            assetname: '../assets/images/add-user-2-xxl.png',
             description: 'Members',
             url: '/members'),
         const NavButton(
-            assetname: '../../../Images/account-login-xxl.png',
+            assetname: '../assets/images/account-login-xxl.png',
             description: 'Log out',
             url: '/'),
       ];
@@ -105,6 +105,10 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    double btnSize = MediaQuery.of(context).size.height * 0.7;
+    if (btnSize > 300) {
+      btnSize = 300; // Limit maxHeight to 400px if it exceeds
+    }
     if (isLoading) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
@@ -118,8 +122,6 @@ class _HomePageState extends State<HomePage> {
           ),
           child: Stack(
             children: [
-              const TealGradLeft(),
-              const TealGradRight(),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Column(
@@ -135,17 +137,18 @@ class _HomePageState extends State<HomePage> {
                     const SizedBox(height: 16.0),
                     LayoutBuilder(
                       builder: (context, constraints) {
-                        if (constraints.maxWidth > 600) {
+                        if (constraints.maxWidth > 950) {
                           return Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: buildButtonsForRole(),
                           );
                         } else {
                           return SizedBox(
-                            height: MediaQuery.of(context).size.height *
-                                0.7, // You can adjust this value according to your needs
+                            
+                            height: btnSize,
+                            width: btnSize,
                             child: GridView.count(
-                              crossAxisCount: 2,
+                              crossAxisCount: role == 'Visitor' ? 1 : 2,
                               shrinkWrap: true,
                               children: buildButtonsForRole(),
                             ),

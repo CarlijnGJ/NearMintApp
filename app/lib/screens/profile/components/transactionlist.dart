@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // Import the intl package
+import 'package:intl/intl.dart';
 
 class TransactionList extends StatelessWidget {
   final List transactions;
-  final double width;
 
-  const TransactionList({Key? key, required this.transactions, required this.width}) : super(key: key);
+  const TransactionList({Key? key, required this.transactions}) : super(key: key);
 
   List<DataRow> checkTransactions() {
     if (transactions.isEmpty) {
@@ -31,18 +30,14 @@ class TransactionList extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      child: Container(
-        width: width, // Set width to screen width for debugging
-        child: DataTable(
-          columns: const [
-            DataColumn(label: Text('Change')),
-            DataColumn(label: Text('Date')),
-            DataColumn(label: Text('Description')),
-          ],
-          rows: checkTransactions(),
-        ),
+      child: DataTable(
+        columns: const [
+          DataColumn(label: Text('Change')),
+          DataColumn(label: Text('Date')),
+          DataColumn(label: Text('Description')),
+        ],
+        rows: checkTransactions(),
       ),
     );
   }
 }
-  

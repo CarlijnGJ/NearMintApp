@@ -92,82 +92,70 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: const TopBar(),
-        body: Stack(
-          children: [
-            const TealGradLeft(),
-            const TealGradRight(),
-            SafeArea(
-              child: Center(
-                child: Column(
-                  children: [
-                    const SizedBox(height: 20),
-                    
-                    const Text(
-                      'Credentials',
-                      style: TextStyle(
-                        fontSize: 20,
-                      ),
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: const TopBar(),
+    body: Stack(
+      children: [
+        SafeArea(
+          child: SingleChildScrollView(
+            child: Center(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(height: 20),
+                  const Text(
+                    'Credentials',
+                    style: TextStyle(
+                      fontSize: 20,
                     ),
-                    const SizedBox(height: 20),
-
-                    // username textfield
-                    CustomTextField(
-                      controller: usernameController,
-                      labelText: 'Username',
-                      hintText: 'Peter',
-                      obscureText: false,
+                  ),
+                  const SizedBox(height: 20),
+                  CustomTextField(
+                    controller: usernameController,
+                    labelText: 'Username',
+                    hintText: 'Peter',
+                    obscureText: false,
+                  ),
+                  const SizedBox(height: 10),
+                  CustomTextField(
+                    controller: passwordController,
+                    labelText: 'Password',
+                    obscureText: true,
+                    errorText: errorMessage,
+                  ),
+                  const SizedBox(height: 10),
+                  CustomButton(text: 'Log in', onTap: loginUser),
+                  const SizedBox(height: 30),
+                  const Divider(),
+                  const SizedBox(height: 20),
+                  const Text(
+                    'Register',
+                    style: TextStyle(
+                      fontSize: 20,
                     ),
-
-                    const SizedBox(height: 10),
-
-                    // password textfield
-                    CustomTextField(
-                      controller: passwordController,
-                      labelText: 'Password',
-                      obscureText: true,
-                      errorText: errorMessage,
-                    ),
-
-                    const SizedBox(height: 10),
-
-                    CustomButton(text: 'Log in', onTap: loginUser),
-
-                    const SizedBox(height: 30),
-
-                    const Divider(),
-
-                    const SizedBox(height: 20),
-
-                    const Text(
-                      'Register',
-                      style: TextStyle(
-                        fontSize: 20,
-                      ),
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    //code textfield
-                    CustomTextField(
-                      controller: codeController,
-                      labelText: 'Token',
-                      hintText: '6 characters',
-                      obscureText: false,
-                      errorText: setupErrorMessage,
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    CustomButton(text: 'Register', onTap: checkValidity),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 20),
+                  CustomTextField(
+                    controller: codeController,
+                    labelText: 'Token',
+                    hintText: '6 characters',
+                    obscureText: false,
+                    errorText: setupErrorMessage,
+                  ),
+                  const SizedBox(height: 20),
+                  CustomButton(text: 'Register', onTap: checkValidity),
+                  const SizedBox(height: 20),
+                ],
               ),
             ),
-          ],
-        ));
-  }
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
 }
