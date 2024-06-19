@@ -16,7 +16,7 @@ services:
       DB_HOST: 157.245.73.11
       DB_PORT: 3307
       DB_USER: Member
-      DB_PASSWORD: "a4fi$adsfj(ower!oadv30"
+      DB_PASSWORD: "a4fiadsfj(ower!oadv30"
       DB_DATABASE: NearMintGamingDB
     ports:
       - 3000:3000

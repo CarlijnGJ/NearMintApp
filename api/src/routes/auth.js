@@ -58,12 +58,12 @@ router.post('/login', (req, res) => {
     const query = 'SELECT * FROM Members WHERE nickname = ?';
     connection.query(query, [nickname], (err, results) => {
         if (err) {
-            console.error('Error executing MySQL query:', err);
+            //console.error('Error executing MySQL query:', err);
             return res.status(500).json({ error: 'Internal server error' });
         }
 
         if (results.length === 0 || results[0].password !== password) {
-            console.error('Error authorizing: ', err);
+            //console.error('Error authorizing: ', err);
             return res.status(401).json({ error: 'Incorrect nickname or password' });
         }
 
@@ -73,7 +73,7 @@ router.post('/login', (req, res) => {
         const sessionQuery = 'INSERT INTO Session (session_key, member_id) VALUES (?, ?)';
         connection.query(sessionQuery, [sessionKey, memberId], (err) => {
             if (err) {
-                console.error('Error inserting session:', err);
+                //console.error('Error inserting session:', err);
                 return res.status(500).json({ error: 'Internal server error' });
             }
             res.status(201).json({ session_key: sessionKey });

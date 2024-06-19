@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:async';
 import 'package:app/events/login_events.dart';
+import 'package:app/util/auth_check_util.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:app/services/api_service.dart';
@@ -12,6 +13,7 @@ class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _HomePageState createState() => _HomePageState();
 }
 
@@ -55,6 +57,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
+    CheckAuthUtil.MemberOrAdmin(context);
     super.initState();
     fetchRoleAndInitialize();
     logoutSubscription = eventBus.on<LogoutEvent>().listen((event) {
@@ -79,6 +82,7 @@ class _HomePageState extends State<HomePage> {
           isLoggedIn = false;
           role = 'Visitor';
         });
+        // ignore: use_build_context_synchronously
         Navigator.pushReplacementNamed(context, '/login');
       } else {
         log('session key not found');
@@ -96,12 +100,12 @@ class _HomePageState extends State<HomePage> {
       return [];
     } else if (role == 'Member') {
       return [
-        NavButtonWithHover(
+        const NavButtonWithHover(
           assetname: '../assets/images/user-3-xxl.png',
           description: 'Profile',
           url: '/profile',
         ),
-        NavButtonWithHover(
+        const NavButtonWithHover(
           assetname: '../assets/images/account-login-xxl.png',
           description: 'Log out',
           url: '/',
@@ -109,17 +113,17 @@ class _HomePageState extends State<HomePage> {
       ];
     } else if (role == 'Admin') {
       return [
-        NavButtonWithHover(
+        const NavButtonWithHover(
           assetname: '../assets/images/user-3-xxl.png',
           description: 'Profile',
           url: '/profile',
         ),
-        NavButtonWithHover(
+        const NavButtonWithHover(
           assetname: '../assets/images/add-user-2-xxl.png',
           description: 'Members',
           url: '/members',
         ),
-        NavButtonWithHover(
+        const NavButtonWithHover(
           assetname: '../assets/images/account-login-xxl.png',
           description: 'Log out',
           url: '/',
@@ -131,10 +135,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final maxBtnSize = screenWidth * 0.7;
-    final double constrainedBtnSize = maxBtnSize > 250 ? 250 : maxBtnSize;
-
     if (isLoading) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),

@@ -1,9 +1,8 @@
-import 'dart:io';
-
 import 'package:app/screens/members/components/member_listwidget.dart';
-import 'package:app/screens/members/components/page_selection.dart';
 import 'package:app/screens/members/components/user.dart';
 import 'package:app/screens/members/components/userservice.dart';
+import 'package:app/util/auth_check_util.dart';
+import 'package:app/util/role_util.dart';
 import 'package:flutter/material.dart';
 import 'package:app/components/topbar/topbar.dart';
 import 'package:app/services/api_service.dart';
@@ -25,6 +24,7 @@ class _MemberListState extends State<MemberList> {
 
   @override
   void initState() {
+    CheckAuthUtil.Admin(context);
     super.initState();
     fetchMembers(); // Call fetchMembers in initState
   }
@@ -52,8 +52,9 @@ class _MemberListState extends State<MemberList> {
             });
           }
         }
+      // ignore: empty_catches
       } catch (e) {
-        print('Error: $e');
+        
       }
     }
   }
@@ -76,17 +77,20 @@ class _MemberListState extends State<MemberList> {
     return userService.getUsersPerPage(page);
   }
 
-    void updateTransactionsButton() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['xlsx', 'xls'],
-    );
+  void updateTransactionsButton() async {
+    if (await RoleUtil.fetchRole() == 'Admin') {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['xlsx', 'xls'],
+      );
 
-    if (result != null && result.files.isNotEmpty) {
-      var fileBytes = result.files.first.bytes;
-      APIService.uploadExcel(fileBytes as List<int>, result.files.first.name);
-    } else {
-      print('No file selected');
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final sessionKey = prefs.getString('session_key');
+      if (result != null && result.files.isNotEmpty) {
+        var fileBytes = result.files.first.bytes;
+        await APIService.uploadExcel(
+            fileBytes as List<int>, result.files.first.name, sessionKey!);
+      }
     }
   }
 
@@ -95,30 +99,30 @@ class _MemberListState extends State<MemberList> {
     Navigator.pushNamed(context, '/addmember');
   }
 
-@override
-Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: const TopBar(),
-    body: SafeArea(
-      child: SingleChildScrollView(
-        child: Center(
-          child: Column(
-            children: [
-              const SizedBox(height: 10),
-              const Text('Members', style: TextStyle(fontSize: 20)),
-              const SizedBox(height: 10),
-              MemberListWidget(
-                memberList: usersPerPage(page),
-                page: page,
-                pageSize: pageSize,
-                membersList: membersList,
-                previousPage: previousPage,
-                nextPage: nextPage,
-              ),
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: const TopBar(),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Center(
+            child: Column(
+              children: [
+                const SizedBox(height: 10),
+                const Text('Members', style: TextStyle(fontSize: 20)),
+                const SizedBox(height: 10),
+                MemberListWidget(
+                  memberList: usersPerPage(page),
+                  page: page,
+                  pageSize: pageSize,
+                  membersList: membersList,
+                  previousPage: previousPage,
+                  nextPage: nextPage,
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Container(
+                    SizedBox(
                       width: 180,
                       child: ElevatedButton(
                         onPressed: addMemberButton,
@@ -126,7 +130,7 @@ Widget build(BuildContext context) {
                       ),
                     ),
                     const SizedBox(width: 10),
-                    Container(
+                    SizedBox(
                       width: 180,
                       child: ElevatedButton(
                         onPressed: updateTransactionsButton,
@@ -135,14 +139,12 @@ Widget build(BuildContext context) {
                     ),
                   ],
                 ),
-              const SizedBox(height: 10),
-
-            ],
+                const SizedBox(height: 10),
+              ],
+            ),
           ),
         ),
       ),
-    ),
-  );
-}
-
+    );
+  }
 }

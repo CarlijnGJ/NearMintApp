@@ -14,7 +14,7 @@ class CustomButton extends StatelessWidget {
     double buttonWidth = screenWidth > 600 ? 500 : screenWidth * 0.9;
 
     return Center(
-      child: Container(
+      child: SizedBox(
         width: buttonWidth,
         child: GestureDetector(
           onTap: onTap,

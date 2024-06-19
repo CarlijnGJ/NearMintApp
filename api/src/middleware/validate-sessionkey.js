@@ -12,7 +12,7 @@ function validateSessionKey(req, res, next) {
     const query = 'SELECT member_id FROM Session WHERE session_key = ?';
     connection.query(query, [sessionKey], (err, results) => {
         if (err) {
-            console.error('Error executing MySQL query:', err);
+            //console.error('Error executing MySQL query:', err);
             return res.status(500).json({ error: 'Internal server error' });
         }
 

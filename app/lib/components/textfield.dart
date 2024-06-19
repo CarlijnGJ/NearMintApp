@@ -25,7 +25,7 @@ class CustomTextField extends StatelessWidget {
     double textFieldWidth = screenWidth > 600 ? 500 : screenWidth * 0.9;
 
     return Center(
-      child: Container(
+      child: SizedBox(
         width: textFieldWidth,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 25.0),
@@ -37,7 +37,7 @@ class CustomTextField extends StatelessWidget {
                   padding: const EdgeInsets.only(bottom: 8.0),
                   child: Text(
                     labelText!,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
                     ),
@@ -45,7 +45,7 @@ class CustomTextField extends StatelessWidget {
                 ),
               Theme(
                 data: Theme.of(context).copyWith(
-                  textSelectionTheme: TextSelectionThemeData(
+                  textSelectionTheme: const TextSelectionThemeData(
                     selectionColor: Colors.blue, // Set selection color to blue
                   ),
                 ),

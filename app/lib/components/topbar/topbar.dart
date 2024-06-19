@@ -18,6 +18,7 @@ class TopBar extends StatefulWidget implements PreferredSizeWidget {
   const TopBar({Key? key}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _TopBarState createState() => _TopBarState();
 
   @override
@@ -57,8 +58,8 @@ class _TopBarState extends State<TopBar> {
             loginButtonText = 'Logout';
           });
         }
+      // ignore: empty_catches
       } catch (e) {
-        print('Error: $e');
       }
     } else {
       if (mounted) {
@@ -73,33 +74,11 @@ class _TopBarState extends State<TopBar> {
 
   Future<void> onTap() async {
     try {
-      // final prefs = await SharedPreferences.getInstance();
-      // final sessionKey = prefs.getString('session_key');
-      // if (sessionKey != null) {
-      //   await APIService.logout(sessionKey);
-      //   await prefs.remove(
-      //       'session_key'); // Remove the session key from SharedPreferences
-      // } else {
-      //   print('session key not found');
-      // }
       eventBus.fire(LogoutEvent());
       eventBus.fire(RefreshTopbarEvent(false));
+    // ignore: empty_catches
     } catch (e) {
-      print("Logout failed: $e");
     }
-
-    //     try {
-    //   // Call the login method from APIService
-    //   // final token =
-    //   await APIService.login(username, password);
-    //   // SharedPreferences prefs = await SharedPreferences.getInstance();
-    //   // final sessionKey = token['session_key'];
-    //   // prefs.setString('session_key', sessionKey);
-
-    //   eventBus.fire(RefreshTopbarEvent(true));
-    // } catch (e) {
-    //   // Handle login error (e.g., show an error message)
-    //   print('Login failed: $e');
   }
 
   Future<List<Widget>> getTopbarButtons(String role) async {

@@ -1,6 +1,7 @@
 import 'package:app/screens/addmember/addmember_screen.dart';
 import 'package:app/screens/addtransaction/addtransaction.dart';
 import 'package:app/screens/editmember/editmember.dart';
+import 'package:app/screens/error/error_screen.dart';
 import 'package:app/screens/members/components/user.dart';
 import 'package:app/screens/members/member_list.dart';
 import 'package:app/screens/profile/profile_screen.dart';
@@ -37,12 +38,13 @@ class AppBarApp extends StatelessWidget {
           '/profile': (context) => const ProfilePage(),
           '/addmember': (context) => const AddMemberPage(),
           '/setup': (context) => const SetupPage(),
+          '/error': (context) => const LoginErrorWidget(),
           '/addtransaction': (context) {
             final arguments = ModalRoute.of(context)!.settings.arguments;
-            if (arguments == null || !(arguments is User)) {
+            if (arguments == null || arguments is! User) {
               return const AddTransactionPage(member: null);
             }
-            final User member = arguments as User;
+            final User member = arguments;
             return AddTransactionPage(member: member);
           },
           '/editmember': (context) => const EditMemberPage()

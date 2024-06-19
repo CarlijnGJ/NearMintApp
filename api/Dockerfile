@@ -15,7 +15,7 @@ ENV NODE_ENV production
 ENV DB_HOST 157.245.73.11
 ENV DB_PORT 3307
 ENV DB_USER Member
-ENV DB_PASSWORD "a4fi$adsfj(ower!oadv30"
+ENV DB_PASSWORD "a4fiadsfj(ower!oadv30"
 ENV DB_DATABASE NearMintGamingDB
 
 
@@ -29,9 +29,8 @@ RUN --mount=type=bind,source=package.json,target=package.json \
     --mount=type=bind,source=package-lock.json,target=package-lock.json \
     --mount=type=cache,target=/root/.npm \
     npm ci --omit=dev
-
+RUN nmp install pm2
 # Run the application as a non-root user.
-USER node
 
 # Copy the rest of the source files into the image.
 COPY . .
@@ -40,4 +39,4 @@ COPY . .
 EXPOSE 3000
 
 # Run the application.
-CMD node src/app.js
+CMD ["pm2-runtime", "src/app.js"]

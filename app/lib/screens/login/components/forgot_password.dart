@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class ForgotPasswordButton extends StatelessWidget {
   final VoidCallback onPressed;
 
-  const ForgotPasswordButton({required this.onPressed});
+  const ForgotPasswordButton({super.key, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {

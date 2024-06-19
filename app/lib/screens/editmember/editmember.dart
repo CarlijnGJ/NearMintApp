@@ -1,3 +1,4 @@
+import 'package:app/util/auth_check_util.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:app/components/button.dart';
@@ -10,6 +11,7 @@ class EditMemberPage extends StatefulWidget {
   const EditMemberPage({Key? key}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _EditMemberPageState createState() => _EditMemberPageState();
 }
 
@@ -24,6 +26,7 @@ class _EditMemberPageState extends State<EditMemberPage> {
 
   @override
   void initState() {
+    CheckAuthUtil.MemberOrAdmin(context);
     super.initState();
     nicknameController = TextEditingController();
     genderController = TextEditingController();
@@ -76,10 +79,10 @@ class _EditMemberPageState extends State<EditMemberPage> {
             prefgameController.text.isNotEmpty ? prefgameController.text : null,
         avatar: avatar != null ? avatar!['path'] : null,
       );
+      // ignore: use_build_context_synchronously
       Navigator.pushReplacementNamed(context, '/profile');
+    // ignore: empty_catches
     } catch (e) {
-      print('Failed to update member: $e');
-      // Handle update failure
     }
   }
 
@@ -87,10 +90,10 @@ class _EditMemberPageState extends State<EditMemberPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Member'),
+        title: const Text('Edit Member'),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           
           children: [

@@ -10,9 +10,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 class UserActivityTracker extends StatefulWidget {
   final Widget child;
 
-  const UserActivityTracker({required this.child});
+  const UserActivityTracker({super.key, required this.child});
 
   @override
+  // ignore: library_private_types_in_public_api
   _UserActivityTrackerState createState() => _UserActivityTrackerState();
 }
 
@@ -35,14 +36,12 @@ class _UserActivityTrackerState extends State<UserActivityTracker> {
     super.initState();
     // Subscribe to login and logout events
     eventBus.on<LoginEvent>().listen((event) {
-      print("fire login event");
       setState(() {
         _isUserLoggedIn = true;
         _startKeepAliveTimer();
       });
     });
     eventBus.on<LogoutEvent>().listen((event) {
-      print("fire logout event");
       setState(() {
         _isUserLoggedIn = false;
         _idleTimer.cancel();
@@ -61,12 +60,10 @@ class _UserActivityTrackerState extends State<UserActivityTracker> {
         setState(() {
           _isUserLoggedIn = true;
         });
-      } else {
-        print('session key not found');
       }
       eventBus.fire(RefreshWidgetAfterSessionUpdateEvent());
     } catch (e) {
-      print("Logout failed: $e");
+      // Handle error logic
     }
 
     if (_isUserLoggedIn) {
@@ -104,13 +101,9 @@ class _UserActivityTrackerState extends State<UserActivityTracker> {
       await prefs.remove(
           'session_key'); // Remove the session key from SharedPreferences
       eventBus.fire(LogoutEvent());
-    } else {
-      print('session key not found');
-    }
+    } else {}
     // Navigate to the home page
-    print("Refresh buttons homepage");
     eventBus.fire(RefreshWidgetAfterSessionUpdateEvent());
-    print('User is idle. Logging out...');
   }
 
   void _onUserActivity(PointerEvent details) {
@@ -118,7 +111,6 @@ class _UserActivityTrackerState extends State<UserActivityTracker> {
       setState(() {
         _isUserActive = true;
       });
-      print('User is active.');
       _resetActivityTimer();
     }
   }
@@ -127,7 +119,6 @@ class _UserActivityTrackerState extends State<UserActivityTracker> {
     if (_isUserActive && _isUserLoggedIn) {
       _startIdleTimer();
       _isUserActive = false;
-      print('User is idle for a bit');
     }
   }
 

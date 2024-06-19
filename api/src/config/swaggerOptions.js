@@ -18,10 +18,6 @@ const options = {
       url: 'http://localhost:3000',
       description: 'Development',
     },
-    // {
-    //   url: 'https://nearmintgaming.com',
-    //   description: 'Production server',
-    // },
   ],
   // Paths to files containing OpenAPI definitions
   apis: ['./routes/*.js'],

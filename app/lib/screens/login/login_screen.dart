@@ -2,8 +2,6 @@ import 'package:app/components/textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:app/components/customexception.dart';
-import 'package:app/components/tealgradleft.dart';
-import 'package:app/components/tealgradright.dart';
 import 'package:app/components/topbar/topbar.dart';
 import 'package:app/components/button.dart';
 import 'package:app/events/login_events.dart';
@@ -16,6 +14,7 @@ class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _LoginPageState createState() => _LoginPageState();
 }
 
@@ -37,6 +36,7 @@ class _LoginPageState extends State<LoginPage> {
     final sessionKey = prefs.getString('session_key');
     if (sessionKey != null) {
       // Navigate to home page if session key exists
+      // ignore: use_build_context_synchronously
       Navigator.pushReplacementNamed(context, '/');
     }
   }
@@ -70,10 +70,6 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  void forgotPassword() {
-    print("Forgot Password button pressed!");
-  }
-
   void checkValidity() async {
     setupErrorMessage = null;
     final code = codeController.text;
@@ -92,7 +88,9 @@ class _LoginPageState extends State<LoginPage> {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString('token', hashedCode);
 
+        // ignore: use_build_context_synchronously
         Navigator.pop(context);
+        // ignore: use_build_context_synchronously
         Navigator.pushNamed(context, '/setup');
         eventBus.fire(RefreshTopbarEvent(true));
       } else {
@@ -129,7 +127,7 @@ class _LoginPageState extends State<LoginPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    SizedBox(height: 30),
+                    const SizedBox(height: 30),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -178,7 +176,7 @@ class _LoginPageState extends State<LoginPage> {
                     CustomButton(text: 'Log in', onTap: loginUser),
                     const SizedBox(height: 30),
                     Center(
-                      child: Container(
+                      child: SizedBox(
                         width: screenWidth > 600 ? 500 : screenWidth * 0.9,
                         child: Divider(
                           color: Colors.white.withOpacity(0.5), // Set color with 50% opacity

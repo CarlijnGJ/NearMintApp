@@ -12,11 +12,6 @@ class RoleUtil {
       throw 'User';
     } catch (e) {
       return 'User';
-      // setState(() {
-      //   isError = true;
-      //   errorMessage = 'Failed to fetch member data: $e';
-      // });
     }
-    return 'User';
   }
 }

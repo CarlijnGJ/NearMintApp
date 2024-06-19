@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'package:app/components/customexception.dart';
 import 'package:app/screens/profile/components/transaction.dart';
 import 'package:http/http.dart' as http;
@@ -119,14 +118,11 @@ static Future<Map<String, dynamic>> login(String nickname, String password) asyn
       // Check if the request was successful (status code 200)
       if (response.statusCode == 200) {
         // Member added successfully
-        print('Member added successfully');
       } else {
         // Handle error response
-        print('Failed to add member: ${response.statusCode}');
       }
     } catch (e) {
       // Handle network errors
-      print('Error adding member: $e');
     }
   }
 
@@ -146,8 +142,6 @@ static Future<void> editMember({
   if (memberId == null) {
     throw 'Failed to retrieve member_id';
   }
-
-  print('Member ID: $memberId');
 
   final Map<String, dynamic> requestBody = {
     'member_id': memberId, // Ensure the key matches the backend expectation
@@ -224,7 +218,6 @@ static Future<void> editMember({
     );
 
     if (response.statusCode == 200) {
-      print("Member data updated successfully.");
     } else if (response.statusCode == 503) {
       throw HttpExceptionWithStatusCode("Duplicate entry in database", 503);
     } else {
@@ -295,19 +288,15 @@ static Future<void> editMember({
 
       // Check if the request was successful (status code 201)
       if (response.statusCode == 201) {
-        print('Transaction added successfully');
       } else {
         // Handle error response
-        print('Failed to add transaction: ${response.statusCode}');
-        print('Response body: ${response.body}');
       }
     } catch (e) {
       // Handle network errors
-      print('Error adding transaction: $e');
     }
   }
 
-    static Future<void> uploadExcel(List<int> fileBytes, String fileName) async {
+    static Future<void> uploadExcel(List<int> fileBytes, String fileName, String sessionKey) async {
     String url = '$baseUrl/api/upload-excel';
     var request = http.MultipartRequest('POST', Uri.parse(url))
       ..files.add(http.MultipartFile.fromBytes(
@@ -315,12 +304,11 @@ static Future<void> editMember({
         fileBytes,
         filename: fileName,
       ));
+    request.headers['auth'] = sessionKey;
 
     var response = await request.send();
     if (response.statusCode == 200) {
-      print('File uploaded successfully');
     } else {
-      print('File upload failed');
     }
   }
 }

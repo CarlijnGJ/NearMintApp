@@ -29,11 +29,13 @@ class TopbarLogoutButton extends StatelessWidget {
               if (onTap != null) {
                 await onTap!();
               }
+              // ignore: use_build_context_synchronously
               Navigator.pop(context); // Close the current screen
+              // ignore: use_build_context_synchronously
               Navigator.pushNamed(context, '/');
             }
           : null,
-      child: Column(
+      child: const Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
@@ -88,7 +90,7 @@ class TopbarMembersButton extends StatelessWidget {
       onPressed: () {
         Navigator.pushNamed(context, '/members');
       },
-      child: Column(
+      child: const Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
@@ -116,7 +118,7 @@ class TopbarProfileButton extends StatelessWidget {
       onPressed: () {
         Navigator.pushNamed(context, '/profile');
       },
-      child: Column(
+      child: const Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(

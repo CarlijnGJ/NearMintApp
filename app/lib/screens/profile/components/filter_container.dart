@@ -4,6 +4,7 @@ class FilterContainer extends StatefulWidget {
   const FilterContainer({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _FilterContainerState createState() => _FilterContainerState();
 }
 

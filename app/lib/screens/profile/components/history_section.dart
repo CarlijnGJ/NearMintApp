@@ -2,7 +2,6 @@ import 'package:app/screens/members/components/page_selection.dart';
 import 'package:app/screens/profile/components/transaction.dart';
 import 'package:app/screens/profile/components/transactionlist.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class HistorySection extends StatelessWidget {
   final List<Transaction> transactions;
@@ -10,7 +9,7 @@ class HistorySection extends StatelessWidget {
   final VoidCallback nextPage;
   final int page;
   final int pageSize;
-  HistorySection({
+  const HistorySection({
     Key? key,
     required this.transactions,
     required this.previousPage,
@@ -47,7 +46,6 @@ class HistorySection extends StatelessWidget {
               child: TransactionList(transactions: paginatedTransactions),
             ),
 
-            // Added to maintain spacing if required
             PageSelectionRow(
               page: page,
               itemsPerPage: pageSize,
