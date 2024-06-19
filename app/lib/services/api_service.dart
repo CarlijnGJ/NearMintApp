@@ -205,8 +205,7 @@ static Future<void> editMember({
     }
   }
 
-  static Future<void> updateMember(String code, String nickname,
-      String password, String avatar, String gender, String prefgame) async {
+  static Future<void> updateMember(String code, String nickname, String password, String avatar, String gender, String prefgame) async {
     Map<String, dynamic> initData = {
       'code': code,
       'nickname': nickname,
@@ -225,11 +224,11 @@ static Future<void> editMember({
     );
 
     if (response.statusCode == 200) {
-      log("Registration complete.");
+      print("Member data updated successfully.");
     } else if (response.statusCode == 503) {
       throw HttpExceptionWithStatusCode("Duplicate entry in database", 503);
     } else {
-      throw Exception("Couldn't move data");
+      throw Exception("Failed to update member data");
     }
   }
 

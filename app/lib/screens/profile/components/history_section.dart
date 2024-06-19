@@ -27,10 +27,11 @@ class HistorySection extends StatelessWidget {
         : transactions.length;
     final List<Transaction> paginatedTransactions =
         transactions.sublist(startIndex, endIndex);
-return Container(
+    return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.white),
+        borderRadius: BorderRadius.circular(16.0),
+        color: Colors.white.withOpacity(0.1),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -45,7 +46,7 @@ return Container(
             Center(
               child: TransactionList(transactions: paginatedTransactions),
             ),
- 
+
             // Added to maintain spacing if required
             PageSelectionRow(
               page: page,

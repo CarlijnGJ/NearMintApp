@@ -26,6 +26,21 @@ class _LoginPageState extends State<LoginPage> {
   String? errorMessage;
   String? setupErrorMessage;
 
+    @override
+  void initState() {
+    super.initState();
+    checkLoggedIn();
+  }
+
+    void checkLoggedIn() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final sessionKey = prefs.getString('session_key');
+    if (sessionKey != null) {
+      // Navigate to home page if session key exists
+      Navigator.pushReplacementNamed(context, '/');
+    }
+  }
+
   void loginUser() async {
     errorMessage = null;
     final username = usernameController.text;
@@ -39,8 +54,10 @@ class _LoginPageState extends State<LoginPage> {
       prefs.setString('session_key', sessionKey);
       // Navigate to the home page
       eventBus.fire(LoginEvent());
-      Navigator.pop(context);
-      Navigator.pushNamed(context, '/');
+      setState((){
+        Navigator.pop(context);
+        Navigator.pushNamed(context, '/');
+      });
       eventBus.fire(RefreshTopbarEvent(true));
     } catch (e) {
       setState(() {

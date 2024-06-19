@@ -1,13 +1,11 @@
 import 'dart:convert';
 import 'dart:math';
-
-import 'package:app/components/tealgradleft.dart';
-import 'package:app/components/tealgradright.dart';
 import 'package:app/components/topbar/topbar.dart';
 import 'package:app/components/textfield.dart';
 import 'package:app/components/button.dart';
 import 'package:app/screens/addmember/inputvalidation.dart';
 import 'package:app/services/api_service.dart';
+import 'package:app/util/role_util.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:flutter/material.dart';
 import 'package:crypto/crypto.dart';
@@ -109,23 +107,6 @@ class _AddMemberPageState extends State<AddMemberPage> {
     }
   }
 
-  Future<String> fetchRole() async {
-    try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      final sessionKey = prefs.getString('session_key');
-      if (sessionKey != null) {
-        return APIService.getRole(sessionKey);
-      }
-      throw 'User';
-    } catch (e) {
-      setState(() {
-        isError = true;
-        errorMessage = 'Failed to fetch member data: $e';
-      });
-    }
-    return 'User';
-  }
-
   @override
   void initState() {
     super.initState();
@@ -133,8 +114,7 @@ class _AddMemberPageState extends State<AddMemberPage> {
   }
 
   void _checkRole() async {
-    String role = await fetchRole();
-    print(role);
+    String role = await RoleUtil.fetchRole();
     if (role != 'Admin') {
       setState(() {
         isError = true;

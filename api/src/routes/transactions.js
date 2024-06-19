@@ -46,9 +46,9 @@ router.get('/getTransactions', validateSessionKey, (req, res) => {
             return res.status(500).json({ error: 'Internal server error' });
         }
 
-        if (results.length === 0) {
-            return res.status(404).json({ error: 'User not found or no transactions available' });
-        }
+        // if (results.length === 0) {
+        //     return res.status(404).json({ error: 'User not found or no transactions available' });
+        // }
 
         res.status(200).json({ transactions: results });
     });

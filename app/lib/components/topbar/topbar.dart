@@ -1,6 +1,7 @@
 import 'dart:async';
 
-import 'package:app/components/topbar/components/topbarbuttons.dart';
+import 'package:app/components/topbar/topbarbuttons.dart';
+import 'package:app/events/login_events.dart';
 import 'package:app/util/eventbus_util.dart';
 import 'package:flutter/material.dart';
 import 'package:app/screens/home/home_screen.dart';
@@ -72,15 +73,16 @@ class _TopBarState extends State<TopBar> {
 
   Future<void> onTap() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final sessionKey = prefs.getString('session_key');
-      if (sessionKey != null) {
-        await APIService.logout(sessionKey);
-        await prefs.remove(
-            'session_key'); // Remove the session key from SharedPreferences
-      } else {
-        print('session key not found');
-      }
+      // final prefs = await SharedPreferences.getInstance();
+      // final sessionKey = prefs.getString('session_key');
+      // if (sessionKey != null) {
+      //   await APIService.logout(sessionKey);
+      //   await prefs.remove(
+      //       'session_key'); // Remove the session key from SharedPreferences
+      // } else {
+      //   print('session key not found');
+      // }
+      eventBus.fire(LogoutEvent());
       eventBus.fire(RefreshTopbarEvent(false));
     } catch (e) {
       print("Logout failed: $e");
@@ -110,7 +112,7 @@ class _TopBarState extends State<TopBar> {
     } else if (role == 'Member') {
       return <Widget>[
         const TopbarProfileButton(),
-        TopbarLogoutButton(onTap: onTap), // Remove await here
+        TopbarLogoutButton(onTap: onTap),
       ];
     } else {
       return <Widget>[

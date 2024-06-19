@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class FilterContainer extends StatefulWidget {
+  const FilterContainer({super.key});
+
   @override
   _FilterContainerState createState() => _FilterContainerState();
 }
@@ -16,7 +18,8 @@ class _FilterContainerState extends State<FilterContainer> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.white),
+        borderRadius: BorderRadius.circular(16.0),
+        color: Colors.white.withOpacity(0.1),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),

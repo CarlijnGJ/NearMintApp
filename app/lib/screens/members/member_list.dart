@@ -95,11 +95,12 @@ class _MemberListState extends State<MemberList> {
     Navigator.pushNamed(context, '/addmember');
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: const TopBar(),
-      body: SafeArea(
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: const TopBar(),
+    body: SafeArea(
+      child: SingleChildScrollView(
         child: Center(
           child: Column(
             children: [
@@ -108,31 +109,40 @@ class _MemberListState extends State<MemberList> {
               const SizedBox(height: 10),
               MemberListWidget(
                 memberList: usersPerPage(page),
+                page: page,
+                pageSize: pageSize,
+                membersList: membersList,
+                previousPage: previousPage,
+                nextPage: nextPage,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    onPressed: addMemberButton,
-                    child: const Text('Add member'),
-                  ),
-                                    ElevatedButton(
-                    onPressed: updateTransactionsButton,
-                    child: const Text('Update transactions'),
-                  )
-                ],
-              ),
-              SizedBox(height: 10),
-              PageSelectionRow(
-                  page: page,
-                  itemsPerPage: pageSize,
-                  itemsList: membersList,
-                  previousPage: previousPage,
-                  nextPage: nextPage),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 180,
+                      child: ElevatedButton(
+                        onPressed: addMemberButton,
+                        child: const Text('Add member'),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Container(
+                      width: 180,
+                      child: ElevatedButton(
+                        onPressed: updateTransactionsButton,
+                        child: const Text('Update transactions'),
+                      ),
+                    ),
+                  ],
+                ),
+              const SizedBox(height: 10),
+
             ],
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
+
 }

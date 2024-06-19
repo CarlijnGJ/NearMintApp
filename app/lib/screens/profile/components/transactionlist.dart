@@ -9,10 +9,12 @@ class TransactionList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+            final NumberFormat currencyFormat = NumberFormat.currency(symbol: '€');
+
     return transactions.isEmpty
-        ? Center(
+        ? const Center(
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(16.0),
               child: Text(
                 'No transactions available.',
                 style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
@@ -31,7 +33,8 @@ class TransactionList extends StatelessWidget {
                   .map(
                     (transaction) => DataRow(
                       cells: [
-                        DataCell(Text(transaction.change.toString())),
+                        // DataCell(Text(transaction.change.toString())),
+                        DataCell(Text(currencyFormat.format(transaction.change))),
                         DataCell(
                           Text(
                             DateFormat('dd/MM/yyyy HH:mm').format(transaction.date),

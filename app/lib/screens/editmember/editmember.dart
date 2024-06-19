@@ -51,8 +51,8 @@ class _EditMemberPageState extends State<EditMemberPage> {
           avatar = {'name': 'Avatar', 'path': memberData['avatar']};
           gender = memberData['gender'];
           prefgame = memberData['prefgame'] ?? '';
-          nicknameController.text = nickname;
-          genderController.text = gender;
+          nicknameController.text = '';
+          genderController.text = '';
           prefgameController.text = prefgame;
         });
       } else {
@@ -98,14 +98,14 @@ class _EditMemberPageState extends State<EditMemberPage> {
               controller: nicknameController,
               labelText: 'Nickname',
               obscureText: false,
-              hintText: 'Enter nickname',
+              hintText: nickname,
             ),
             const SizedBox(height: 10),
             CustomTextField(
               controller: genderController,
               labelText: 'Gender',
               obscureText: false,
-              hintText: 'Enter gender',
+              hintText: gender,
             ),
             const SizedBox(height: 10),
             PreferredGameDropdown(

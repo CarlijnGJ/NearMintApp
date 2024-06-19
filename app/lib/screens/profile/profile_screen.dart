@@ -59,14 +59,16 @@ class _ProfilePageState extends State<ProfilePage> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final sessionKey = prefs.getString('session_key');
       if (sessionKey != null) {
-        Map<String, dynamic> memberData =
-            await APIService.getMember(sessionKey);
+        Map<String, dynamic> memberData = await APIService.getMember(sessionKey);
         setState(() {
           nickname = memberData['nickname'];
           name = memberData['name'];
           balance = memberData['balance'].toString();
-          avatar = memberData['avatar'];
-          gender = memberData['gender'];
+avatar = memberData['avatar'];
+print(avatar);
+if (avatar == null || avatar == '') {
+  avatar = 'Images/Avatars/member.png';
+}          gender = memberData['gender'];
           preferedGame = memberData['preferedGame'];
           isLoading = false;
           isError = false;
@@ -102,7 +104,7 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-@override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const TopBar(),

@@ -4,7 +4,7 @@ class ProfileImagePicker extends StatefulWidget {
   final Map<String, String>? selectedImage;
   final ValueChanged<Map<String, String>?> onImageSelected;
 
-  ProfileImagePicker({
+  const ProfileImagePicker({super.key, 
     required this.selectedImage,
     required this.onImageSelected,
   });
@@ -45,7 +45,7 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
     double pickerWidth = screenWidth > 600 ? 500 : screenWidth * 0.9;
 
     return Center(
-      child: Container(
+      child: SizedBox(
         width: pickerWidth,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

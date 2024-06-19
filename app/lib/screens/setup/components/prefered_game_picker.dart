@@ -5,7 +5,7 @@ class PreferredGameDropdown extends StatelessWidget {
   final String? errorText;
   final ValueChanged<String?> onChanged;
 
-  PreferredGameDropdown({
+  const PreferredGameDropdown({super.key, 
     required this.initialValue,
     this.errorText,
     required this.onChanged,
@@ -17,7 +17,7 @@ class PreferredGameDropdown extends StatelessWidget {
     double screenWidth = MediaQuery.of(context).size.width;
     double dropdownWidth = screenWidth > 600 ? 500 : screenWidth * 0.9;
 
-    return Container(
+    return SizedBox(
       width: dropdownWidth, // Use the calculated width here
       child: DropdownButtonFormField<String>(
         value: initialValue,

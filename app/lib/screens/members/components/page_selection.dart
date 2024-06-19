@@ -25,7 +25,7 @@ class PageSelectionRow<T> extends StatelessWidget {
           onPressed: page > 0 ? previousPage : null,
           child: const Text('Previous'),
         ),
-        SizedBox(width: 20),
+        const SizedBox(width: 20),
         ElevatedButton(
           onPressed: (page + 1) * itemsPerPage < itemsList.length ? nextPage : null,
           child: const Text('Next'),

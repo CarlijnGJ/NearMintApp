@@ -33,7 +33,19 @@ class TopbarLogoutButton extends StatelessWidget {
               Navigator.pushNamed(context, '/');
             }
           : null,
-      child: const Text('Logout'),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.logout,
+            size: 30,
+          ),
+          Text(
+            'Logout',
+            style: TextStyle(fontSize: 14),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -76,7 +88,19 @@ class TopbarMembersButton extends StatelessWidget {
       onPressed: () {
         Navigator.pushNamed(context, '/members');
       },
-      child: const Text('members'),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.people,
+            size: 30,
+          ),
+          Text(
+            'Members',
+            style: TextStyle(fontSize: 14),
+          ),
+        ],
+      ),
     );
   }
 }
