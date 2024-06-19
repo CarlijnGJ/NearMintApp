@@ -9,9 +9,9 @@ class RoleUtil {
       if (sessionKey != null) {
         return APIService.getRole(sessionKey);
       }
-      throw 'User';
+      throw 'Visitor';
     } catch (e) {
-      return 'User';
+      return 'Visitor';
     }
   }
 }
