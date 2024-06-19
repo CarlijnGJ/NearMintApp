@@ -188,7 +188,11 @@ class _AddMemberPageState extends State<AddMemberPage> {
                         ),
                         const SizedBox(height: 10),
                         CustomButton(text: 'Send code', onTap: addMember),
-                        Text(secret ?? ''),
+                        const SizedBox(height: 10),
+                        Text(
+                          secret ?? '',
+                          style: const TextStyle(fontSize: 24, fontFamily: 'Wenkai'),
+                        ),
                       ],
                     ),
                   ),
