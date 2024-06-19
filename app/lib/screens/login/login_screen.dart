@@ -136,7 +136,7 @@ class _LoginPageState extends State<LoginPage> {
                           height: 50,
                           child: Transform.scale(
                             scale: 1.2,
-                            child: Image.asset('assets/near_mint_logo.png'),
+                            child: Image.asset('near_mint_logo.png'),
                           ),
                         ),
                         const SizedBox(width: 15),
@@ -161,14 +161,15 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 5),
                     CustomTextField(
                       controller: usernameController,
-                      labelText: 'Username',
-                      hintText: 'Peter',
+                      labelText: 'Nickname',
+                      hintText: 'Nickname...',
                       obscureText: false,
                     ),
                     const SizedBox(height: 10),
                     CustomTextField(
                       controller: passwordController,
                       labelText: 'Password',
+                      hintText: 'Password...',  
                       obscureText: true,
                       errorText: errorMessage,
                     ),

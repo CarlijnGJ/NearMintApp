@@ -22,14 +22,13 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
   void initState() {
     super.initState();
 
-    // Initialize the images list with predefined images
     images = [
-      {'name': 'Magic', 'path': 'assets/images/profilepics/PFP1.png'},
-      {'name': 'Sea', 'path': 'assets/images/profilepics/PFP2.png'},
-      {'name': 'Skull', 'path': 'assets/images/profilepics/PFP3.png'},
-      {'name': 'Vanguard', 'path': 'assets/images/profilepics/PFP4.png'},
-      {'name': 'Lorcana', 'path': 'assets/images/profilepics/PFP5.png'},
-      {'name': 'OnePiece', 'path': 'assets/images/profilepics/PFP6.png'},
+      {'name': 'Magic', 'path': 'images/profilepics/PFP1.png'},
+      {'name': 'Sea', 'path': 'images/profilepics/PFP2.png'},
+      {'name': 'Skull', 'path': 'images/profilepics/PFP3.png'},
+      {'name': 'Vanguard', 'path': 'images/profilepics/PFP4.png'},
+      {'name': 'Lorcana', 'path': 'images/profilepics/PFP5.png'},
+      {'name': 'OnePiece', 'path': 'images/profilepics/PFP6.png'},
     ];
 
     // Ensure selectedImage is valid or fallback to the first image

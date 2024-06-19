@@ -29,7 +29,7 @@ RUN --mount=type=bind,source=package.json,target=package.json \
     --mount=type=bind,source=package-lock.json,target=package-lock.json \
     --mount=type=cache,target=/root/.npm \
     npm ci --omit=dev
-RUN nmp install pm2
+RUN npm install pm2-runtime
 # Run the application as a non-root user.
 
 # Copy the rest of the source files into the image.
