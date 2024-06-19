@@ -30,6 +30,10 @@ dev_dependencies:
   mockito: ^5.0.16
 
 flutter:
+  fonts:
+    - family: Wenkai
+      fonts:
+        - asset: fonts/WenKaiMono-Regular.ttf
   uses-material-design: true
   assets:
     - assets/images/
