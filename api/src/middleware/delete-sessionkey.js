@@ -13,7 +13,7 @@ function deleteSessionKey(req, res, next) {
     const deleteQuery = 'DELETE FROM Session WHERE session_key = ?';
     connection.query(deleteQuery, [sessionKey], (err, results) => {
         if (err) {
-            console.error('Error executing MySQL query:', err);
+            //console.error('Error executing MySQL query:', err);
             return res.status(500).json({ error: 'Internal server error' });
         }   
 

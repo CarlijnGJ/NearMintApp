@@ -1,12 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const validateSessionKey = require('../middleware/validate-sessionkey');
-const parseExcel = require('../middleware/parse-excel').default;
 const multer = require('multer');
 const fs = require("fs");
 
 const connection = require('../config/db');
-const parsingExcelFile = require('../middleware/parse-excel');
+const { excelImportPlayerCreditGeneral, excelImportDailyIncomeAndExpenses } = require('../middleware/parse-excel');
 const upload = multer({ dest: 'uploads/' });
 
 // Define transaction-related routes
@@ -42,14 +41,10 @@ router.get('/getTransactions', validateSessionKey, (req, res) => {
 
     connection.query(sessionQuery, [sessionKey], (err, results) => {
         if (err) {
-            console.error('Error executing MySQL query:', err);
+            //console.error('Error executing MySQL query:', err);
             return res.status(500).json({ error: 'Internal server error' });
         }
-
-        // if (results.length === 0) {
-        //     return res.status(404).json({ error: 'User not found or no transactions available' });
-        // }
-
+        
         res.status(200).json({ transactions: results });
     });
 });
@@ -112,7 +107,7 @@ router.post('/addTransaction', validateSessionKey, (req, res) => {
     WHERE s.session_key = ? AND ur.role_id = 2`;
     connection.query(getRoleQuery, [sessionKey], (err, results) => {
         if (err) {
-            console.error('Error executing MySQL query:', err);
+            //console.error('Error executing MySQL query:', err);
             return res.status(500).json({ error: 'Internal server error' });
         }
 
@@ -125,7 +120,7 @@ router.post('/addTransaction', validateSessionKey, (req, res) => {
 
         connection.query(insertTransactionQuery, [amount, description, date, member_id], (err, results) => {
             if (err) {
-                console.error('Error executing MySQL query:', err);
+                //console.error('Error executing MySQL query:', err);
                 return res.status(500).json({ error: 'Internal server error' });
             }
 
@@ -134,7 +129,7 @@ router.post('/addTransaction', validateSessionKey, (req, res) => {
 
             connection.query(updateCreditsQuery, [amount, member_id], (err, results) => {
                 if (err) {
-                    console.error('Error executing MySQL query:', err);
+                    //console.error('Error executing MySQL query:', err);
                     return res.status(500).json({ error: 'Internal server error' });
                 }
 
@@ -144,31 +139,69 @@ router.post('/addTransaction', validateSessionKey, (req, res) => {
     });
 });
 
-router.post('/upload-excel', upload.single('excelFile'), (req, res) => {
+router.post('/upload-excel', validateSessionKey, upload.single('excelFile'), (req, res) => {
+    const sessionKey = req.headers.auth;
+
     const filePath = req.file.path;
-    const filteredData = parsingExcelFile(filePath);
-    
+    const filteredDataPlayerCreditGeneral = excelImportPlayerCreditGeneral(filePath);
+    const filteredDataDailyIncomeAndExpenses = excelImportDailyIncomeAndExpenses(filePath);
+
     var failedtransactionsPush = 0;
 
-    filteredData.forEach(data => {
-        if (data.__EMPTY !== undefined || data.__EMPTY_1 !== undefined) {
-        const insertTransactionQuery = `INSERT INTO NearMintGamingDB.TestTransactions (member_name, credit_total) VALUES (?, ?)`;
-        connection.query(insertTransactionQuery, [data.__EMPTY, data.__EMPTY_1], (err, results) => {
-            if (err) {
-                console.error('Error executing MySQL query:', err);
-                return res.status(500).json({ error: 'Internal server error' });
-            }
-        });
+    filteredDataPlayerCreditGeneral.forEach(data => {
+        if (data['Account name'] !== undefined || data['credit total'] !== undefined) {
+            const updateCreditsQuery = `UPDATE Members SET credits = ? WHERE name = ?`;
+            connection.query(updateCreditsQuery, [data['credit total'], data['Account name']], (err, results) => {
+                if (err) {
+                    //console.error('Error executing MySQL query:', err);
+                    return res.status(500).json({ error: 'Internal server error' });
+                }
+            });
         } else {
             failedtransactionsPush++;
         }
     });
+
+    const deleteTransactionQuery = `DELETE FROM Transactions`;
+    connection.query(deleteTransactionQuery, (err, results) => {
+        if (err) {
+            //console.error('Error executing MySQL query:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
+    filteredDataDailyIncomeAndExpenses.forEach(data => {
+        if (data['Player name'] !== undefined || data['Date'] !== undefined || data['Sale amount'] !== undefined || data['Discription'] !== undefined) {
+            var currentMemberId = 0;
+            const getMemberIdFromName = `SELECT member_id FROM Members WHERE name = ?`;
+            connection.query(getMemberIdFromName, [data['Player Name']], (err, results) => {
+                if (err) {
+                    //console.error('Error executing MySQL query:', err);
+                    return res.status(500).json({ error: 'Internal server error' });
+                } else if (results[0] === null || results[0] === undefined) {
+                    //console.log("Member id not found")                
+                } else {
+                    currentMemberId = results[0].member_id;
+                    const updateTransactionsQuery = `INSERT INTO Transactions (amount, date, description, member_id) VALUES (?, ?, ?, ?)`;
+                    connection.query(updateTransactionsQuery, [data['Sale amount'], data['Date'], data['Discription'], currentMemberId], (err, results) => {
+                        if (err) {
+                            console.error('Error executing MySQL query:', err);
+                            return res.status(500).json({ error: 'Internal server error' });
+                        }
+                    });
+                }
+            });
+        } else {
+            failedtransactionsPush++;
+        }
+    });
+
     res.send('Excel file uploaded and parsed. Check the console for data. Failed transactions: ' + failedtransactionsPush);
     let resultHandler = function (err) {
         if (err) {
-            console.log("unlink failed", err);
+            //console.log("unlink failed", err);
         } else {
-            console.log("file deleted");
+            //console.log("file deleted");
         }
     }
     fs.unlink(req.file.path, resultHandler);

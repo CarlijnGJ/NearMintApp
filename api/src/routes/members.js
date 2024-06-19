@@ -43,7 +43,7 @@ router.get('/member', validateSessionKey, (req, res) => {
     const memberQuery = 'SELECT nickname, name, credits, avatar, gender, preferedgame FROM Members WHERE member_id = ?';
     connection.query(memberQuery, [memberId], (err, results) => {
         if (err) {
-            console.error('Error executing MySQL query:', err);
+            //console.error('Error executing MySQL query:', err);
             return res.status(500).json({ error: 'Internal server error' });
         }
 
@@ -92,15 +92,15 @@ router.get('/member/code', (req, res) => {
 
     connection.query(codeQuery, [parameter], (err, results) => {
         if (err) {
-            console.error('Error executing MySQL query:', err);
+            //console.error('Error executing MySQL query:', err);
             return res.status(500).json({ error: 'Internal server error' });
         }
 
         if (results.length != 0) {
-            console.log("True");
+            //console.log("True");
             res.status(200).json({ result: true, name: results[0].name });
         } else {
-            console.log("False");
+            //console.log("False");
             res.status(200).json({ result: false, name: 'null' });
         }
     });
@@ -129,7 +129,7 @@ router.get('/members', validateSessionKey, (req, res) => {
     const query = 'SELECT * FROM Members';
     connection.query(query, (err, results) => {
         if (err) {
-            console.error('Error executing MySQL query:', err);
+            //console.error('Error executing MySQL query:', err);
             return res.status(500).json({ error: 'Internal server error' });
         }
         res.status(200).json(results);

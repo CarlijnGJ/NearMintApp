@@ -1,4 +1,3 @@
-import 'package:app/screens/members/components/page_selection.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -48,7 +47,7 @@ class MemberListWidget extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(16.0),
-                      boxShadow: [
+                      boxShadow: const [
                         BoxShadow(
                           color: Colors.black26,
                           offset: Offset(0, 2),
@@ -69,7 +68,7 @@ class MemberListWidget extends StatelessWidget {
                         ...memberList.map(
                           (user) => DataRow(cells: [
                             DataCell(
-                              Container(
+                              SizedBox(
                                 width: columnWidth,
                                 child: Text(
                                   user.name,
@@ -78,7 +77,7 @@ class MemberListWidget extends StatelessWidget {
                               ),
                             ),
                             DataCell(
-                              Container(
+                              SizedBox(
                                 width: columnWidth,
                                 child: Text(
                                   user.nickname,
@@ -87,7 +86,7 @@ class MemberListWidget extends StatelessWidget {
                               ),
                             ),
                             DataCell(
-                              Container(
+                              SizedBox(
                                 width: columnWidth,
                                 child: Text(
                                   currencyFormat.format(user.credits),
@@ -118,7 +117,7 @@ class MemberListWidget extends StatelessWidget {
                           cells: [
                             DataCell.empty,
                             DataCell(
-                              Container(
+                              SizedBox(
                                 width: buttonWidth,
                                 child: ElevatedButton(
                                   onPressed: page > 0 ? previousPage : null,
@@ -127,7 +126,7 @@ class MemberListWidget extends StatelessWidget {
                               ),
                             ),
                             DataCell(
-                              Container(
+                              SizedBox(
                                 width: buttonWidth,
                                 child: ElevatedButton(
                                   onPressed: (page + 1) * pageSize < membersList.length

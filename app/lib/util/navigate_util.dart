@@ -6,7 +6,7 @@ class NavigateUtil {
     try {
       Navigator.pushNamedAndRemoveUntil(context, "/", (r) => false);
     } catch (e) {
-      print('Error popping context: $e');
+      throw ('Error popping context: $e');
     }
   }
 }

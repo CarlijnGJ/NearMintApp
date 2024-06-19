@@ -5,16 +5,16 @@ import 'package:app/components/textfield.dart';
 import 'package:app/components/button.dart';
 import 'package:app/screens/addmember/inputvalidation.dart';
 import 'package:app/services/api_service.dart';
+import 'package:app/util/auth_check_util.dart';
 import 'package:app/util/role_util.dart';
-import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:flutter/material.dart';
 import 'package:crypto/crypto.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class AddMemberPage extends StatefulWidget {
   const AddMemberPage({Key? key}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _AddMemberPageState createState() => _AddMemberPageState();
 }
 
@@ -77,23 +77,13 @@ class _AddMemberPageState extends State<AddMemberPage> {
 
     if (errors.any((error) => error != null)) {
       setState(() {
-        print('Errors: $errors'); // Debugging check
       });
       return;
     }
 
     try {
-      final key = encrypt.Key.fromLength(32); // 32 bytes for AES256 encryption
-      final iv = encrypt.IV.fromLength(16); // 16 bytes for AES
-      final encrypter = encrypt.Encrypter(encrypt.AES(key));
-
       secret = generateRandomCode();
-      
       String hashedSecret = generateHashCode(secret);
-      // final encryptedUsername = encrypter.encrypt(username, iv: iv).base64;
-      final encryptedEmail = encrypter.encrypt(email, iv: iv).base64;
-      final encryptedPhoneNumber =
-          encrypter.encrypt(phoneNumber, iv: iv).base64;
       await APIService.addMember(
           username, email, phoneNumber, hashedSecret);
       setState(() {
@@ -109,6 +99,7 @@ class _AddMemberPageState extends State<AddMemberPage> {
 
   @override
   void initState() {
+    CheckAuthUtil.Admin(context);
     super.initState();
     _checkRole();
   }
@@ -168,7 +159,7 @@ class _AddMemberPageState extends State<AddMemberPage> {
                         ),
                         const SizedBox(height: 10),
                         CustomButton(text: 'Send code', onTap: addMember),
-                        Text(secret ?? ''),
+                        Text(secret),
                       ],
                     ),
                   ),

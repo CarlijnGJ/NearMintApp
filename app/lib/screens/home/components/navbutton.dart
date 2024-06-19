@@ -1,7 +1,5 @@
 import 'package:app/events/login_events.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:app/services/api_service.dart';
 import 'package:app/util/eventbus_util.dart';
 
 class NavButtonWithHover extends StatefulWidget {
@@ -17,6 +15,7 @@ class NavButtonWithHover extends StatefulWidget {
   }) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _NavButtonWithHoverState createState() => _NavButtonWithHoverState();
 }
 

@@ -32,7 +32,7 @@ router.get('/getRole', validateSessionKey, (req, res) => {
                           WHERE s.session_key = ?`;
     connection.query(sessionQuery, [sessionKey], (err, results) => {
         if (err) {
-            console.error('Error executing MySQL query:', err);
+            //console.error('Error executing MySQL query:', err);
             return res.status(500).json({ error: 'Internal server error' });
         }
 

@@ -1,5 +1,5 @@
 import 'package:app/components/topbar/topbar.dart';
-import 'package:app/screens/profile/components/filter_container.dart';
+import 'package:app/util/auth_check_util.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:app/services/api_service.dart';
@@ -12,6 +12,7 @@ class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _ProfilePageState createState() => _ProfilePageState();
 }
 
@@ -49,45 +50,46 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   void initState() {
+    CheckAuthUtil.MemberOrAdmin(context);
     super.initState();
     fetchMemberData();
     fetchTransactions();
   }
 
   Future<void> fetchMemberData() async {
-    try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      final sessionKey = prefs.getString('session_key');
-      if (sessionKey != null) {
-        Map<String, dynamic> memberData = await APIService.getMember(sessionKey);
-        setState(() {
-          nickname = memberData['nickname'];
-          name = memberData['name'];
-          balance = memberData['balance'].toString();
-avatar = memberData['avatar'];
-print(avatar);
-if (avatar == null || avatar == '') {
-  avatar = 'Images/Avatars/member.png';
-}          gender = memberData['gender'];
-          preferedGame = memberData['preferedGame'];
-          isLoading = false;
-          isError = false;
-        });
-      } else {
-        setState(() {
-          isLoading = false;
-          isError = true;
-          errorMessage = 'Please login again';
-        });
-      }
-    } catch (e) {
+  try {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final sessionKey = prefs.getString('session_key');
+    if (sessionKey != null) {
+      Map<String, dynamic> memberData = await APIService.getMember(sessionKey);
+      setState(() {
+        nickname = memberData['nickname'];
+        name = memberData['name'];
+        balance = memberData['balance'].toString();
+        avatar = memberData['avatar'];
+        if (avatar == null || avatar == '') {
+          avatar = 'Images/Avatars/member.png';
+        }
+        gender = memberData['gender'];
+        preferedGame = memberData['preferedGame'];
+        isLoading = false;
+        isError = false;
+      });
+    } else {
       setState(() {
         isLoading = false;
         isError = true;
-        errorMessage = 'Failed to fetch member data: $e';
+        errorMessage = 'Please login again';
       });
     }
+  } catch (e) {
+    setState(() {
+      isLoading = false;
+      isError = true;
+      errorMessage = 'Failed to fetch member data: $e';
+    });
   }
+}
 
   Future<void> fetchTransactions() async {
     try {
@@ -130,7 +132,7 @@ if (avatar == null || avatar == '') {
                                     nickname: nickname,
                                     name: name,
                                     gender: gender,
-                                    preferedGame: preferedGame,
+                                    preferredGame: preferedGame,
                                   ),
                                   const SizedBox(height: 10),
                                   BalanceContainer(
@@ -165,7 +167,7 @@ if (avatar == null || avatar == '') {
                                 nickname: nickname,
                                 name: name,
                                 gender: gender,
-                                preferedGame: preferedGame,
+                                preferredGame: preferedGame,
                               ),
                               const SizedBox(height: 10),
                               BalanceContainer(

@@ -2,6 +2,7 @@ import 'package:app/components/button.dart';
 import 'package:app/components/textfield.dart';
 import 'package:app/screens/addmember/inputvalidation.dart';
 import 'package:app/services/api_service.dart';
+import 'package:app/util/auth_check_util.dart';
 import 'package:flutter/material.dart';
 import 'package:app/screens/members/components/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,7 +13,9 @@ class AddTransactionPage extends StatefulWidget {
   const AddTransactionPage({Key? key, required this.member}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _AddTransactionPageState createState() =>
+      // ignore: no_logic_in_create_state
       _AddTransactionPageState(member: member);
 }
 
@@ -28,6 +31,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
 
   @override
   void initState() {
+    CheckAuthUtil.Admin(context);
     super.initState();
     fetchRole().then((value) {
       setState(() {
@@ -39,15 +43,15 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
   @override
   Widget build(BuildContext context) {
     if (role == null) {
-      return CircularProgressIndicator();
+      return const CircularProgressIndicator();
     }
 
     if (role != 'Admin' || member == null) {
       return Scaffold(
         appBar: AppBar(
-          title: Text('Error'),
+          title: const Text('Error'),
         ),
-        body: Center(
+        body: const Center(
           child: Text(
             'Unauthorized access or invalid member',
             style: TextStyle(fontSize: 20),
@@ -63,14 +67,14 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
       body: Center(
         child: Column(
           children: [
-            Text(
+            const Text(
               'Member ID:',
               style: TextStyle(fontSize: 20),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text(
               member!.id.toString(),
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             CustomTextField(
               controller: amountController,
@@ -89,7 +93,9 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
               onTap: () async {
                 bool success = await addTransaction(member!);
                 if (success) {
+                  // ignore: use_build_context_synchronously
                   Navigator.pop(context);
+                  // ignore: use_build_context_synchronously
                   Navigator.pushNamed(context, '/members'); 
                 }
               },

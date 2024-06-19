@@ -59,7 +59,7 @@ router.post('/addmember', (req, res) => {
     const insertQuery = 'INSERT INTO NewMembers (name, email, phonenumber, secret) VALUES (?, ?, ?, ?)';
     connection.query(insertQuery, [name, mail, phonenumber, secret], (err, results) => {
         if (err) {
-            console.error('Error executing MySQL query:', err);
+            //console.error('Error executing MySQL query:', err);
             return res.status(500).json({ error: 'Internal server error' });
         }
 
