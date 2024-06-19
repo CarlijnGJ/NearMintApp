@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:app/components/customexception.dart';
+import 'package:app/events/login_events.dart';
+import 'package:app/util/eventbus_util.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -48,88 +51,84 @@ class _SetupPageState extends State<SetupPage> {
     return digest.toString(); // Convert the digest to a string
   }
 
-  void finishRegister() async {
-    log("Data: ${nicknameController.text}, ${passwordController.text}, ${selectedImage?.toString()}, ${pwcheckController.text}, ${genderController.text}, ${gameController.text}.");
-
-    String nickname = nicknameController.text;
-    String password = passwordController.text;
-    String pwcheck = pwcheckController.text;
-    String gender = genderController.text;
-    String prefgame = gameController.text;
-
-    errors = List.filled(5, null);
-    if (!ValidateUser.validateBasicString(nicknameController.text)) {
-      errors[0] = 'Invalid username';
-    }
-
-    if (!ValidateUser.validatePassword(passwordController.text)) {
-      errors[1] = 'Invalid password';
-    }
-
-    if (pwcheckController.text != passwordController.text) {
-      errors[2] = 'Passwords don\'t match';
-    }
-
-    if (!ValidateUser.validateBasicString(genderController.text) &&
-        genderController.text != '') {
-      errors[3] = 'Invalid gender';
-    }
-
-    if (!ValidateUser.validateBasicString(gameController.text) &&
-        gameController.text != '') {
-      errors[4] = 'Invalid prefered game';
-    }
-
-    if (errors.any((error) => error != null)) {
+  void showErrors(){
+      if (errors.any((error) => error != null)) {
       setState(() {
         print('Errors: $errors'); // Debugging check
       });
       return;
     }
-    setState(() {});
+  }
 
-    try {
-      // Retrieve token
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String code = prefs.getString('token') ?? '';
+ void finishRegister() async {
+  log("Data: ${nicknameController.text}, ${passwordController.text}, ${selectedImage?.toString()}, ${pwcheckController.text}, ${genderController.text}, ${gameController.text}.");
 
-      // Hash or encrypt everything
-      final key = encrypt.Key.fromLength(32); // 32 bytes for AES256 encryption
-      final iv = encrypt.IV.fromLength(16); // 16 bytes for AES
-      final encrypter = encrypt.Encrypter(encrypt.AES(key));
+  String nickname = nicknameController.text;
+  String password = passwordController.text;
+  String pwcheck = pwcheckController.text;
+  String gender = genderController.text;
+  String prefgame = gameController.text;
 
-      final String hashedPassword;
-      if (password == pwcheck) {
-        hashedPassword = generateHashCode(password);
-      } else {
-        throw Exception("Passwords don't match");
-      }
+  errors = List.filled(5, null);
+  if (!ValidateUser.validateBasicString(nickname)) {
+    errors[0] = 'Invalid username';
+  }
 
-      String encryptedGender = 'empty';
-      if (gender.isNotEmpty) {
-        encryptedGender = encrypter.encrypt(gender, iv: iv).base64;
-      }
+  if (!ValidateUser.validatePassword(password)) {
+    errors[1] = 'Invalid password';
+  }
 
-      String encryptedPrefGame = 'empty';
-      if (prefgame.isNotEmpty) {
-        encryptedPrefGame = encrypter.encrypt(prefgame, iv: iv).base64;
-      }
+  if (pwcheck != password) {
+    errors[2] = 'Passwords don\'t match';
+  }
 
-      // Throw everything into the database
-      await APIService.updateMember(code, nickname, hashedPassword,
-          selectedImage?['path'] ?? '', gender, prefgame);
+  if (!ValidateUser.validateBasicString(gender) && gender.isNotEmpty) {
+    errors[3] = 'Invalid gender';
+  }
 
-      // Attempt login
-      await APIService.login(nickname, hashedPassword);
+  if (!ValidateUser.validateBasicString(prefgame) && prefgame.isNotEmpty) {
+    errors[4] = 'Invalid preferred game';
+  }
 
-      // Navigate to the home page after successful login
-      if (!mounted) return;
+  showErrors();
+
+  if (errors.any((error) => error != null)) {
+    return; // Exit if there are errors
+  }
+
+  try { 
+    // Retrieve token
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String code = prefs.getString('token') ?? '';
+
+    final String hashedPassword = generateHashCode(password);
+
+    // Update member data via API
+    await APIService.updateMember(code, nickname, hashedPassword,
+        selectedImage?['path'] ?? '', gender, prefgame);
+
+    // Attempt login after update
+    final token = await APIService.login(nickname, hashedPassword);
+    final sessionKey = token['session_key'];
+    prefs.setString('session_key', sessionKey);
+
+    // Navigate to the home page
+    eventBus.fire(LoginEvent());
+    setState(() {
       Navigator.pop(context);
       Navigator.pushNamed(context, '/');
-    } catch (e) {
-      print('Registering member failed! $e');
-    }
+    });
+    eventBus.fire(RefreshTopbarEvent(true));
+  } on HttpExceptionWithStatusCode catch (e) {
+    // Handle duplicate entry error
+    errors[0] = 'Username already exists';
+    showErrors();
+  } catch (e) {
+    // Handle other errors
+    print('Registering member failed! $e');
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -167,21 +166,22 @@ class _SetupPageState extends State<SetupPage> {
                             const SizedBox(height: 20),
                             CustomTextField(
                               controller: nicknameController,
-                              hintText: 'Nickname*',
+                              labelText: 'Nickname*',
+                              hintText: 'Peter',
                               obscureText: false,
                               errorText: errors.isNotEmpty ? errors[0] : null,
                             ),
                             const SizedBox(height: 10),
                             CustomTextField(
                               controller: passwordController,
-                              hintText: 'Password*',
+                              labelText: 'Password*',
                               obscureText: true,
                               errorText: errors.isNotEmpty ? errors[1] : null,
                             ),
                             const SizedBox(height: 10),
                             CustomTextField(
                               controller: pwcheckController,
-                              hintText: 'Repeat Password*',
+                              labelText: 'Repeat Password*',
                               obscureText: true,
                               errorText: errors.isNotEmpty ? errors[2] : null,
                             ),
@@ -190,7 +190,7 @@ class _SetupPageState extends State<SetupPage> {
                             const SizedBox(height: 10),
                             CustomTextField(
                               controller: genderController,
-                              hintText: 'Gender',
+                              labelText: 'Gender',
                               obscureText: false,
                               errorText: errors.isNotEmpty ? errors[3] : null,
                             ),

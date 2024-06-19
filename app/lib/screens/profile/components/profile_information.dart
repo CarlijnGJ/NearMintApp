@@ -7,7 +7,7 @@ class ProfileInformation extends StatelessWidget {
   final String? gender;
   final String? preferedGame;
 
-  ProfileInformation({
+  const ProfileInformation({super.key, 
     this.avatar,
     this.nickname,
     this.name,
@@ -19,7 +19,8 @@ class ProfileInformation extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.white),
+        borderRadius: BorderRadius.circular(16.0),
+        color: Colors.white.withOpacity(0.1),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -32,16 +33,14 @@ class ProfileInformation extends StatelessWidget {
                 // Avatar or default icon and edit button
                 Column(
                   children: [
-                    avatar != null
-                        ? Padding(
+                    if (avatar != null) Padding(
                             padding: const EdgeInsets.only(right: 16.0),
                             child: Image.asset(
                               avatar!,
                               width: 50,
                               height: 50,
                             ),
-                          )
-                        : const Icon(Icons.person, size: 50),
+                          ) else const Icon(Icons.person, size: 50),
                     IconButton(
                       icon: const Icon(Icons.edit),
                       onPressed: () {
@@ -58,7 +57,7 @@ class ProfileInformation extends StatelessWidget {
                       // Nickname
                       Text(
                         'Nickname: ${nickname ?? 'Empty'}',
-                        style: TextStyle(fontSize: 14.0),
+                        style: const TextStyle(fontSize: 14.0),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -66,7 +65,7 @@ class ProfileInformation extends StatelessWidget {
                       // Name
                       Text(
                         'Name: ${name ?? 'Empty'}',
-                        style: TextStyle(fontSize: 14.0),
+                        style: const TextStyle(fontSize: 14.0),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -74,7 +73,7 @@ class ProfileInformation extends StatelessWidget {
                       // Gender
                       Text(
                         'Gender: ${gender ?? 'Empty'}',
-                        style: TextStyle(fontSize: 14.0),
+                        style: const TextStyle(fontSize: 14.0),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -82,7 +81,7 @@ class ProfileInformation extends StatelessWidget {
                       // Preferred game
                       Text(
                         'Preferred game: ${preferedGame ?? 'Empty'}',
-                        style: TextStyle(fontSize: 14.0),
+                        style: const TextStyle(fontSize: 14.0),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
