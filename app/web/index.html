@@ -32,12 +32,13 @@
   <title>app</title>
   <link rel="manifest" href="manifest.json">
 
-  <!-- This script adds the flutter initialization JS code -->
-  <script src="flutter.js" defer></script>
 </head>
 <body>
   <script>
     window.addEventListener('load', function(ev) {
+      {{flutter_js}}
+      {{flutter_build_config}}
+
       const loading = document.createElement('div');
       document.body.appendChild(loading);
       loading.textContent = "Loading Entrypoint...";
